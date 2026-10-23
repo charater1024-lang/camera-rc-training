@@ -1,0 +1,418 @@
+{
+  "complete": true,
+  "source_report_sha256": "884f80c93853ea904e6f59d6978108f4d3c5274061b08ae73f19a3b1cb213792",
+  "scope": "official training annotations only",
+  "rgb_available_verified_at_label_audit": false,
+  "model_trained_on_acdc": false,
+  "counts_are_frames_and_pixels_not_instances": true,
+  "conditions": {
+    "fog": {
+      "frames": 400,
+      "total_pixels": 829440000,
+      "ignored_pixel_fraction": 0.06783921682098766,
+      "classes": {
+        "road": {
+          "label_id": 7,
+          "frames": 400,
+          "pixels": 134606949
+        },
+        "sidewalk": {
+          "label_id": 8,
+          "frames": 258,
+          "pixels": 20759333
+        },
+        "building": {
+          "label_id": 11,
+          "frames": 247,
+          "pixels": 64461613
+        },
+        "wall": {
+          "label_id": 12,
+          "frames": 206,
+          "pixels": 11177393
+        },
+        "fence": {
+          "label_id": 13,
+          "frames": 264,
+          "pixels": 17608971
+        },
+        "pole": {
+          "label_id": 17,
+          "frames": 400,
+          "pixels": 5500738
+        },
+        "traffic_light": {
+          "label_id": 19,
+          "frames": 144,
+          "pixels": 772174
+        },
+        "traffic_sign": {
+          "label_id": 20,
+          "frames": 340,
+          "pixels": 2509901
+        },
+        "vegetation": {
+          "label_id": 21,
+          "frames": 399,
+          "pixels": 143288635
+        },
+        "terrain": {
+          "label_id": 22,
+          "frames": 306,
+          "pixels": 22221503
+        },
+        "sky": {
+          "label_id": 23,
+          "frames": 400,
+          "pixels": 328586754
+        },
+        "person": {
+          "label_id": 24,
+          "frames": 78,
+          "pixels": 338440
+        },
+        "rider": {
+          "label_id": 25,
+          "frames": 21,
+          "pixels": 108365
+        },
+        "car": {
+          "label_id": 26,
+          "frames": 382,
+          "pixels": 12423725
+        },
+        "truck": {
+          "label_id": 27,
+          "frames": 210,
+          "pixels": 5089727
+        },
+        "bus": {
+          "label_id": 28,
+          "frames": 15,
+          "pixels": 1672609
+        },
+        "train": {
+          "label_id": 31,
+          "frames": 18,
+          "pixels": 1860423
+        },
+        "motorcycle": {
+          "label_id": 32,
+          "frames": 13,
+          "pixels": 47717
+        },
+        "bicycle": {
+          "label_id": 33,
+          "frames": 27,
+          "pixels": 136470
+        }
+      }
+    },
+    "night": {
+      "frames": 400,
+      "total_pixels": 829440000,
+      "ignored_pixel_fraction": 0.10310783902391975,
+      "classes": {
+        "road": {
+          "label_id": 7,
+          "frames": 400,
+          "pixels": 251770125
+        },
+        "sidewalk": {
+          "label_id": 8,
+          "frames": 385,
+          "pixels": 61088259
+        },
+        "building": {
+          "label_id": 11,
+          "frames": 394,
+          "pixels": 147157443
+        },
+        "wall": {
+          "label_id": 12,
+          "frames": 270,
+          "pixels": 14054749
+        },
+        "fence": {
+          "label_id": 13,
+          "frames": 248,
+          "pixels": 10223985
+        },
+        "pole": {
+          "label_id": 17,
+          "frames": 397,
+          "pixels": 7845730
+        },
+        "traffic_light": {
+          "label_id": 19,
+          "frames": 264,
+          "pixels": 1751850
+        },
+        "traffic_sign": {
+          "label_id": 20,
+          "frames": 376,
+          "pixels": 3100472
+        },
+        "vegetation": {
+          "label_id": 21,
+          "frames": 391,
+          "pixels": 94131506
+        },
+        "terrain": {
+          "label_id": 22,
+          "frames": 144,
+          "pixels": 5435223
+        },
+        "sky": {
+          "label_id": 23,
+          "frames": 396,
+          "pixels": 119175815
+        },
+        "person": {
+          "label_id": 24,
+          "frames": 190,
+          "pixels": 1227313
+        },
+        "rider": {
+          "label_id": 25,
+          "frames": 121,
+          "pixels": 325000
+        },
+        "car": {
+          "label_id": 26,
+          "frames": 382,
+          "pixels": 17716814
+        },
+        "truck": {
+          "label_id": 27,
+          "frames": 11,
+          "pixels": 177153
+        },
+        "bus": {
+          "label_id": 28,
+          "frames": 46,
+          "pixels": 1746314
+        },
+        "train": {
+          "label_id": 31,
+          "frames": 85,
+          "pixels": 5993415
+        },
+        "motorcycle": {
+          "label_id": 32,
+          "frames": 90,
+          "pixels": 345828
+        },
+        "bicycle": {
+          "label_id": 33,
+          "frames": 96,
+          "pixels": 651240
+        }
+      }
+    },
+    "rain": {
+      "frames": 400,
+      "total_pixels": 829440000,
+      "ignored_pixel_fraction": 0.08422839988425926,
+      "classes": {
+        "road": {
+          "label_id": 7,
+          "frames": 400,
+          "pixels": 112496471
+        },
+        "sidewalk": {
+          "label_id": 8,
+          "frames": 385,
+          "pixels": 43585360
+        },
+        "building": {
+          "label_id": 11,
+          "frames": 395,
+          "pixels": 154356859
+        },
+        "wall": {
+          "label_id": 12,
+          "frames": 274,
+          "pixels": 10664246
+        },
+        "fence": {
+          "label_id": 13,
+          "frames": 273,
+          "pixels": 9231526
+        },
+        "pole": {
+          "label_id": 17,
+          "frames": 400,
+          "pixels": 8022341
+        },
+        "traffic_light": {
+          "label_id": 19,
+          "frames": 215,
+          "pixels": 1410505
+        },
+        "traffic_sign": {
+          "label_id": 20,
+          "frames": 386,
+          "pixels": 2171544
+        },
+        "vegetation": {
+          "label_id": 21,
+          "frames": 399,
+          "pixels": 171234966
+        },
+        "terrain": {
+          "label_id": 22,
+          "frames": 230,
+          "pixels": 11251750
+        },
+        "sky": {
+          "label_id": 23,
+          "frames": 400,
+          "pixels": 215333964
+        },
+        "person": {
+          "label_id": 24,
+          "frames": 131,
+          "pixels": 523845
+        },
+        "rider": {
+          "label_id": 25,
+          "frames": 20,
+          "pixels": 106227
+        },
+        "car": {
+          "label_id": 26,
+          "frames": 376,
+          "pixels": 13947277
+        },
+        "truck": {
+          "label_id": 27,
+          "frames": 27,
+          "pixels": 1048802
+        },
+        "bus": {
+          "label_id": 28,
+          "frames": 33,
+          "pixels": 1734969
+        },
+        "train": {
+          "label_id": 31,
+          "frames": 33,
+          "pixels": 1533903
+        },
+        "motorcycle": {
+          "label_id": 32,
+          "frames": 65,
+          "pixels": 353144
+        },
+        "bicycle": {
+          "label_id": 33,
+          "frames": 75,
+          "pixels": 569897
+        }
+      }
+    },
+    "snow": {
+      "frames": 400,
+      "total_pixels": 829440000,
+      "ignored_pixel_fraction": 0.05599382957175926,
+      "classes": {
+        "road": {
+          "label_id": 7,
+          "frames": 400,
+          "pixels": 113509487
+        },
+        "sidewalk": {
+          "label_id": 8,
+          "frames": 395,
+          "pixels": 44201726
+        },
+        "building": {
+          "label_id": 11,
+          "frames": 399,
+          "pixels": 180206837
+        },
+        "wall": {
+          "label_id": 12,
+          "frames": 255,
+          "pixels": 8825491
+        },
+        "fence": {
+          "label_id": 13,
+          "frames": 257,
+          "pixels": 12258481
+        },
+        "pole": {
+          "label_id": 17,
+          "frames": 398,
+          "pixels": 9830286
+        },
+        "traffic_light": {
+          "label_id": 19,
+          "frames": 207,
+          "pixels": 2238808
+        },
+        "traffic_sign": {
+          "label_id": 20,
+          "frames": 387,
+          "pixels": 2835070
+        },
+        "vegetation": {
+          "label_id": 21,
+          "frames": 389,
+          "pixels": 135590044
+        },
+        "terrain": {
+          "label_id": 22,
+          "frames": 219,
+          "pixels": 7766182
+        },
+        "sky": {
+          "label_id": 23,
+          "frames": 400,
+          "pixels": 235853764
+        },
+        "person": {
+          "label_id": 24,
+          "frames": 238,
+          "pixels": 1699497
+        },
+        "rider": {
+          "label_id": 25,
+          "frames": 36,
+          "pixels": 93147
+        },
+        "car": {
+          "label_id": 26,
+          "frames": 385,
+          "pixels": 18740872
+        },
+        "truck": {
+          "label_id": 27,
+          "frames": 101,
+          "pixels": 2908920
+        },
+        "bus": {
+          "label_id": 28,
+          "frames": 40,
+          "pixels": 1660367
+        },
+        "train": {
+          "label_id": 31,
+          "frames": 51,
+          "pixels": 4232400
+        },
+        "motorcycle": {
+          "label_id": 32,
+          "frames": 28,
+          "pixels": 150013
+        },
+        "bicycle": {
+          "label_id": 33,
+          "frames": 71,
+          "pixels": 395086
+        }
+      }
+    }
+  }
+}

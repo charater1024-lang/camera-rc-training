@@ -1,0 +1,19 @@
+{
+  "task": "segmentation",
+  "model": {"num_classes": 2, "width": 16},
+  "data": {
+    "label_space_id": "road_surface_v1",
+    "image_size": [192, 320],
+    "train_sources": [
+      {"name": "vehicle", "manifest": "../../data/road/vehicle_train/manifest.jsonl", "weight": 3.0},
+      {"name": "bdd_replay", "manifest": "../../data/road/bdd_train/manifest.jsonl", "weight": 1.0},
+      {"name": "cityscapes_replay", "manifest": "../../data/road/cityscapes_train/manifest.jsonl", "weight": 1.0}
+    ],
+    "val_manifests": [
+      {"name": "vehicle", "manifest": "../../data/road/vehicle_val/manifest.jsonl"},
+      {"name": "bdd", "manifest": "../../data/road/bdd_val/manifest.jsonl"},
+      {"name": "cityscapes", "manifest": "../../data/road/cityscapes_val/manifest.jsonl"}
+    ]
+  },
+  "training": {"output_dir": "../../runs/road_vehicle", "epochs": 10, "batch_size": 2, "grad_accum_steps": 4, "num_workers": 0, "lr": 0.0001, "seed": 42, "device": "auto", "amp": true}
+}

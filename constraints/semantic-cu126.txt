@@ -1,0 +1,11 @@
+# Recorded CUDA experiment profile: Python 3.13, Windows, CUDA 12.6 wheels.
+# Install torch/torchvision from https://download.pytorch.org/whl/cu126 first.
+torch==2.9.1+cu126
+torchvision==0.24.1+cu126
+ultralytics==8.4.182
+numpy==2.5.2
+Pillow==12.3.0
+PyYAML==6.0.3
+psutil==7.2.2
+opencv-python==5.0.0.93
+requests==2.34.2

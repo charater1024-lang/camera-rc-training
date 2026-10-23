@@ -1,0 +1,8 @@
+{
+  "source_encoding": "BDD100K drivable raw ID PNG: 0=direct, 1=alternative, 2=background; not RGB visualization",
+  "label_space_id": "road_surface_v1",
+  "num_classes": 2,
+  "class_names": ["road_surface", "not_road_surface"],
+  "mapping": {"0": 0, "1": 0, "2": 1, "255": 255},
+  "interpretation": "Both BDD direct and alternative drivable regions map to road_surface. A class-0 prediction is not a guarantee of obstacle-free or permitted travel."
+}

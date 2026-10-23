@@ -1,0 +1,6 @@
+{
+  "task": "depth",
+  "model": {"width": 16},
+  "data": {"train_manifest": "../data/kitti_depth/train.jsonl", "val_manifest": "../data/kitti_depth/val.jsonl", "image_size": [192, 640], "depth_scale": 256.0, "max_depth_m": 80.0},
+  "training": {"epochs": 30, "batch_size": 2, "num_workers": 2, "lr": 0.001, "seed": 42, "device": "auto", "amp": true, "grad_accum_steps": 2, "output_dir": "../runs/kitti_depth"}
+}

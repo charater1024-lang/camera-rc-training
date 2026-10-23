@@ -1,0 +1,51 @@
+{
+  "complete": true,
+  "passed": true,
+  "scope": "one parent-exposed development image; CPU implementation parity only, not accuracy or speed",
+  "distinct_images": 1,
+  "model_forward_counts": {
+    "runtime": 1,
+    "reference": 1
+  },
+  "input_size_hw": [
+    384,
+    640
+  ],
+  "runtime_threshold": 0.65,
+  "device": "cpu",
+  "torch_threads": 2,
+  "torch_interop_threads": 1,
+  "precision": "fp32",
+  "torch_version": "2.9.1+cu126",
+  "ultralytics_version": "8.4.182",
+  "probability_exact_equal": true,
+  "probability_max_abs_difference": 0.0,
+  "thresholded_probability_exact_equal": true,
+  "thresholded_mask_exact_equal": true,
+  "different_mask_pixels": 0,
+  "output_shape": [
+    1080,
+    1920
+  ],
+  "output_dtype": "float32",
+  "gpu_used": false,
+  "cuda_initialized": false,
+  "physical_output": false,
+  "camera_or_serial_opened": false,
+  "training_performed": false,
+  "timing_benchmark_performed": false,
+  "dataset_image_copies_written": false,
+  "limitations": [
+    "One existing-checkpoint CPU frame cannot establish robust perception or collision avoidance.",
+    "CUDA/AMP, target MSI performance and synchronized multi-camera operation were not tested.",
+    "No dataset image or output map was copied into the public repository."
+  ],
+  "source_proof_sha256": "54818d75a6758e579b0a85b6820f707fc3c5fb0cb72d894284b8b12f6f971ab6",
+  "checkpoint_sha256": "14e13390eb2b6d052959df88c2510f6f6875ebac07b96658da4782727b98536d",
+  "training_report_sha256": "41fdfe2e9f71fac9b04361490f85e9b85dba656a142e0cb545c7016bbf78f148",
+  "source_code_sha256": {
+    "src/camera_rc/driving/perception.py": "b7134f4fd23d7a474a8e4f82dc683bfedc47e4f3c2f23d91aaa8048ccd9ba384",
+    "src/camera_rc/driving/yolo_semantic.py": "7c7e39a794168059ac340165201afc6b09694361c69232977e750afdb906cc4b",
+    "scripts/evaluate_yolo_semantic.py": "09c6e26b9e8696b8767948a3321fd1f552219bc2b537ce7ceea537b77c42c786"
+  }
+}

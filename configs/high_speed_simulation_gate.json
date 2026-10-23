@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "required_evidence_domain": "simulated",
+  "scope": "Closed-loop simulator comparisons only; simulated results remain diagnostic evidence",
+  "required_metrics": {
+    "trajectory_ade_m": {"direction": "lower", "unit": "m", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "trajectory_fde_m": {"direction": "lower", "unit": "m", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "lateral_tracking_mae_m": {"direction": "lower", "unit": "m", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "speed_tracking_mae_mps": {"direction": "lower", "unit": "m/s", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "jerk_p95_mps3": {"direction": "lower", "unit": "m/s^3", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "minimum_clearance_m": {"direction": "higher", "unit": "m", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "collision_count": {"direction": "lower", "unit": "count", "min_units": 30, "mode": "maintain", "min_improvement": 0, "absolute_min": 0, "absolute_max": 0},
+    "lane_departure_count": {"direction": "lower", "unit": "count", "min_units": 30, "mode": "maintain", "min_improvement": 0, "absolute_min": 0, "absolute_max": 0},
+    "unjustified_emergency_braking_count": {"direction": "lower", "unit": "count", "min_units": 30, "mode": "maintain", "min_improvement": 0, "absolute_min": 0, "absolute_max": 0},
+    "route_failure_count": {"direction": "lower", "unit": "count", "min_units": 30, "mode": "maintain", "min_improvement": 0, "absolute_min": 0, "absolute_max": 0}
+  },
+  "coverage_required": {"speed_75_85": 30, "speed_75_85__night_dry": 30, "speed_75_85__rain_wet": 30, "speed_75_85__small_debris": 30, "speed_75_85__cut_in": 30},
+  "require_no_unit_regression": true,
+  "critical_failure_metrics": ["collision_count", "lane_departure_count", "unjustified_emergency_braking_count", "route_failure_count"],
+  "bootstrap_repetitions": 10000,
+  "seed": 42
+}

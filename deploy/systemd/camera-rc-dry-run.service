@@ -1,0 +1,22 @@
+# USER service example, not installed or enabled by this project.
+# Replace the project directory in all four paths if your location differs.
+# Quoted systemd arguments preserve spaces; no shell expansion/sh -c is used.
+[Unit]
+Description=Camera RC headless perception and planning dry-run
+
+[Service]
+Type=exec
+WorkingDirectory="%h/자율 주행/camera-rc-training"
+Environment="PYTHONUNBUFFERED=1"
+ExecStart="%h/자율 주행/camera-rc-training/.venv-linux/bin/python" "%h/자율 주행/camera-rc-training/scripts/run_headless.py" --config "%h/자율 주행/camera-rc-training/configs/runtime_msi_prestige15_ubuntu.json" --output-root "%h/자율 주행/camera-rc-training/runs/headless" --dry-run
+Restart=no
+KillSignal=SIGTERM
+KillMode=mixed
+TimeoutStopSec=15
+UMask=0077
+NoNewPrivileges=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

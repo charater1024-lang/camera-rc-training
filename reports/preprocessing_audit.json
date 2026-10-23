@@ -1,0 +1,567 @@
+{
+  "complete": true,
+  "source_report_sha256": "9b6d87a9df44a62309a9f21a1fff122b8b476fa12a5c4f0ba6e0f47f53cbeca2",
+  "frame_change_accounting_sha256": "bc737979635c9dfc9a59f0470ba7d985b192a054b039ee95aa97004a9b4bc1d2",
+  "pool_count": 37864,
+  "quarantine_preserved_frames": 272,
+  "frames_reprocessed": 84,
+  "frames_with_pixel_changes": 83,
+  "ignore_to_nonroad_pixels": 137436,
+  "changed_polygons": 343,
+  "manifests": {
+    "train": {
+      "samples": 33228,
+      "sha256": "541cc507798cc632b9b5900f02a6c91469bbcfcf94a7dd8dcbea686cf3b311f9"
+    },
+    "dev": {
+      "samples": 4636,
+      "sha256": "10a163954611de7f0002b5576663ed45d8e2cf094ea49568a280687173833dfd"
+    }
+  },
+  "validation": {
+    "all_referenced_training_images_byte_verified": true,
+    "all_referenced_training_masks_byte_verified_and_decoded": true,
+    "all_aihub_training_original_annotations_sha_and_geometry_verified": true,
+    "changed_masks_reproduce_old_rasterizer_before_correction": true,
+    "only_ignore255_to_nonroad1_changed": true,
+    "new_masks_decoded_and_exact_array_checked": true,
+    "image_rgb_hashes_inherited_from_byte_identical_fully_decoded_export": true,
+    "reporting_cross_split_byte_rgb_group_overlap": 0,
+    "official_reporting_manifests_contract_reports_unchanged": true,
+    "reporting_image_mask_bytes_not_reverified_this_run": true
+  },
+  "source_aggregate_statistics": {
+    "train": {
+      "aihub_13": {
+        "frames": 5551,
+        "pixels": {
+          "0": 1787863303,
+          "1": 1098722027,
+          "255": 8623968270
+        },
+        "classes_polygons": {
+          "background": 104522,
+          "curb": 20433,
+          "fence": 7758,
+          "freespace": 12987,
+          "pedestrian": 3909,
+          "sideWalk": 18310,
+          "trafficSign": 27921,
+          "truck": 9379,
+          "vehicle": 37975,
+          "whiteLane": 92914,
+          "yellowLane": 26302,
+          "bicycle": 1119,
+          "rider": 660,
+          "twoWheeler": 235,
+          "bus": 2531,
+          "trafficLight": 13590,
+          "roadMark": 24058,
+          "constructionGuide": 194,
+          "crossWalk": 10331,
+          "stopLane": 2906,
+          "motorcycle": 661,
+          "safetyZone": 2073,
+          "trafficDrum": 334,
+          "schoolBus": 1000,
+          "rubberCone": 581,
+          "otherCar": 1073,
+          "speedBump": 796,
+          "blueLane": 1679,
+          "redLane": 94,
+          "policeCar": 576,
+          "ambulance": 641,
+          "warningTriangle": 3
+        },
+        "classes_frames": {
+          "background": 5551,
+          "curb": 5470,
+          "fence": 2847,
+          "freespace": 5551,
+          "pedestrian": 1329,
+          "sideWalk": 4670,
+          "trafficSign": 5147,
+          "truck": 3835,
+          "vehicle": 5070,
+          "whiteLane": 5521,
+          "yellowLane": 5392,
+          "bicycle": 647,
+          "rider": 545,
+          "twoWheeler": 181,
+          "bus": 1844,
+          "trafficLight": 3449,
+          "roadMark": 3989,
+          "constructionGuide": 146,
+          "crossWalk": 2762,
+          "stopLane": 1967,
+          "motorcycle": 489,
+          "safetyZone": 1529,
+          "trafficDrum": 77,
+          "schoolBus": 901,
+          "rubberCone": 225,
+          "otherCar": 819,
+          "speedBump": 363,
+          "blueLane": 509,
+          "redLane": 26,
+          "policeCar": 558,
+          "ambulance": 631,
+          "warningTriangle": 1
+        },
+        "weather_frames": {
+          "1.맑음": 2476,
+          "2.흐림": 1748,
+          "3.구름": 1327
+        },
+        "mean_image_fractions": {
+          "0": 0.15532383281721562,
+          "1": 0.09545344778204282,
+          "255": 0.74922271940074
+        }
+      },
+      "aihub_14": {
+        "frames": 5736,
+        "pixels": {
+          "0": 2275043603,
+          "1": 820933062,
+          "255": 8798192935
+        },
+        "classes_polygons": {
+          "background": 22833,
+          "curb": 9870,
+          "fence": 13246,
+          "freespace": 8743,
+          "truck": 7532,
+          "vehicle": 23496,
+          "whiteLane": 44279,
+          "yellowLane": 6342,
+          "trafficSign": 11142,
+          "roadMark": 4287,
+          "otherCar": 1095,
+          "blueLane": 4611,
+          "bus": 1639,
+          "constructionGuide": 29,
+          "safetyZone": 2631,
+          "pedestrian": 39,
+          "rubberCone": 124,
+          "ambulance": 715,
+          "policeCar": 594,
+          "schoolBus": 695,
+          "trafficLight": 235,
+          "motorcycle": 35,
+          "sideWalk": 31,
+          "trafficDrum": 1,
+          "rider": 35,
+          "crossWalk": 10,
+          "stopLane": 3,
+          "speedBump": 4,
+          "bicycle": 1
+        },
+        "classes_frames": {
+          "background": 5735,
+          "curb": 4413,
+          "fence": 4445,
+          "freespace": 5735,
+          "truck": 3862,
+          "vehicle": 5394,
+          "whiteLane": 5736,
+          "yellowLane": 4140,
+          "trafficSign": 4230,
+          "roadMark": 1304,
+          "otherCar": 890,
+          "blueLane": 1101,
+          "bus": 1431,
+          "constructionGuide": 24,
+          "safetyZone": 1478,
+          "pedestrian": 24,
+          "rubberCone": 55,
+          "ambulance": 715,
+          "policeCar": 594,
+          "schoolBus": 686,
+          "trafficLight": 107,
+          "motorcycle": 29,
+          "sideWalk": 21,
+          "trafficDrum": 1,
+          "rider": 30,
+          "crossWalk": 10,
+          "stopLane": 3,
+          "speedBump": 3,
+          "bicycle": 1
+        },
+        "weather_frames": {
+          "1.맑음": 2503,
+          "2.흐림": 1415,
+          "3.구름": 1818
+        },
+        "mean_image_fractions": {
+          "0": 0.19127384924795413,
+          "1": 0.06901978781267742,
+          "255": 0.739706362939367
+        }
+      },
+      "aihub_15": {
+        "frames": 5669,
+        "pixels": {
+          "0": 1522386323,
+          "1": 776506027,
+          "255": 9456346050
+        },
+        "classes_polygons": {
+          "ambulance": 826,
+          "background": 13199,
+          "blueLane": 1408,
+          "curb": 6026,
+          "fence": 9258,
+          "freespace": 6694,
+          "otherCar": 59,
+          "roadMark": 4423,
+          "safetyZone": 1275,
+          "vehicle": 18312,
+          "whiteLane": 31610,
+          "yellowLane": 9879,
+          "constructionGuide": 55,
+          "truck": 1980,
+          "policeCar": 609,
+          "bus": 1545,
+          "schoolBus": 763,
+          "trafficSign": 16332,
+          "trafficLight": 314,
+          "crossWalk": 8,
+          "rubberCone": 6,
+          "sideWalk": 15,
+          "stopLane": 2,
+          "redLane": 1,
+          "bicycle": 2,
+          "pedestrian": 2,
+          "motorcycle": 1,
+          "warningTriangle": 1,
+          "trafficDrum": 1,
+          "rider": 1
+        },
+        "classes_frames": {
+          "ambulance": 825,
+          "background": 5657,
+          "blueLane": 530,
+          "curb": 4036,
+          "fence": 4297,
+          "freespace": 5669,
+          "otherCar": 58,
+          "roadMark": 1481,
+          "safetyZone": 1088,
+          "vehicle": 5209,
+          "whiteLane": 5570,
+          "yellowLane": 5374,
+          "constructionGuide": 36,
+          "truck": 1756,
+          "policeCar": 609,
+          "bus": 1432,
+          "schoolBus": 750,
+          "trafficSign": 4643,
+          "trafficLight": 147,
+          "crossWalk": 8,
+          "rubberCone": 6,
+          "sideWalk": 15,
+          "stopLane": 2,
+          "redLane": 1,
+          "bicycle": 2,
+          "pedestrian": 2,
+          "motorcycle": 1,
+          "warningTriangle": 1,
+          "trafficDrum": 1,
+          "rider": 1
+        },
+        "weather_frames": {
+          "1.맑음": 2583,
+          "2.흐림": 1281,
+          "3.구름": 1805
+        },
+        "mean_image_fractions": {
+          "0": 0.12950705644557534,
+          "1": 0.06605617007307969,
+          "255": 0.8044367734813451
+        }
+      },
+      "bdd100k_drivable": {
+        "frames": 9000,
+        "pixels": {
+          "0": 1397980795,
+          "1": 6896419205
+        },
+        "classes_polygons": {},
+        "classes_frames": {},
+        "weather_frames": {
+          "not_recorded": 9000
+        },
+        "mean_image_fractions": {
+          "0": 0.16854513828607284,
+          "1": 0.8314548617139284
+        }
+      },
+      "vkitti2_0_3": {
+        "frames": 7272,
+        "pixels": {
+          "0": 647801407,
+          "1": 2739132593
+        },
+        "classes_polygons": {},
+        "classes_frames": {},
+        "weather_frames": {
+          "not_recorded": 7272
+        },
+        "mean_image_fractions": {
+          "0": 0.19126484513722314,
+          "1": 0.8087351548627754
+        }
+      }
+    },
+    "dev": {
+      "aihub_13": {
+        "frames": 727,
+        "pixels": {
+          "0": 259818792,
+          "1": 165406393,
+          "255": 1082282015
+        },
+        "classes_polygons": {
+          "background": 18585,
+          "bus": 356,
+          "crossWalk": 767,
+          "curb": 3372,
+          "fence": 1373,
+          "freespace": 2354,
+          "sideWalk": 2564,
+          "trafficLight": 1540,
+          "trafficSign": 4273,
+          "vehicle": 6017,
+          "whiteLane": 6990,
+          "yellowLane": 3089,
+          "pedestrian": 649,
+          "roadMark": 2985,
+          "stopLane": 422,
+          "blueLane": 51,
+          "truck": 458,
+          "twoWheeler": 101,
+          "bicycle": 355,
+          "speedBump": 626,
+          "safetyZone": 186,
+          "schoolBus": 36,
+          "motorcycle": 48,
+          "rubberCone": 138,
+          "otherCar": 65,
+          "rider": 81,
+          "constructionGuide": 28,
+          "policeCar": 2,
+          "redLane": 10,
+          "trafficDrum": 3,
+          "ambulance": 1
+        },
+        "classes_frames": {
+          "background": 727,
+          "bus": 249,
+          "crossWalk": 481,
+          "curb": 717,
+          "fence": 487,
+          "freespace": 727,
+          "sideWalk": 699,
+          "trafficLight": 440,
+          "trafficSign": 710,
+          "vehicle": 720,
+          "whiteLane": 725,
+          "yellowLane": 714,
+          "pedestrian": 304,
+          "roadMark": 613,
+          "stopLane": 302,
+          "blueLane": 29,
+          "truck": 273,
+          "twoWheeler": 91,
+          "bicycle": 215,
+          "speedBump": 271,
+          "safetyZone": 146,
+          "schoolBus": 35,
+          "motorcycle": 46,
+          "rubberCone": 47,
+          "otherCar": 57,
+          "rider": 65,
+          "constructionGuide": 15,
+          "policeCar": 2,
+          "redLane": 5,
+          "trafficDrum": 3,
+          "ambulance": 1
+        },
+        "weather_frames": {
+          "1.맑음": 644,
+          "3.구름": 83
+        },
+        "mean_image_fractions": {
+          "0": 0.17234995096540834,
+          "1": 0.1097217930368757,
+          "255": 0.7179282559977153
+        }
+      },
+      "aihub_14": {
+        "frames": 615,
+        "pixels": {
+          "0": 434239564,
+          "1": 94378443,
+          "255": 746645993
+        },
+        "classes_polygons": {
+          "background": 1946,
+          "curb": 1165,
+          "fence": 1833,
+          "freespace": 943,
+          "otherCar": 205,
+          "truck": 1417,
+          "vehicle": 3373,
+          "whiteLane": 9177,
+          "roadMark": 385,
+          "trafficSign": 1062,
+          "bus": 111,
+          "safetyZone": 75,
+          "yellowLane": 120,
+          "crossWalk": 2,
+          "sideWalk": 19,
+          "stopLane": 1,
+          "pedestrian": 15,
+          "schoolBus": 4,
+          "speedBump": 2,
+          "constructionGuide": 2,
+          "rubberCone": 14,
+          "rider": 1,
+          "ambulance": 1
+        },
+        "classes_frames": {
+          "background": 615,
+          "curb": 556,
+          "fence": 589,
+          "freespace": 615,
+          "otherCar": 163,
+          "truck": 547,
+          "vehicle": 601,
+          "whiteLane": 615,
+          "roadMark": 135,
+          "trafficSign": 447,
+          "bus": 93,
+          "safetyZone": 56,
+          "yellowLane": 84,
+          "crossWalk": 2,
+          "sideWalk": 11,
+          "stopLane": 1,
+          "pedestrian": 6,
+          "schoolBus": 4,
+          "speedBump": 1,
+          "constructionGuide": 2,
+          "rubberCone": 2,
+          "rider": 1,
+          "ambulance": 1
+        },
+        "weather_frames": {
+          "1.맑음": 517,
+          "2.흐림": 79,
+          "3.구름": 19
+        },
+        "mean_image_fractions": {
+          "0": 0.340509544690354,
+          "1": 0.07400698443616374,
+          "255": 0.5854834708734817
+        }
+      },
+      "aihub_15": {
+        "frames": 634,
+        "pixels": {
+          "0": 180700807,
+          "1": 71228500,
+          "255": 1062733093
+        },
+        "classes_polygons": {
+          "background": 1752,
+          "curb": 745,
+          "fence": 1110,
+          "freespace": 856,
+          "trafficSign": 2097,
+          "vehicle": 2413,
+          "whiteLane": 4128,
+          "yellowLane": 1245,
+          "roadMark": 612,
+          "safetyZone": 235,
+          "truck": 185,
+          "otherCar": 2,
+          "motorcycle": 3,
+          "rider": 1,
+          "bus": 6,
+          "sideWalk": 1,
+          "trafficLight": 22,
+          "blueLane": 302,
+          "constructionGuide": 3,
+          "rubberCone": 2
+        },
+        "classes_frames": {
+          "background": 633,
+          "curb": 472,
+          "fence": 530,
+          "freespace": 634,
+          "trafficSign": 561,
+          "vehicle": 620,
+          "whiteLane": 628,
+          "yellowLane": 618,
+          "roadMark": 203,
+          "safetyZone": 169,
+          "truck": 138,
+          "otherCar": 2,
+          "motorcycle": 2,
+          "rider": 1,
+          "bus": 6,
+          "sideWalk": 1,
+          "trafficLight": 14,
+          "blueLane": 95,
+          "constructionGuide": 2,
+          "rubberCone": 2
+        },
+        "weather_frames": {
+          "1.맑음": 204,
+          "2.흐림": 354,
+          "3.구름": 76
+        },
+        "mean_image_fractions": {
+          "0": 0.13745034999099393,
+          "1": 0.05418006934708103,
+          "255": 0.808369580661926
+        }
+      },
+      "bdd100k_drivable": {
+        "frames": 1000,
+        "pixels": {
+          "0": 155085682,
+          "1": 766514318
+        },
+        "classes_polygons": {},
+        "classes_frames": {},
+        "weather_frames": {
+          "not_recorded": 1000
+        },
+        "mean_image_fractions": {
+          "0": 0.16827873480902786,
+          "1": 0.8317212651909727
+        }
+      },
+      "vkitti2_0_3": {
+        "frames": 1660,
+        "pixels": {
+          "0": 311735952,
+          "1": 461409048
+        },
+        "classes_polygons": {},
+        "classes_frames": {},
+        "weather_frames": {
+          "not_recorded": 1660
+        },
+        "mean_image_fractions": {
+          "0": 0.4032050288108954,
+          "1": 0.5967949711891047
+        }
+      }
+    }
+  },
+  "parent_exposed_development": true,
+  "official_evaluation_modified": false,
+  "note": "Aggregate counts only; no original or derived dataset samples included."
+}

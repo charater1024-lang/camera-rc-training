@@ -1,0 +1,8 @@
+{
+  "output_dir": "../runs/curriculum_multiview",
+  "stages": [
+    {"name": "road_public", "config": "stages/road_public.json"},
+    {"name": "road_mixed", "config": "stages/road_mixed.json", "init_from": "previous"},
+    {"name": "multiview_vehicle", "config": "stages/multiview_vehicle.json", "init_from": "previous"}
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "experiment_specification_not_a_training_launcher",
+  "deployment_approved": false,
+  "training": {
+    "gpu": "RTX 3080 Laptop GPU",
+    "physical_vram_gib": 16,
+    "system_ram_gib": 32,
+    "deployment_budget_applies": false,
+    "precision": "AMP when supported; verify numerical stability",
+    "batch_policy": "Start with a fitting micro-batch and profile peak memory/throughput; increase with headroom. Use accumulation for the chosen effective batch. Avoid simultaneous GPU jobs when comparing throughput.",
+    "scales": ["yolo26n", "yolo26s", "yolo26m", "yolo26l", "yolo26x"],
+    "input_sizes": [640, 960],
+    "comparison_policy": "Keep original-drive splits and evaluation protocol fixed. Report matched-compute and best-achievable-quality experiments separately.",
+    "new_detector_training_started": false
+  },
+  "deployment_comparison": {
+    "gpu_budgets_gib": [4, 8],
+    "system_ram_gib": 16,
+    "scales": ["yolo26n", "yolo26s", "yolo26m", "yolo26l", "yolo26x"],
+    "input_sizes": [640, 960],
+    "views": [1, 8],
+    "per_call_batch_size": 1,
+    "shared_detector_instances": 1,
+    "precisions_initial": ["fp32", "fp16"],
+    "architecture_diagnostic_command": "scripts/benchmark_detector_candidates.py",
+    "architecture_diagnostic_accuracy_evaluated": false,
+    "target_hardware_measured": false,
+    "selection_policy": "Do not reject a model solely by its scale. Select using measured peak system memory, original-drive perception metrics and full exposure-to-command latency on the actual hardware. Detection-only timing is insufficient.",
+    "further_export_candidates": ["TensorRT FP16", "TensorRT INT8 with representative calibration and separate accuracy validation"],
+    "export_engines_built": false
+  },
+  "optional_teacher_student": {
+    "teacher_candidates": ["yolo26l", "yolo26x"],
+    "student_candidates": ["yolo26n", "yolo26s", "yolo26m"],
+    "implemented": false,
+    "condition": "Consider only after direct deployment measurements. A trained x checkpoint cannot be renamed or directly loaded as an n/s checkpoint. Distillation requires separate student training and held-out evaluation; retained accuracy is not guaranteed."
+  }
+}

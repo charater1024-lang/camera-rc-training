@@ -1,0 +1,22 @@
+{
+  "task": "detection",
+  "model": "yolo11n.pt",
+  "data": "../data/bdd_yolo/dataset.yaml",
+  "project": "../runs/detection",
+  "name": "bdd_yolo11n_3080",
+  "epochs": 50,
+  "imgsz": 640,
+  "batch": 4,
+  "workers": 2,
+  "device": 0,
+  "amp": true,
+  "cache": false,
+  "seed": 42,
+  "deterministic": true,
+  "patience": 15,
+  "pretrained": true,
+  "save": true,
+  "plots": true,
+  "resume": false,
+  "export": {"format": "onnx", "dynamic": true, "simplify": false, "imgsz": 640}
+}

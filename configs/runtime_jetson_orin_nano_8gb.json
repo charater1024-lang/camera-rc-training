@@ -1,0 +1,24 @@
+{
+  "device": "cuda",
+  "hardware": {"profile": "jetson_orin_nano_8gb_provisional", "memory_architecture": "shared"},
+  "calibration": "calibration_measured.json",
+  "models_validated_for_control": false,
+  "source": {"kind": "camera", "index": 0, "width": 640, "height": 360, "fps": 30},
+  "perception": {
+    "segmentation_checkpoint": "../runs/deployment/road_surface.pt",
+    "drivable_class_ids": [0], "min_probability": 0.65,
+    "half": true, "allow_diagnostic": false,
+    "detection_image_size": 320, "detection_confidence": 0.35,
+    "obstacle_labels": ["pedestrian", "person", "rider", "car", "truck", "bus", "train", "motorcycle", "bicycle"]
+  },
+  "transport": {"kind": "dry_run", "port": "/dev/serial/by-id/REPLACE_WITH_MCU", "baudrate": 230400, "calibration_confirmed": false},
+  "route_hint": "straight",
+  "runtime": {
+    "perception_hz": 10, "control_hz": 50,
+    "gpu_budget_gib": 4, "torch_allocator_cap_gib": 2.5,
+    "ram_budget_gib": 8, "process_ram_limit_gib": 4,
+    "system_available_min_gib": 1.5
+  },
+  "planner": {"max_speed_mps": 0.4, "wheelbase_m": 0.26, "vehicle_width_m": 0.22, "vehicle_length_m": 0.35},
+  "controller": {"max_speed_mps": 0.4, "wheelbase_m": 0.26}
+}

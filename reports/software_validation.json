@@ -1,0 +1,25 @@
+{
+  "scope": "CPU software tests, not road accuracy, speed, or vehicle safety validation",
+  "platform": "Windows",
+  "python": "3.13.15",
+  "packages": {
+    "torch": "2.9.1+cu126",
+    "torchvision": "0.24.1+cu126",
+    "ultralytics": "8.4.182",
+    "numpy": "2.5.2",
+    "Pillow": "12.3.0",
+    "pytest": "9.1.1"
+  },
+  "cuda_disabled_for_tests": true,
+  "temporary_directory_note": "TEMP/TMP and pytest basetemp were both set to writable isolated local directories.",
+  "pip_check": "No broken requirements found.",
+  "remote_ci": "Not yet run; see Actions for the published commit.",
+  "combined_suite": {
+    "command": "python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=<new writable directory>",
+    "passed": 1551,
+    "skipped": 1,
+    "failed": 0,
+    "source_log_sha256": "1e578e2c40c66e7873a826f36662af61a6749c01343504a2236aa8f572a2f500"
+  },
+  "installed_source_resolution": "Local shared environment used explicit PYTHONPATH pointing at the release source tree. Fresh installation uses pip install -e ."
+}

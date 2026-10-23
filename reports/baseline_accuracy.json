@@ -1,0 +1,2103 @@
+{
+  "schema_version": 1,
+  "models": {
+    "tinyunet_192x320": {
+      "source_report_sha256": "384c7583444a84123e281edcc6829b5415a7ce9a17d4e83a2e23133f6ea34231",
+      "checkpoint_sha256": "68d2310069e47a7cdc353b334a1d8331188f636cdc32da98918d3a734627e688",
+      "evaluation_contract_sha256": "a87bf6004f930d3cb807130d7ec5944426992a64f59c3875ffaaa7e0a843ae63",
+      "input_size": [
+        192,
+        320
+      ],
+      "native_gt_size": [
+        192,
+        320
+      ],
+      "precision_condition": "autocast_fp16_logits_fp32_metrics",
+      "runtime_threshold": 0.65,
+      "native_sources": {
+        "bdd": {
+          "images": 10000,
+          "confusion_matrix_argmax": [
+            [
+              78804100,
+              25244230
+            ],
+            [
+              11310887,
+              499040783
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                69790705,
+                34257625
+              ],
+              [
+                7050099,
+                503301571
+              ]
+            ],
+            "road_iou": 0.6281880457553545,
+            "road_precision": 0.9082505825941124,
+            "road_recall": 0.6707527646046794,
+            "false_road_rate": 0.013814197962749882
+          }
+        },
+        "source_00_vkitti2_v1": {
+          "images": 8940,
+          "confusion_matrix_argmax": [
+            [
+              96365089,
+              30076534
+            ],
+            [
+              13574171,
+              409257806
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                90314438,
+                36127185
+              ],
+              [
+                9955643,
+                412876334
+              ]
+            ],
+            "road_iou": 0.662142582828603,
+            "road_precision": 0.9007117287558589,
+            "road_recall": 0.714277750136124,
+            "false_road_rate": 0.023545151600490234
+          }
+        },
+        "source_01_camvid_road_v1": {
+          "images": 124,
+          "confusion_matrix_argmax": [
+            [
+              869477,
+              448401
+            ],
+            [
+              84784,
+              5712273
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                746855,
+                571023
+              ],
+              [
+                50788,
+                5746269
+              ]
+            ],
+            "road_iou": 0.5456809769512796,
+            "road_precision": 0.9363274046158494,
+            "road_recall": 0.5667102721192705,
+            "false_road_rate": 0.008760997174945839
+          }
+        },
+        "source_02_kitti_road_v2": {
+          "images": 58,
+          "confusion_matrix_argmax": [
+            [
+              617526,
+              110458
+            ],
+            [
+              57729,
+              2734681
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                576442,
+                151542
+              ],
+              [
+                42475,
+                2749935
+              ]
+            ],
+            "road_iou": 0.7481799810242985,
+            "road_precision": 0.9313720579657693,
+            "road_recall": 0.7918333369964176,
+            "false_road_rate": 0.015210875193828986
+          }
+        },
+        "aihub_13_day_city": {
+          "images": 783,
+          "confusion_matrix_argmax": [
+            [
+              4736097,
+              2842487
+            ],
+            [
+              101701,
+              4661893
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                4277888,
+                3300696
+              ],
+              [
+                66210,
+                4697384
+              ]
+            ],
+            "road_iou": 0.5595818540041759,
+            "road_precision": 0.9847586311358537,
+            "road_recall": 0.5644706187857784,
+            "false_road_rate": 0.013899169408643977
+          }
+        },
+        "aihub_14_day_expressway": {
+          "images": 799,
+          "confusion_matrix_argmax": [
+            [
+              7055276,
+              3432682
+            ],
+            [
+              42917,
+              3389675
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                6544827,
+                3943131
+              ],
+              [
+                22327,
+                3410265
+              ]
+            ],
+            "road_iou": 0.6227069009070639,
+            "road_precision": 0.9966002015484943,
+            "road_recall": 0.6240325333110601,
+            "false_road_rate": 0.00650441415699856
+          }
+        },
+        "aihub_15_night_expressway": {
+          "images": 785,
+          "confusion_matrix_argmax": [
+            [
+              1583447,
+              4873195
+            ],
+            [
+              16870,
+              3177183
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                1094985,
+                5361657
+              ],
+              [
+                6902,
+                3187151
+              ]
+            ],
+            "road_iou": 0.1694093828401261,
+            "road_precision": 0.9937361998099624,
+            "road_recall": 0.16959047752686304,
+            "false_road_rate": 0.0021608908806460005
+          }
+        }
+      },
+      "pooled_native": {
+        "images": 21489,
+        "confusion_matrix": [
+          [
+            173346140,
+            83712859
+          ],
+          [
+            17194444,
+            935968909
+          ]
+        ],
+        "road_iou": 0.632065501544132,
+        "road_tp_pixels": 173346140,
+        "road_fn_pixels": 83712859,
+        "road_fp_pixels": 17194444,
+        "road_tn_pixels": 935968909,
+        "road_precision": 0.9097596761853107,
+        "road_recall": 0.6743437914033112,
+        "false_road_rate": 0.018039346504334183,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_legacy": {
+        "images": 19122,
+        "confusion_matrix": [
+          [
+            161428440,
+            71107375
+          ],
+          [
+            17099005,
+            924674109
+          ]
+        ],
+        "road_iou": 0.646658346780309,
+        "road_tp_pixels": 161428440,
+        "road_fn_pixels": 71107375,
+        "road_fp_pixels": 17099005,
+        "road_tn_pixels": 924674109,
+        "road_precision": 0.9042219811077227,
+        "road_recall": 0.6942089329336214,
+        "false_road_rate": 0.018156182997596172,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_aihub": {
+        "images": 2367,
+        "confusion_matrix": [
+          [
+            11917700,
+            12605484
+          ],
+          [
+            95439,
+            11294800
+          ]
+        ],
+        "road_iou": 0.4840928755438515,
+        "road_tp_pixels": 11917700,
+        "road_fn_pixels": 12605484,
+        "road_fp_pixels": 95439,
+        "road_tn_pixels": 11294800,
+        "road_precision": 0.9920554486217132,
+        "road_recall": 0.485976861732147,
+        "false_road_rate": 0.008379016454351835,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "public_reused_regression": {
+        "obstacle": {
+          "aggregate": {
+            "images": 30,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 20734,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.1597602132807323,
+                "mean_per_image_obstacle_as_road_rate": 0.4702848392403734,
+                "images_with_labelled_obstacles": 30
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 18380,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.14162210476029033,
+                "mean_per_image_obstacle_as_road_rate": 0.4404811900249447,
+                "images_with_labelled_obstacles": 30
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 19106170,
+            "ignored_pixels": 42972048
+          },
+          "images_all_labelled_pixels_predicted_road": 7,
+          "images_at_least_half_labelled_pixels_predicted_road": 12
+        },
+        "anomaly": {
+          "aggregate": {
+            "images": 10,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 282,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.0002141127645374595,
+                "mean_per_image_obstacle_as_road_rate": 0.0015296564349954007,
+                "images_with_labelled_obstacles": 10
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 157,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.00011920462422830191,
+                "mean_per_image_obstacle_as_road_rate": 0.001001925876983218,
+                "images_with_labelled_obstacles": 10
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 7578030,
+            "ignored_pixels": 320907
+          },
+          "images_all_labelled_pixels_predicted_road": 0,
+          "images_at_least_half_labelled_pixels_predicted_road": 0
+        }
+      }
+    },
+    "yolo_v2_192x320": {
+      "source_report_sha256": "46afdea4b63c85017caf945bc0e8afa91b1d74aa9910ad5263f20f17ef56747c",
+      "checkpoint_sha256": "9740dc363816ea661cf7d7e19877c5803eae1778ee152db0cfbacbe55acd9a14",
+      "evaluation_contract_sha256": "a87bf6004f930d3cb807130d7ec5944426992a64f59c3875ffaaa7e0a843ae63",
+      "input_size": [
+        192,
+        320
+      ],
+      "native_gt_size": [
+        192,
+        320
+      ],
+      "precision_condition": "autocast_fp16_logits_fp32_metrics",
+      "runtime_threshold": 0.65,
+      "native_sources": {
+        "bdd": {
+          "images": 10000,
+          "confusion_matrix_argmax": [
+            [
+              85652378,
+              18395952
+            ],
+            [
+              5072987,
+              505278683
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                81003683,
+                23044647
+              ],
+              [
+                3708310,
+                506643360
+              ]
+            ],
+            "road_iou": 0.7517279956019416,
+            "road_precision": 0.956224498224236,
+            "road_recall": 0.7785197801829208,
+            "false_road_rate": 0.0072661856872144655
+          }
+        },
+        "source_00_vkitti2_v1": {
+          "images": 8940,
+          "confusion_matrix_argmax": [
+            [
+              101836526,
+              24605097
+            ],
+            [
+              4414698,
+              418417279
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                98284389,
+                28157234
+              ],
+              [
+                3473122,
+                419358855
+              ]
+            ],
+            "road_iou": 0.7565298996661234,
+            "road_precision": 0.9658686423648865,
+            "road_recall": 0.7773104035527921,
+            "false_road_rate": 0.008213953033169012
+          }
+        },
+        "source_01_camvid_road_v1": {
+          "images": 124,
+          "confusion_matrix_argmax": [
+            [
+              674461,
+              643417
+            ],
+            [
+              771,
+              5796286
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                621561,
+                696317
+              ],
+              [
+                479,
+                5796578
+              ]
+            ],
+            "road_iou": 0.4714663782268384,
+            "road_precision": 0.9992299530576811,
+            "road_recall": 0.47163773884987836,
+            "false_road_rate": 8.2628133551214e-05
+          }
+        },
+        "source_02_kitti_road_v2": {
+          "images": 58,
+          "confusion_matrix_argmax": [
+            [
+              599521,
+              128463
+            ],
+            [
+              27892,
+              2764518
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                574178,
+                153806
+              ],
+              [
+                23781,
+                2768629
+              ]
+            ],
+            "road_iou": 0.7637732536098382,
+            "road_precision": 0.9602297147463288,
+            "road_recall": 0.788723378535792,
+            "false_road_rate": 0.00851629954054025
+          }
+        },
+        "aihub_13_day_city": {
+          "images": 783,
+          "confusion_matrix_argmax": [
+            [
+              4792086,
+              2786498
+            ],
+            [
+              45379,
+              4718215
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                4527882,
+                3050702
+              ],
+              [
+                39980,
+                4723614
+              ]
+            ],
+            "road_iou": 0.5943222371040002,
+            "road_precision": 0.9912475464451421,
+            "road_recall": 0.5974575197688645,
+            "false_road_rate": 0.008392822730064737
+          }
+        },
+        "aihub_14_day_expressway": {
+          "images": 799,
+          "confusion_matrix_argmax": [
+            [
+              6967113,
+              3520845
+            ],
+            [
+              3296,
+              3429296
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                6632701,
+                3855257
+              ],
+              [
+                1387,
+                3431205
+              ]
+            ],
+            "road_iou": 0.6323274713530731,
+            "road_precision": 0.9997909283084577,
+            "road_recall": 0.632411094704994,
+            "false_road_rate": 0.0004040678297915977
+          }
+        },
+        "aihub_15_night_expressway": {
+          "images": 785,
+          "confusion_matrix_argmax": [
+            [
+              3560195,
+              2896447
+            ],
+            [
+              1811,
+              3192242
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                3362160,
+                3094482
+              ],
+              [
+                557,
+                3193496
+              ]
+            ],
+            "road_iou": 0.5206839683893899,
+            "road_precision": 0.9998343601320004,
+            "road_recall": 0.5207288866255865,
+            "false_road_rate": 0.00017438658657198237
+          }
+        }
+      },
+      "pooled_native": {
+        "images": 21489,
+        "confusion_matrix": [
+          [
+            195006554,
+            62052445
+          ],
+          [
+            7247616,
+            945915737
+          ]
+        ],
+        "road_iou": 0.737804288401938,
+        "road_tp_pixels": 195006554,
+        "road_fn_pixels": 62052445,
+        "road_fp_pixels": 7247616,
+        "road_tn_pixels": 945915737,
+        "road_precision": 0.9641658018719713,
+        "road_recall": 0.7586062139765821,
+        "false_road_rate": 0.0076037501622242916,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_legacy": {
+        "images": 19122,
+        "confusion_matrix": [
+          [
+            180483811,
+            52052004
+          ],
+          [
+            7205692,
+            934567422
+          ]
+        ],
+        "road_iou": 0.7528267143160988,
+        "road_tp_pixels": 180483811,
+        "road_fn_pixels": 52052004,
+        "road_fp_pixels": 7205692,
+        "road_tn_pixels": 934567422,
+        "road_precision": 0.961608444346512,
+        "road_recall": 0.776154894677192,
+        "false_road_rate": 0.007651197398697453,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_aihub": {
+        "images": 2367,
+        "confusion_matrix": [
+          [
+            14522743,
+            10000441
+          ],
+          [
+            41924,
+            11348315
+          ]
+        ],
+        "road_iou": 0.5911939406087692,
+        "road_tp_pixels": 14522743,
+        "road_fn_pixels": 10000441,
+        "road_fp_pixels": 41924,
+        "road_tn_pixels": 11348315,
+        "road_precision": 0.9971215270489878,
+        "road_recall": 0.5922046256309947,
+        "false_road_rate": 0.003680695374346403,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "public_reused_regression": {
+        "obstacle": {
+          "aggregate": {
+            "images": 30,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 54926,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.42321739532446717,
+                "mean_per_image_obstacle_as_road_rate": 0.6577520815536302,
+                "images_with_labelled_obstacles": 30
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 44920,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.34611887626943644,
+                "mean_per_image_obstacle_as_road_rate": 0.6193232821979943,
+                "images_with_labelled_obstacles": 30
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 19106170,
+            "ignored_pixels": 42972048
+          },
+          "images_all_labelled_pixels_predicted_road": 13,
+          "images_at_least_half_labelled_pixels_predicted_road": 19
+        },
+        "anomaly": {
+          "aggregate": {
+            "images": 10,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 3210,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.0024372410431391664,
+                "mean_per_image_obstacle_as_road_rate": 0.017563939975922194,
+                "images_with_labelled_obstacles": 10
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 2466,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.0018723477920190607,
+                "mean_per_image_obstacle_as_road_rate": 0.015371749310212396,
+                "images_with_labelled_obstacles": 10
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 7578030,
+            "ignored_pixels": 320907
+          },
+          "images_all_labelled_pixels_predicted_road": 0,
+          "images_at_least_half_labelled_pixels_predicted_road": 0
+        }
+      }
+    },
+    "aihub_192x320": {
+      "source_report_sha256": "fb4fc1e4b59cf78909ef2519757eafa4e5c472a5c27c5df534b589e3e3e8016c",
+      "checkpoint_sha256": "14e13390eb2b6d052959df88c2510f6f6875ebac07b96658da4782727b98536d",
+      "evaluation_contract_sha256": "a87bf6004f930d3cb807130d7ec5944426992a64f59c3875ffaaa7e0a843ae63",
+      "input_size": [
+        192,
+        320
+      ],
+      "native_gt_size": [
+        192,
+        320
+      ],
+      "precision_condition": "autocast_fp16_logits_fp32_metrics",
+      "runtime_threshold": 0.65,
+      "native_sources": {
+        "bdd": {
+          "images": 10000,
+          "confusion_matrix_argmax": [
+            [
+              88662919,
+              15385411
+            ],
+            [
+              6192956,
+              504158714
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                84277459,
+                19770871
+              ],
+              [
+                4488164,
+                505863506
+              ]
+            ],
+            "road_iou": 0.7764896017370895,
+            "road_precision": 0.9494380386425046,
+            "road_recall": 0.8099837738866159,
+            "false_road_rate": 0.008794257496992221
+          }
+        },
+        "source_00_vkitti2_v1": {
+          "images": 8940,
+          "confusion_matrix_argmax": [
+            [
+              115609518,
+              10832105
+            ],
+            [
+              22399291,
+              400432686
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                113240148,
+                13201475
+              ],
+              [
+                19225059,
+                403606918
+              ]
+            ],
+            "road_iou": 0.7773922385353708,
+            "road_precision": 0.8548671048390842,
+            "road_recall": 0.8955923319649258,
+            "false_road_rate": 0.045467372492501906
+          }
+        },
+        "source_01_camvid_road_v1": {
+          "images": 124,
+          "confusion_matrix_argmax": [
+            [
+              757184,
+              560694
+            ],
+            [
+              2384,
+              5794673
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                691787,
+                626091
+              ],
+              [
+                1029,
+                5796028
+              ]
+            ],
+            "road_iou": 0.5245153752311573,
+            "road_precision": 0.9985147571649615,
+            "road_recall": 0.5249249171774626,
+            "false_road_rate": 0.0001775038610108543
+          }
+        },
+        "source_02_kitti_road_v2": {
+          "images": 58,
+          "confusion_matrix_argmax": [
+            [
+              710168,
+              17816
+            ],
+            [
+              244519,
+              2547891
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                701917,
+                26067
+              ],
+              [
+                197701,
+                2594709
+              ]
+            ],
+            "road_iou": 0.7582676612454561,
+            "road_precision": 0.7802389458636888,
+            "road_recall": 0.9641928943493263,
+            "false_road_rate": 0.0707994169910579
+          }
+        },
+        "aihub_13_day_city": {
+          "images": 783,
+          "confusion_matrix_argmax": [
+            [
+              7121258,
+              457326
+            ],
+            [
+              196619,
+              4566975
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                6994696,
+                583888
+              ],
+              [
+                148388,
+                4615206
+              ]
+            ],
+            "road_iou": 0.9052311824088402,
+            "road_precision": 0.9792263397714489,
+            "road_recall": 0.9229555283678323,
+            "false_road_rate": 0.031150429696569438
+          }
+        },
+        "aihub_14_day_expressway": {
+          "images": 799,
+          "confusion_matrix_argmax": [
+            [
+              10171793,
+              316165
+            ],
+            [
+              85893,
+              3346699
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                10079246,
+                408712
+              ],
+              [
+                61272,
+                3371320
+              ]
+            ],
+            "road_iou": 0.9554485019285768,
+            "road_precision": 0.9939577051192059,
+            "road_recall": 0.9610303550033286,
+            "false_road_rate": 0.017850067820469197
+          }
+        },
+        "aihub_15_night_expressway": {
+          "images": 785,
+          "confusion_matrix_argmax": [
+            [
+              6127624,
+              329018
+            ],
+            [
+              62458,
+              3131595
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                6034602,
+                422040
+              ],
+              [
+                37269,
+                3156784
+              ]
+            ],
+            "road_iou": 0.9292708200035387,
+            "road_precision": 0.9938620237485283,
+            "road_recall": 0.9346347528637952,
+            "false_road_rate": 0.011668247208170935
+          }
+        }
+      },
+      "pooled_native": {
+        "images": 21489,
+        "confusion_matrix": [
+          [
+            222019855,
+            35039144
+          ],
+          [
+            24158882,
+            929004471
+          ]
+        ],
+        "road_iou": 0.7894940898157183,
+        "road_tp_pixels": 222019855,
+        "road_fn_pixels": 35039144,
+        "road_fp_pixels": 24158882,
+        "road_tn_pixels": 929004471,
+        "road_precision": 0.901864465248272,
+        "road_recall": 0.863692210207354,
+        "false_road_rate": 0.025346003834455014,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_legacy": {
+        "images": 19122,
+        "confusion_matrix": [
+          [
+            198911311,
+            33624504
+          ],
+          [
+            23911953,
+            917861161
+          ]
+        ],
+        "road_iou": 0.7756406403973849,
+        "road_tp_pixels": 198911311,
+        "road_fn_pixels": 33624504,
+        "road_fp_pixels": 23911953,
+        "road_tn_pixels": 917861161,
+        "road_precision": 0.8926864611407901,
+        "road_recall": 0.8554007519228812,
+        "false_road_rate": 0.025390354263181907,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_aihub": {
+        "images": 2367,
+        "confusion_matrix": [
+          [
+            23108544,
+            1414640
+          ],
+          [
+            246929,
+            11143310
+          ]
+        ],
+        "road_iou": 0.9329204109807654,
+        "road_tp_pixels": 23108544,
+        "road_fn_pixels": 1414640,
+        "road_fp_pixels": 246929,
+        "road_tn_pixels": 11143310,
+        "road_precision": 0.9894273603450463,
+        "road_recall": 0.9423141791049645,
+        "false_road_rate": 0.021679000765479985,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "public_reused_regression": {
+        "obstacle": {
+          "aggregate": {
+            "images": 30,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 60498,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.46615093002111235,
+                "mean_per_image_obstacle_as_road_rate": 0.737932366741519,
+                "images_with_labelled_obstacles": 30
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 53263,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.4104035998828805,
+                "mean_per_image_obstacle_as_road_rate": 0.6809261799158607,
+                "images_with_labelled_obstacles": 30
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 19106170,
+            "ignored_pixels": 42972048
+          },
+          "images_all_labelled_pixels_predicted_road": 15,
+          "images_at_least_half_labelled_pixels_predicted_road": 22
+        },
+        "anomaly": {
+          "aggregate": {
+            "images": 10,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 19873,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.015088875778911107,
+                "mean_per_image_obstacle_as_road_rate": 0.08410331632552034,
+                "images_with_labelled_obstacles": 10
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 14231,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.01080510195791697,
+                "mean_per_image_obstacle_as_road_rate": 0.07070430308971756,
+                "images_with_labelled_obstacles": 10
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 7578030,
+            "ignored_pixels": 320907
+          },
+          "images_all_labelled_pixels_predicted_road": 0,
+          "images_at_least_half_labelled_pixels_predicted_road": 1
+        }
+      }
+    },
+    "tinyunet_384x640": {
+      "source_report_sha256": "43d1e5e84c8af9be4ce941e50f732c04686d5e16bce0ca95724d25e7b349078c",
+      "checkpoint_sha256": "68d2310069e47a7cdc353b334a1d8331188f636cdc32da98918d3a734627e688",
+      "evaluation_contract_sha256": "a87bf6004f930d3cb807130d7ec5944426992a64f59c3875ffaaa7e0a843ae63",
+      "input_size": [
+        384,
+        640
+      ],
+      "native_gt_size": [
+        192,
+        320
+      ],
+      "precision_condition": "autocast_fp16_logits_fp32_metrics",
+      "runtime_threshold": 0.65,
+      "native_sources": {
+        "bdd": {
+          "images": 10000,
+          "confusion_matrix_argmax": [
+            [
+              71379448,
+              32668882
+            ],
+            [
+              19702581,
+              490649089
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                61971508,
+                42076822
+              ],
+              [
+                12583013,
+                497768657
+              ]
+            ],
+            "road_iou": 0.5313452319587882,
+            "road_precision": 0.8312240112172407,
+            "road_recall": 0.5956031009820149,
+            "false_road_rate": 0.02465557328341847
+          }
+        },
+        "source_00_vkitti2_v1": {
+          "images": 8940,
+          "confusion_matrix_argmax": [
+            [
+              99702058,
+              26739565
+            ],
+            [
+              16739026,
+              406092951
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                94092366,
+                32349257
+              ],
+              [
+                12176499,
+                410655478
+              ]
+            ],
+            "road_iou": 0.6787883477457587,
+            "road_precision": 0.8854180008415447,
+            "road_recall": 0.7441565820457714,
+            "false_road_rate": 0.028797488511612734
+          }
+        },
+        "source_01_camvid_road_v1": {
+          "images": 124,
+          "confusion_matrix_argmax": [
+            [
+              833002,
+              484876
+            ],
+            [
+              116276,
+              5680781
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                649660,
+                668218
+              ],
+              [
+                57390,
+                5739667
+              ]
+            ],
+            "road_iou": 0.4723879272985338,
+            "road_precision": 0.9188317657874266,
+            "road_recall": 0.492959135822891,
+            "false_road_rate": 0.00989985090710683
+          }
+        },
+        "source_02_kitti_road_v2": {
+          "images": 58,
+          "confusion_matrix_argmax": [
+            [
+              349706,
+              378278
+            ],
+            [
+              38356,
+              2754054
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                284896,
+                443088
+              ],
+              [
+                22290,
+                2770120
+              ]
+            ],
+            "road_iou": 0.37972260800720803,
+            "road_precision": 0.9274380993925504,
+            "road_recall": 0.39134926042330603,
+            "false_road_rate": 0.007982352161752752
+          }
+        },
+        "aihub_13_day_city": {
+          "images": 783,
+          "confusion_matrix_argmax": [
+            [
+              5067129,
+              2511455
+            ],
+            [
+              231766,
+              4531828
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                4547777,
+                3030807
+              ],
+              [
+                154440,
+                4609154
+              ]
+            ],
+            "road_iou": 0.5880981359944053,
+            "road_precision": 0.9671559181552021,
+            "road_recall": 0.6000826803529524,
+            "false_road_rate": 0.03242089901028509
+          }
+        },
+        "aihub_14_day_expressway": {
+          "images": 799,
+          "confusion_matrix_argmax": [
+            [
+              5849287,
+              4638671
+            ],
+            [
+              60732,
+              3371860
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                5147636,
+                5340322
+              ],
+              [
+                36279,
+                3396313
+              ]
+            ],
+            "road_iou": 0.48912201426098634,
+            "road_precision": 0.9930016213614614,
+            "road_recall": 0.4908139410932042,
+            "false_road_rate": 0.010568981108153838
+          }
+        },
+        "aihub_15_night_expressway": {
+          "images": 785,
+          "confusion_matrix_argmax": [
+            [
+              1125090,
+              5331552
+            ],
+            [
+              37750,
+              3156303
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                657445,
+                5799197
+              ],
+              [
+                16967,
+                3177086
+              ]
+            ],
+            "road_iou": 0.10155772460153216,
+            "road_precision": 0.9748417881057869,
+            "road_recall": 0.10182460170472515,
+            "false_road_rate": 0.005312059630820152
+          }
+        }
+      },
+      "pooled_native": {
+        "images": 21489,
+        "confusion_matrix": [
+          [
+            167351288,
+            89707711
+          ],
+          [
+            25046878,
+            928116475
+          ]
+        ],
+        "road_iou": 0.5932215584434634,
+        "road_tp_pixels": 167351288,
+        "road_fn_pixels": 89707711,
+        "road_fp_pixels": 25046878,
+        "road_tn_pixels": 928116475,
+        "road_precision": 0.8698174804847152,
+        "road_recall": 0.6510228727685974,
+        "false_road_rate": 0.026277634280805172,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_legacy": {
+        "images": 19122,
+        "confusion_matrix": [
+          [
+            156998430,
+            75537385
+          ],
+          [
+            24839192,
+            916933922
+          ]
+        ],
+        "road_iou": 0.6099987400874554,
+        "road_tp_pixels": 156998430,
+        "road_fn_pixels": 75537385,
+        "road_fp_pixels": 24839192,
+        "road_tn_pixels": 916933922,
+        "road_precision": 0.8633990495102273,
+        "road_recall": 0.6751580611356578,
+        "false_road_rate": 0.026374921550372483,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_aihub": {
+        "images": 2367,
+        "confusion_matrix": [
+          [
+            10352858,
+            14170326
+          ],
+          [
+            207686,
+            11182553
+          ]
+        ],
+        "road_iou": 0.41862085725249454,
+        "road_tp_pixels": 10352858,
+        "road_fn_pixels": 14170326,
+        "road_fp_pixels": 207686,
+        "road_tn_pixels": 11182553,
+        "road_precision": 0.9803337782599079,
+        "road_recall": 0.42216614286301485,
+        "false_road_rate": 0.018233682366103118,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "public_reused_regression": {
+        "obstacle": {
+          "aggregate": {
+            "images": 30,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 12449,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.09592239293584627,
+                "mean_per_image_obstacle_as_road_rate": 0.36267125292367397,
+                "images_with_labelled_obstacles": 30
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 10181,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.07844693408947312,
+                "mean_per_image_obstacle_as_road_rate": 0.32894457416969186,
+                "images_with_labelled_obstacles": 30
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 19106170,
+            "ignored_pixels": 42972048
+          },
+          "images_all_labelled_pixels_predicted_road": 4,
+          "images_at_least_half_labelled_pixels_predicted_road": 9
+        },
+        "anomaly": {
+          "aggregate": {
+            "images": 10,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 14572,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.011064011364680354,
+                "mean_per_image_obstacle_as_road_rate": 0.021274057440366503,
+                "images_with_labelled_obstacles": 10
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 8110,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.006157640143258143,
+                "mean_per_image_obstacle_as_road_rate": 0.012408871783544993,
+                "images_with_labelled_obstacles": 10
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 7578030,
+            "ignored_pixels": 320907
+          },
+          "images_all_labelled_pixels_predicted_road": 0,
+          "images_at_least_half_labelled_pixels_predicted_road": 0
+        }
+      }
+    },
+    "yolo_v2_384x640": {
+      "source_report_sha256": "fb0263b392a39126b36af5a843831b96976fc41817f02d24bab9bbd16df4a8c5",
+      "checkpoint_sha256": "9740dc363816ea661cf7d7e19877c5803eae1778ee152db0cfbacbe55acd9a14",
+      "evaluation_contract_sha256": "a87bf6004f930d3cb807130d7ec5944426992a64f59c3875ffaaa7e0a843ae63",
+      "input_size": [
+        384,
+        640
+      ],
+      "native_gt_size": [
+        192,
+        320
+      ],
+      "precision_condition": "autocast_fp16_logits_fp32_metrics",
+      "runtime_threshold": 0.65,
+      "native_sources": {
+        "bdd": {
+          "images": 10000,
+          "confusion_matrix_argmax": [
+            [
+              93057623,
+              10990707
+            ],
+            [
+              6512285,
+              503839385
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                90091929,
+                13956401
+              ],
+              [
+                5076408,
+                505275262
+              ]
+            ],
+            "road_iou": 0.8255866694497814,
+            "road_precision": 0.9466586455114793,
+            "road_recall": 0.8658661700769248,
+            "false_road_rate": 0.009946882313523144
+          }
+        },
+        "source_00_vkitti2_v1": {
+          "images": 8940,
+          "confusion_matrix_argmax": [
+            [
+              120655524,
+              5786099
+            ],
+            [
+              11835350,
+              410996627
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                119491610,
+                6950013
+              ],
+              [
+                10464707,
+                412367270
+              ]
+            ],
+            "road_iou": 0.872798284783472,
+            "road_precision": 0.9194751956536288,
+            "road_recall": 0.9450338200736319,
+            "false_road_rate": 0.024749090819117494
+          }
+        },
+        "source_01_camvid_road_v1": {
+          "images": 124,
+          "confusion_matrix_argmax": [
+            [
+              809021,
+              508857
+            ],
+            [
+              220,
+              5796837
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                752405,
+                565473
+              ],
+              [
+                93,
+                5796964
+              ]
+            ],
+            "road_iou": 0.5708813016371377,
+            "road_precision": 0.9998764116316589,
+            "road_recall": 0.5709215875824621,
+            "false_road_rate": 1.6042623006811904e-05
+          }
+        },
+        "source_02_kitti_road_v2": {
+          "images": 58,
+          "confusion_matrix_argmax": [
+            [
+              596731,
+              131253
+            ],
+            [
+              20244,
+              2772166
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                579202,
+                148782
+              ],
+              [
+                17936,
+                2774474
+              ]
+            ],
+            "road_iou": 0.7764934577434578,
+            "road_precision": 0.9699633920467295,
+            "road_recall": 0.7956246291127278,
+            "false_road_rate": 0.006423125543885031
+          }
+        },
+        "aihub_13_day_city": {
+          "images": 783,
+          "confusion_matrix_argmax": [
+            [
+              5230886,
+              2347698
+            ],
+            [
+              44764,
+              4718830
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                5073206,
+                2505378
+              ],
+              [
+                41405,
+                4722189
+              ]
+            ],
+            "road_iou": 0.6657760267107997,
+            "road_precision": 0.9919045651761199,
+            "road_recall": 0.6694134418777967,
+            "false_road_rate": 0.008691966611764143
+          }
+        },
+        "aihub_14_day_expressway": {
+          "images": 799,
+          "confusion_matrix_argmax": [
+            [
+              7350265,
+              3137693
+            ],
+            [
+              6166,
+              3426426
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                7119939,
+                3368019
+              ],
+              [
+                4269,
+                3428323
+              ]
+            ],
+            "road_iou": 0.6785917803722699,
+            "road_precision": 0.9994007754967289,
+            "road_recall": 0.6788679931784624,
+            "false_road_rate": 0.00124366659364119
+          }
+        },
+        "aihub_15_night_expressway": {
+          "images": 785,
+          "confusion_matrix_argmax": [
+            [
+              4115263,
+              2341379
+            ],
+            [
+              738,
+              3193315
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                3980352,
+                2476290
+              ],
+              [
+                504,
+                3193549
+              ]
+            ],
+            "road_iou": 0.6164258946599628,
+            "road_precision": 0.9998733940639902,
+            "road_recall": 0.6164740123426388,
+            "false_road_rate": 0.00015779324889098585
+          }
+        }
+      },
+      "pooled_native": {
+        "images": 21489,
+        "confusion_matrix": [
+          [
+            227088643,
+            29970356
+          ],
+          [
+            15605322,
+            937558031
+          ]
+        ],
+        "road_iou": 0.8328505987404198,
+        "road_tp_pixels": 227088643,
+        "road_fn_pixels": 29970356,
+        "road_fp_pixels": 15605322,
+        "road_tn_pixels": 937558031,
+        "road_precision": 0.9356995877503588,
+        "road_recall": 0.8834105940014183,
+        "false_road_rate": 0.016372138050506857,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_legacy": {
+        "images": 19122,
+        "confusion_matrix": [
+          [
+            210915146,
+            21620669
+          ],
+          [
+            15559144,
+            926213970
+          ]
+        ],
+        "road_iou": 0.8501387809334732,
+        "road_tp_pixels": 210915146,
+        "road_fn_pixels": 21620669,
+        "road_fp_pixels": 15559144,
+        "road_tn_pixels": 926213970,
+        "road_precision": 0.931298409192496,
+        "road_recall": 0.9070221978493936,
+        "false_road_rate": 0.016521117208279104,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_aihub": {
+        "images": 2367,
+        "confusion_matrix": [
+          [
+            16173497,
+            8349687
+          ],
+          [
+            46178,
+            11344061
+          ]
+        ],
+        "road_iou": 0.6582790794486238,
+        "road_tp_pixels": 16173497,
+        "road_fn_pixels": 8349687,
+        "road_fp_pixels": 46178,
+        "road_tn_pixels": 11344061,
+        "road_precision": 0.9971529639157382,
+        "road_recall": 0.6595186416250027,
+        "false_road_rate": 0.004054173051153712,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "public_reused_regression": {
+        "obstacle": {
+          "aggregate": {
+            "images": 30,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 41477,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.31958977362037877,
+                "mean_per_image_obstacle_as_road_rate": 0.5665070000366524,
+                "images_with_labelled_obstacles": 30
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 37244,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.28697354024440985,
+                "mean_per_image_obstacle_as_road_rate": 0.5268064907259906,
+                "images_with_labelled_obstacles": 30
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 19106170,
+            "ignored_pixels": 42972048
+          },
+          "images_all_labelled_pixels_predicted_road": 11,
+          "images_at_least_half_labelled_pixels_predicted_road": 15
+        },
+        "anomaly": {
+          "aggregate": {
+            "images": 10,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 21980,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.01668864739196227,
+                "mean_per_image_obstacle_as_road_rate": 0.04753595475333036,
+                "images_with_labelled_obstacles": 10
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 15720,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.011935647725279656,
+                "mean_per_image_obstacle_as_road_rate": 0.03686399332818169,
+                "images_with_labelled_obstacles": 10
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 7578030,
+            "ignored_pixels": 320907
+          },
+          "images_all_labelled_pixels_predicted_road": 0,
+          "images_at_least_half_labelled_pixels_predicted_road": 0
+        }
+      }
+    },
+    "aihub_384x640": {
+      "source_report_sha256": "0bd4d8f5cb5f967f9c57065dec306bc3aef5ac13e54f3e90b092478156b9d172",
+      "checkpoint_sha256": "14e13390eb2b6d052959df88c2510f6f6875ebac07b96658da4782727b98536d",
+      "evaluation_contract_sha256": "a87bf6004f930d3cb807130d7ec5944426992a64f59c3875ffaaa7e0a843ae63",
+      "input_size": [
+        384,
+        640
+      ],
+      "native_gt_size": [
+        192,
+        320
+      ],
+      "precision_condition": "autocast_fp16_logits_fp32_metrics",
+      "runtime_threshold": 0.65,
+      "native_sources": {
+        "bdd": {
+          "images": 10000,
+          "confusion_matrix_argmax": [
+            [
+              95172357,
+              8875973
+            ],
+            [
+              7028353,
+              503323317
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                92512568,
+                11535762
+              ],
+              [
+                5499376,
+                504852294
+              ]
+            ],
+            "road_iou": 0.8444957122150965,
+            "road_precision": 0.9438907568244947,
+            "road_recall": 0.8891307337657414,
+            "false_road_rate": 0.010775659850392966
+          }
+        },
+        "source_00_vkitti2_v1": {
+          "images": 8940,
+          "confusion_matrix_argmax": [
+            [
+              121071199,
+              5370424
+            ],
+            [
+              23347146,
+              399484831
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                120128064,
+                6313559
+              ],
+              [
+                20883666,
+                401948311
+              ]
+            ],
+            "road_iou": 0.8153933707878218,
+            "road_precision": 0.8519012141755866,
+            "road_recall": 0.9500673998782821,
+            "false_road_rate": 0.04938998736133904
+          }
+        },
+        "source_01_camvid_road_v1": {
+          "images": 124,
+          "confusion_matrix_argmax": [
+            [
+              887553,
+              430325
+            ],
+            [
+              1826,
+              5795231
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                833250,
+                484628
+              ],
+              [
+                1324,
+                5795733
+              ]
+            ],
+            "road_iou": 0.6316318501639627,
+            "road_precision": 0.9984135618890596,
+            "road_recall": 0.6322664161629529,
+            "false_road_rate": 0.00022839175119375226
+          }
+        },
+        "source_02_kitti_road_v2": {
+          "images": 58,
+          "confusion_matrix_argmax": [
+            [
+              722289,
+              5695
+            ],
+            [
+              288733,
+              2503677
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                719838,
+                8146
+              ],
+              [
+                254317,
+                2538093
+              ]
+            ],
+            "road_iou": 0.7328079682296974,
+            "road_precision": 0.7389357956382712,
+            "road_recall": 0.9888101936306293,
+            "false_road_rate": 0.09107437661374941
+          }
+        },
+        "aihub_13_day_city": {
+          "images": 783,
+          "confusion_matrix_argmax": [
+            [
+              7339005,
+              239579
+            ],
+            [
+              182977,
+              4580617
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                7272993,
+                305591
+              ],
+              [
+                151388,
+                4612206
+              ]
+            ],
+            "road_iou": 0.940882192070036,
+            "road_precision": 0.9796093438631449,
+            "road_recall": 0.9596770320154794,
+            "false_road_rate": 0.03178020628962082
+          }
+        },
+        "aihub_14_day_expressway": {
+          "images": 799,
+          "confusion_matrix_argmax": [
+            [
+              10344776,
+              143182
+            ],
+            [
+              69168,
+              3363424
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                10300723,
+                187235
+              ],
+              [
+                49563,
+                3383029
+              ]
+            ],
+            "road_iou": 0.977528111213254,
+            "road_precision": 0.9952114366694794,
+            "road_recall": 0.9821476211098481,
+            "false_road_rate": 0.014438942932920662
+          }
+        },
+        "aihub_15_night_expressway": {
+          "images": 785,
+          "confusion_matrix_argmax": [
+            [
+              6254976,
+              201666
+            ],
+            [
+              58539,
+              3135514
+            ]
+          ],
+          "runtime_threshold_metrics": {
+            "confusion_matrix": [
+              [
+                6198265,
+                258377
+              ],
+              [
+                37654,
+                3156399
+              ]
+            ],
+            "road_iou": 0.9544167681916562,
+            "road_precision": 0.9939617560779734,
+            "road_recall": 0.9599827588396569,
+            "false_road_rate": 0.011788783717740439
+          }
+        }
+      },
+      "pooled_native": {
+        "images": 21489,
+        "confusion_matrix": [
+          [
+            237965701,
+            19093298
+          ],
+          [
+            26877288,
+            926286065
+          ]
+        ],
+        "road_iou": 0.8380954175117462,
+        "road_tp_pixels": 237965701,
+        "road_fn_pixels": 19093298,
+        "road_fp_pixels": 26877288,
+        "road_tn_pixels": 926286065,
+        "road_precision": 0.8985161430873294,
+        "road_recall": 0.9257240630583798,
+        "false_road_rate": 0.028197987171250383,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_legacy": {
+        "images": 19122,
+        "confusion_matrix": [
+          [
+            214193720,
+            18342095
+          ],
+          [
+            26638683,
+            915134431
+          ]
+        ],
+        "road_iou": 0.8264459723193908,
+        "road_tp_pixels": 214193720,
+        "road_fn_pixels": 18342095,
+        "road_fp_pixels": 26638683,
+        "road_tn_pixels": 915134431,
+        "road_precision": 0.8893891242699596,
+        "road_recall": 0.9211214195112267,
+        "false_road_rate": 0.028285669450529675,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "pooled_aihub": {
+        "images": 2367,
+        "confusion_matrix": [
+          [
+            23771981,
+            751203
+          ],
+          [
+            238605,
+            11151634
+          ]
+        ],
+        "road_iou": 0.960026797740664,
+        "road_tp_pixels": 23771981,
+        "road_fn_pixels": 751203,
+        "road_fp_pixels": 238605,
+        "road_tn_pixels": 11151634,
+        "road_precision": 0.9900625082619807,
+        "road_recall": 0.9693676400258628,
+        "false_road_rate": 0.020948199594407108,
+        "false_road_rate_definition": "FP / (FP + TN), GT nonroad pixels predicted road",
+        "decision": "road softmax probability >= 0.65 on the native GT grid"
+      },
+      "public_reused_regression": {
+        "obstacle": {
+          "aggregate": {
+            "images": 30,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 41344,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.3185649781942026,
+                "mean_per_image_obstacle_as_road_rate": 0.6232708429700207,
+                "images_with_labelled_obstacles": 30
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 39681,
+                "labelled_obstacle_pixels": 129782,
+                "micro_obstacle_as_road_rate": 0.3057511827526159,
+                "mean_per_image_obstacle_as_road_rate": 0.6019569251147083,
+                "images_with_labelled_obstacles": 30
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 19106170,
+            "ignored_pixels": 42972048
+          },
+          "images_all_labelled_pixels_predicted_road": 15,
+          "images_at_least_half_labelled_pixels_predicted_road": 18
+        },
+        "anomaly": {
+          "aggregate": {
+            "images": 10,
+            "decisions": {
+              "road_p_gt_0_5": {
+                "threshold": 0.5,
+                "comparison": ">",
+                "obstacle_pixels_predicted_road": 19651,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.014920318921722044,
+                "mean_per_image_obstacle_as_road_rate": 0.06411469241744314,
+                "images_with_labelled_obstacles": 10
+              },
+              "runtime_road": {
+                "threshold": 0.65,
+                "comparison": ">=",
+                "obstacle_pixels_predicted_road": 13069,
+                "labelled_obstacle_pixels": 1317063,
+                "micro_obstacle_as_road_rate": 0.009922835885603042,
+                "mean_per_image_obstacle_as_road_rate": 0.04897788167836856,
+                "images_with_labelled_obstacles": 10
+              }
+            },
+            "usual_pixels_not_used_as_road_gt": 7578030,
+            "ignored_pixels": 320907
+          },
+          "images_all_labelled_pixels_predicted_road": 0,
+          "images_at_least_half_labelled_pixels_predicted_road": 0
+        }
+      }
+    }
+  },
+  "speed_comparison": "cancelled; not measured",
+  "real_vehicle_validated": false,
+  "weights_included": false,
+  "notice": "Descriptive pixel metrics on reused reporting sets, not independent safety/collision probabilities. All local file paths and individual dataset samples excluded."
+}

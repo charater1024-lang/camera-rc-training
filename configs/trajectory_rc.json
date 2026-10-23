@@ -1,0 +1,6 @@
+{
+  "task": "trajectory",
+  "model": {"width": 16, "horizon": 5},
+  "data": {"train_manifest": "../data/rc/split/train.jsonl", "val_manifest": "../data/rc/split/val.jsonl", "image_size": [192, 320], "future_offsets_s": [0.5, 1, 1.5, 2, 2.5]},
+  "training": {"epochs": 30, "batch_size": 8, "num_workers": 2, "lr": 0.001, "seed": 42, "device": "auto", "amp": true, "grad_accum_steps": 1, "output_dir": "../runs/rc_trajectory"}
+}

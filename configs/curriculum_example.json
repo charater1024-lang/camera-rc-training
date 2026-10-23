@@ -1,0 +1,8 @@
+{
+  "output_dir": "../runs/curriculum_road_surface",
+  "stages": [
+    {"name": "road_public", "config": "stages/road_public.json"},
+    {"name": "road_mixed", "config": "stages/road_mixed.json", "init_from": "previous"},
+    {"name": "road_vehicle", "config": "stages/road_vehicle.json", "init_from": "previous"}
+  ]
+}

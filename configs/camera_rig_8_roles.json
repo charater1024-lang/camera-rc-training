@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "rig_id": "proposed_eight_exterior_cameras_v1",
+  "status": "proposed_not_installed_or_calibrated",
+  "tesla_replica": false,
+  "camera_count_is_not_a_safety_requirement": true,
+  "shared_model": "road_surface_v1",
+  "calibration_validated": false,
+  "capture_synchronization_validated": false,
+  "models_validated_for_control": false,
+  "roles": [
+    {"id": "front_main", "purpose": "Forward roadway, lane boundaries and road users", "direction": "front"},
+    {"id": "front_wide", "purpose": "Wider forward intersections and crossing road users", "direction": "front"},
+    {"id": "front_near", "purpose": "Near-front ground and low obstacles", "direction": "front"},
+    {"id": "left_forward", "purpose": "Left-side intersections and adjacent road users", "direction": "left"},
+    {"id": "right_forward", "purpose": "Right-side intersections and adjacent road users", "direction": "right"},
+    {"id": "left_rearward", "purpose": "Left rearward blind spots and approaching road users", "direction": "left"},
+    {"id": "right_rearward", "purpose": "Right rearward blind spots and approaching road users", "direction": "right"},
+    {"id": "rear", "purpose": "Rear ground and road users", "direction": "rear"}
+  ],
+  "roles_are_observation_goals_not_existing_model_capabilities": true,
+  "intrinsics_extrinsics_and_lens_choice": "Must be measured on the actual rig; no values are invented here.",
+  "scope": "Public per-image pretraining does not establish synchronized surround perception, obstacle-free space, distance estimation or collision avoidance."
+}

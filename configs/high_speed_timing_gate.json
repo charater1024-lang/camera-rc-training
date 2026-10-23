@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "required_evidence_domain": "real_recorded",
+  "required_measurement_kind": "hardware_exposure_to_command",
+  "scope": "Paired hardware trace comparison on the same target device; exposure and brake onset require separate instrumentation",
+  "required_metrics": {
+    "exposure_to_command_p999_ms": {"direction": "lower", "unit": "ms", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0, "absolute_max": 100},
+    "exposure_to_brake_onset_p999_ms": {"direction": "lower", "unit": "ms", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0, "absolute_max": 300},
+    "deadline_miss_rate": {"direction": "lower", "unit": "fraction", "min_units": 30, "mode": "maintain", "min_improvement": 0, "absolute_min": 0, "absolute_max": 0},
+    "stale_input_use_count": {"direction": "lower", "unit": "count", "min_units": 30, "mode": "maintain", "min_improvement": 0, "absolute_min": 0, "absolute_max": 0},
+    "out_of_memory_count": {"direction": "lower", "unit": "count", "min_units": 30, "mode": "maintain", "min_improvement": 0, "absolute_min": 0, "absolute_max": 0}
+  },
+  "coverage_required": {"speed_75_85": 30, "speed_75_85__thermal_steady_state": 30},
+  "require_no_unit_regression": true,
+  "critical_failure_metrics": ["stale_input_use_count", "out_of_memory_count"],
+  "bootstrap_repetitions": 10000,
+  "seed": 42,
+  "notice": "100/300ms are provisional research targets, not verified vehicle limits. Replay timestamps cannot populate exposure-based metrics. 30 original drives are independent units, not repeated loops of the same recording."
+}

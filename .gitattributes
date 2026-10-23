@@ -1,0 +1,3 @@
+# Preserve exact source bytes across hosts: provenance reports use SHA256.
+# Shell scripts are already stored with LF endings.
+* -text

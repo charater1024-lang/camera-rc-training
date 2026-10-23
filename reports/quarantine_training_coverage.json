@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "scope": "quarantined training annotations only; no training or evaluation modification",
+  "training_json_read": 245,
+  "all_annotation_sha_verified": true,
+  "all_geometry_errors_reproduced": true,
+  "image_mask_decoding": false,
+  "validation_json_read": 0,
+  "validation_excluded_count_only": 27,
+  "input_sha256": {
+    "quarantine_ledger": "a1d2ffc4d90d061372a1073e5417eb62f0112bb7bc80885b447776b0aa8cc4d3",
+    "retained_data_audit": "bea66381645f180c20394af97b9b6d5675aac13cae7164fcf727967f7c720997",
+    "native_preparation_report": "4ab844f36f168d5a6dace509c906b39da3cfc231857044305cfc096c14e8a0a2",
+    "retained_training_pool_report": "9b6d87a9df44a62309a9f21a1fff122b8b476fa12a5c4f0ba6e0f47f53cbeca2",
+    "geometry_validator": "57048177d8000bfe316728a1588e011938c054839569f7e5195b4a73c7c74b09"
+  },
+  "training_total": {
+    "before": 19177,
+    "excluded": 245,
+    "retained": 18932,
+    "excluded_frame_polygon_total": 16723,
+    "invalid_polygons": 569,
+    "geometry_passing_polygons": 16154,
+    "frames_invalid_only_ignored_or_background_classes": 141,
+    "frames_any_road_or_nonroad_error": 104
+  },
+  "training_errors": {
+    "zero_area": 320,
+    "fewer_than_three_flat_pairs_or_odd_length": 198,
+    "fewer_than_three_distinct_points": 51
+  },
+  "count_semantics": "Class values are frames containing at least one source annotation, not object instances. Classes overlap. All listed rare-class polygons in excluded frames passed the geometry validator.",
+  "datasets": {
+    "aihub_13": {
+      "condition": "day_city",
+      "train_before": 6410,
+      "excluded": 132,
+      "retained": 6278,
+      "excluded_annotation_hash_inventory_sha256": "7ee85e9fa53aa02c44b6daa383e505b361c76cf9c22331c914979cddec9ae823",
+      "rare_frames_before": {
+        "pedestrian": 1665,
+        "bicycle": 873,
+        "motorcycle": 550,
+        "rider": 623,
+        "rubberCone": 276,
+        "trafficDrum": 84,
+        "warningTriangle": 1,
+        "twoWheeler": 278
+      },
+      "rare_frames_excluded": {
+        "pedestrian": 32,
+        "bicycle": 11,
+        "motorcycle": 15,
+        "rider": 13,
+        "rubberCone": 4,
+        "trafficDrum": 4,
+        "warningTriangle": 0,
+        "twoWheeler": 6
+      },
+      "rare_frames_retained": {
+        "pedestrian": 1633,
+        "bicycle": 862,
+        "motorcycle": 535,
+        "rider": 610,
+        "rubberCone": 272,
+        "trafficDrum": 80,
+        "warningTriangle": 1,
+        "twoWheeler": 272
+      },
+      "excluded_frames_with_any_listed_rare_class": 50,
+      "frames_invalid_only_ignored_or_background_classes": 101
+    },
+    "aihub_14": {
+      "condition": "day_highway",
+      "train_before": 6398,
+      "excluded": 47,
+      "retained": 6351,
+      "excluded_annotation_hash_inventory_sha256": "1e6d552317d115cb5fe3f7d8a445dbfcd6e9f26262da4a1ea209524f26034234",
+      "rare_frames_before": {
+        "pedestrian": 30,
+        "bicycle": 1,
+        "motorcycle": 29,
+        "rider": 31,
+        "rubberCone": 57,
+        "trafficDrum": 1,
+        "warningTriangle": 0,
+        "twoWheeler": 0
+      },
+      "rare_frames_excluded": {
+        "pedestrian": 0,
+        "bicycle": 0,
+        "motorcycle": 0,
+        "rider": 0,
+        "rubberCone": 0,
+        "trafficDrum": 0,
+        "warningTriangle": 0,
+        "twoWheeler": 0
+      },
+      "rare_frames_retained": {
+        "pedestrian": 30,
+        "bicycle": 1,
+        "motorcycle": 29,
+        "rider": 31,
+        "rubberCone": 57,
+        "trafficDrum": 1,
+        "warningTriangle": 0,
+        "twoWheeler": 0
+      },
+      "excluded_frames_with_any_listed_rare_class": 0,
+      "frames_invalid_only_ignored_or_background_classes": 22
+    },
+    "aihub_15": {
+      "condition": "night_highway",
+      "train_before": 6369,
+      "excluded": 66,
+      "retained": 6303,
+      "excluded_annotation_hash_inventory_sha256": "b963772839444137725473a225bb35f20f4a7151c5f6fe0b7fffac73711baa92",
+      "rare_frames_before": {
+        "pedestrian": 2,
+        "bicycle": 2,
+        "motorcycle": 3,
+        "rider": 2,
+        "rubberCone": 8,
+        "trafficDrum": 1,
+        "warningTriangle": 1,
+        "twoWheeler": 0
+      },
+      "rare_frames_excluded": {
+        "pedestrian": 0,
+        "bicycle": 0,
+        "motorcycle": 0,
+        "rider": 0,
+        "rubberCone": 0,
+        "trafficDrum": 0,
+        "warningTriangle": 0,
+        "twoWheeler": 0
+      },
+      "rare_frames_retained": {
+        "pedestrian": 2,
+        "bicycle": 2,
+        "motorcycle": 3,
+        "rider": 2,
+        "rubberCone": 8,
+        "trafficDrum": 1,
+        "warningTriangle": 1,
+        "twoWheeler": 0
+      },
+      "excluded_frames_with_any_listed_rare_class": 0,
+      "frames_invalid_only_ignored_or_background_classes": 18
+    }
+  },
+  "annotation_hash_inventory_method": "SHA256 of sorted per-annotation SHA256 strings, each followed by ASCII LF; no frame IDs or paths",
+  "interpretation": {
+    "night_annotation_scarcity_caused_by_quarantine": false,
+    "day_city_collateral_loss_frames_with_rare_annotations": 50,
+    "automatic_frame_recovery_performed": false,
+    "limitations": [
+      "Annotations alone do not prove whether visible objects were absent or unlabelled.",
+      "Valid geometry does not establish correct semantics or visibility.",
+      "Removing an invalid ignored polygon may expose underlying road supervision; future recovery requires separate human review or a predefined conservative ignore policy and split checks."
+    ]
+  }
+}

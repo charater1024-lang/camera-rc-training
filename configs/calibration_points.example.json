@@ -1,0 +1,10 @@
+{
+  "note": "EXAMPLE ONLY. Replace every correspondence with measured points in your rectified camera image. x forward/y left metres from rear axle. This synthetic top-down mapping is NOT a physical camera calibration.",
+  "image_size": [360, 640],
+  "input_is_rectified": true,
+  "supported_range": {"min_forward_m": 0.1, "max_forward_m": 1.8, "max_abs_lateral_m": 0.8},
+  "max_validation_error_m": 0.05,
+  "points": [[64, 20, 1.9, 0.8], [576, 20, 1.9, -0.8], [64, 340, 0.05, 0.8], [576, 340, 0.05, -0.8]],
+  "validation_points": [[320, 180, 0.975, 0], [160, 260, 0.5125, 0.5]],
+  "diagnostic_only": true
+}

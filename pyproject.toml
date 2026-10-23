@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "camera-rc-training"
+version = "0.1.0"
+description = "Camera-only RC and autonomous driving research training baselines"
+readme = "README.md"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26,<3", "Pillow>=10,<13", "torch>=2.7,<3", "torchvision>=0.22,<1"]
+
+[project.optional-dependencies]
+detection = ["ultralytics==8.4.182"]
+semantic = ["ultralytics==8.4.182", "PyYAML>=6,<7", "psutil>=5.9,<8"]
+download = ["requests>=2.32,<3"]
+preview = ["matplotlib>=3.8,<4"]
+test = ["pytest>=8,<10", "requests>=2.32,<3", "PyYAML>=6,<7", "psutil>=5.9,<8", "opencv-python>=4.10,<6", "pyserial>=3.5,<4"]
+runtime = ["opencv-python>=4.10,<6", "pyserial>=3.5,<4", "psutil>=5.9,<8", "nvidia-ml-py>=12"]
+
+[project.scripts]
+camera-rc = "camera_rc.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

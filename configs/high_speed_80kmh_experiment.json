@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "experiment_id": "camera_only_80kmh_research_v1",
+  "scope": "offline_replay_and_simulation_only",
+  "deployment_approved": false,
+  "training_compute": {
+    "gpu": "RTX 3080 Laptop GPU", "physical_vram_gib": 16, "system_ram_gib": 32,
+    "deployment_vram_budget_applies_to_training": false,
+    "policy": "Profile AMP and micro-batch size on the training device with headroom for the OS. Do not run concurrent training and latency benchmarks. Model-size comparison is specified in model_scale_experiment.json."
+  },
+  "target_speed_kmh": 80,
+  "verified_speed_bin_kmh": [75, 85],
+  "speeds_kmh": [20, 40, 60, 75, 80, 85, 100],
+  "reaction_delays_s": [0.1, 0.3, 0.5, 0.8],
+  "assumed_decelerations_mps2": [7, 4, 3],
+  "stopping_margin_m": 10,
+  "camera_fps": [15, 20, 30, 60],
+  "distance_bins_m": [0, 20, 40, 60, 80, 120, 160],
+  "optics": {
+    "network_input_widths": [320, 640, 960, 1280, 1920],
+    "horizontal_fov_deg": [30, 35, 60, 90, 100],
+    "object_heights_m": [0.15, 0.3, 1.7],
+    "distances_m": [40, 80, 120],
+    "assumption": "Square pixels, centered object, pinhole projection. Projected pixel height is not a detection guarantee."
+  },
+  "provisional_latency_targets": {
+    "front_capture_hz": 30,
+    "minimum_effective_capture_hz": 29,
+    "exposure_to_command_p999_ms": 100,
+    "maximum_exposure_to_command_ms": 150,
+    "latest_frame_max_skew_ms": 10,
+    "maximum_deadline_miss_rate": 0,
+    "speed_alignment_tolerance_ms": 50,
+    "clock_uncertainty_max_ms": 1,
+    "minimum_samples": 30000,
+    "minimum_duration_s": 1800,
+    "minimum_brake_events": 100,
+    "minimum_high_speed_brake_events": 100,
+    "maximum_exposure_to_brake_onset_ms": 300,
+    "notice": "Engineering experiment targets, not standards or proof of 80km/h suitability. Brake onset must be measured separately."
+  },
+  "camera_roles": ["front_main", "front_wide", "front_near", "left_forward", "right_forward", "left_rearward", "right_rearward", "rear"],
+  "models": [
+    {"id": "main_8gb", "detector": "YOLO26s", "front_detector_input": 960, "segmenter": "PIDNet-S", "tracking": "ByteTrack", "status": "candidate_not_validated"},
+    {"id": "fallback_4gb", "detector": "YOLO26n", "front_detector_input": 640, "segmenter": "PIDNet-S", "tracking": "ByteTrack", "status": "candidate_not_validated"},
+    {"id": "boundary_comparison_8gb", "detector": "YOLO26s", "front_detector_input": 960, "segmenter": "SegFormer-B0", "tracking": "ByteTrack", "status": "candidate_not_validated"},
+    {"id": "medium_direct_deploy", "detector": "YOLO26m", "front_detector_input": 960, "deployment_budgets_gib": [4, 8], "segmenter": "PIDNet-S", "tracking": "ByteTrack", "status": "candidate_not_validated"},
+    {"id": "large_direct_deploy", "detector": "YOLO26l", "front_detector_input": 960, "deployment_budgets_gib": [4, 8], "segmenter": "PIDNet-S", "tracking": "ByteTrack", "status": "candidate_not_validated"},
+    {"id": "xlarge_direct_deploy", "detector": "YOLO26x", "front_detector_input": 960, "deployment_budgets_gib": [4, 8], "segmenter": "PIDNet-S", "tracking": "ByteTrack", "status": "candidate_not_validated"}
+  ],
+  "scenario_families": ["lead_constant", "stopped_vehicle", "lead_hard_brake", "cut_in", "pedestrian_crossing", "small_debris", "curve_lane_boundary", "partial_occlusion", "camera_failure"],
+  "conditions": ["day_dry", "night_dry", "rain_wet", "backlight", "fog"],
+  "faults": ["none", "frame_drop", "frozen_frame", "timestamp_skew", "camera_blackout", "gpu_throttle", "queue_backlog"],
+  "simulation": {
+    "platform": "CARLA",
+    "installed_and_run": false,
+    "synchronous_mode": true,
+    "fixed_delta_seconds": 0.016666666666666666,
+    "physics_max_substep_delta_time": 0.004166666666666667,
+    "physics_max_substeps": 4,
+    "camera_sensor_tick_s": 0.03333333333333333,
+    "minimum_independent_seeds_per_cell": 30,
+    "minimum_goal_speed_hold_s": 5,
+    "require_measured_vehicle_speed": true,
+    "world_y_axis": "right; convert explicitly before using existing forward-left-up policy",
+    "ground_truth_only_sensors": ["depth", "instance_segmentation", "collision", "lane_invasion"],
+    "perception_inputs": ["rgb_cameras", "current_vehicle_speed", "causal_imu_odometry"],
+    "notice": "World target velocity is not proof of attained speed. Simulation weather appearance does not by itself guarantee realistic tyre friction; configure and log vehicle/road physics separately. Simulator time and host wall latency must remain separate."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "source_encoding": "BDD100K 2018 drivable_maps/labels raw ID PNG: 0=background, 1=direct, 2=alternative",
+  "encoding_reference": "https://github.com/bdd100k/bdd100k/blob/3e762ca7337eb05ad80d54654dc93d943b75814f/README.md",
+  "label_space_id": "road_surface_v1",
+  "num_classes": 2,
+  "class_names": ["road_surface", "not_road_surface"],
+  "mapping": {"0": 1, "1": 0, "2": 0, "255": 255},
+  "interpretation": "Legacy 2018 IDs differ from the newer labels/drivable/masks release. Direct and alternative become road_surface; this does not certify obstacle-free or permitted travel."
+}

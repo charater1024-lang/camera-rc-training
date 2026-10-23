@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "required_evidence_domain": "real_recorded",
+  "scope": "Held-out perception only; not a closed-loop driving or deployment decision",
+  "required_metrics": {
+    "road_iou": {"direction": "higher", "unit": "fraction", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0, "absolute_max": 1},
+    "road_false_positive_rate": {"direction": "lower", "unit": "fraction", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0, "absolute_max": 1},
+    "obstacle_as_road_rate": {"direction": "lower", "unit": "fraction", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0, "absolute_max": 1},
+    "vehicle_recall": {"direction": "higher", "unit": "fraction", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0, "absolute_max": 1},
+    "pedestrian_recall": {"direction": "higher", "unit": "fraction", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0, "absolute_max": 1},
+    "small_obstacle_recall_60_120m": {"direction": "higher", "unit": "fraction", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0, "absolute_max": 1},
+    "object_false_positives_per_km": {"direction": "lower", "unit": "per_km", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "lane_boundary_mae_m": {"direction": "lower", "unit": "m", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "distance_mae_m": {"direction": "lower", "unit": "m", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "relative_speed_mae_mps": {"direction": "lower", "unit": "m/s", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0},
+    "tracking_id_switches_per_km": {"direction": "lower", "unit": "per_km", "min_units": 30, "mode": "improve", "min_improvement": 0, "absolute_min": 0}
+  },
+  "coverage_required": {"speed_75_85": 30, "speed_75_85__night_dry": 30, "speed_75_85__rain_wet": 30, "speed_75_85__small_debris": 30},
+  "require_no_unit_regression": true,
+  "critical_failure_metrics": [],
+  "bootstrap_repetitions": 10000,
+  "seed": 42
+}
