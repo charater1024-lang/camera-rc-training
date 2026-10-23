@@ -426,6 +426,12 @@ def test_swapped_cli_pair_rejected_before_predictor_construction(tmp_path, monke
         pytest.fail("Invalid role/lineage must fail before predictor construction")
     monkeypatch.setattr(adapter, "VerifiedYoloSemantic", forbidden_predictor)
     output = tmp_path / "private_diagnostic"
+    # CI places --basetemp inside the checkout. This test exercises lineage,
+    # so give it an isolated public-root boundary with output outside that
+    # boundary. Separate tests still exercise the real production privacy gate.
+    fixture_public_root = tmp_path / "fixture_public_tree"
+    monkeypatch.setattr(diagnostic, "__file__", str(fixture_public_root / "scripts/diagnose_corrected_dev_roi.py"))
+    assert not output.resolve().is_relative_to(fixture_public_root.resolve())
     args = ["--prepared-report", prepared["prepared_report"]["path"],
             "--prepared-report-sha256", prepared["prepared_report"]["sha256"],
             "--frame-accounting", "not_read_in_mock", "--frame-accounting-sha256", "0" * 64, "--output", str(output)]

@@ -1,4 +1,5 @@
 """Benchmark orchestration/provenance tests, using no real model or GPU."""
+import importlib.metadata
 import importlib.util
 import os
 from pathlib import Path
@@ -63,6 +64,11 @@ def fake_ultralytics(tmp_path, monkeypatch, *, supports_end2end=True, broken_fus
     package_module = SimpleNamespace(__file__=str(package / "__init__.py"), YOLO=Wrapper,
                                      settings={"sync": True, "hub": True})
     monkeypatch.setitem(sys.modules, "ultralytics", package_module)
+    # A module stub does not supply installed-distribution metadata. Keep this
+    # mocked test independent of the optional Ultralytics installation too.
+    original_version = importlib.metadata.version
+    monkeypatch.setattr(importlib.metadata, "version", lambda name:
+                        "8.4.182-test-fixture" if name == "ultralytics" else original_version(name))
     return creations, views
 
 
@@ -86,6 +92,7 @@ def test_shared_batch_one_views_and_warmup_are_reported_without_accuracy_claim(t
     assert result["graph"]["one_to_one_branch_present"] and not result["graph"]["one_to_many_branch_present"]
     assert len(result["architecture_yaml_sha256"]) == 64
     assert result["selected_scale"] == model[-1] and result["model"] == model
+    assert result["ultralytics_version"] == "8.4.182-test-fixture"
 
 
 def test_unsupported_head_is_not_mislabeled_as_e2e_timing(tmp_path, monkeypatch):
