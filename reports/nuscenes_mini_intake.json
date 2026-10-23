@@ -1,0 +1,219 @@
+{
+  "schema": "nuscenes-mini-ingestion-public-summary-v1",
+  "purpose": "calibration, coordinate-frame, temporal and 3D-track ingestion validation only",
+  "complete": true,
+  "completed_utc": "2026-10-23T02:44:42.630630+00:00",
+  "source_url": "https://www.nuscenes.org/data/v1.0-mini.tgz",
+  "source_documentation": "https://github.com/nutonomy/nuscenes-devkit",
+  "archive": {
+    "bytes": 4167696325,
+    "sha256": "943037abbb3b26b3070dc76504a43eb440503b00baf9ac2f1538d9c03fc9298f",
+    "publisher_sha256_available": false,
+    "maximum_download_bytes": 4300000000,
+    "http_content_length_matched": true,
+    "gzip_crc_all_streams_verified": true,
+    "tar_member_paths_and_types_verified": true,
+    "member_count": 31252,
+    "regular_file_count": 31224,
+    "expanded_member_payload_bytes": 5374897430,
+    "metadata_bytes": 33291476
+  },
+  "metadata": {
+    "table_counts": {
+      "attribute": 8,
+      "calibrated_sensor": 120,
+      "category": 23,
+      "ego_pose": 31206,
+      "instance": 911,
+      "log": 8,
+      "map": 4,
+      "sample": 404,
+      "sample_annotation": 18538,
+      "sample_data": 31206,
+      "scene": 10,
+      "sensor": 12,
+      "visibility": 4
+    },
+    "foreign_key_checks": 284361,
+    "map_reference_scope": {
+      "local_log_count": 8,
+      "map_log_reference_count": 83,
+      "unique_map_log_references": 83,
+      "resolved_local_log_count": 8,
+      "external_log_reference_count": 75,
+      "external_logs_validated": false,
+      "core_local_logs_each_resolve_to_exactly_one_map": true,
+      "scope": "Map catalog retains full-dataset log identifiers; external log records are outside mini and not verified.",
+      "official_devkit_reference": "https://github.com/nutonomy/nuscenes-devkit/blob/master/python-sdk/nuscenes/nuscenes.py"
+    },
+    "validation_version": 2,
+    "original_validator_failure_preserved": true,
+    "all_table_tokens_unique": true,
+    "scene_and_instance_chain_checks_passed": true,
+    "sensor_group_count": 120,
+    "sensor_chain_count": 120,
+    "sensor_chain_covered_records": 31206,
+    "sensor_chain_coverage_checked_separately": true,
+    "incomplete_keyframe_sensor_set_count": 0,
+    "empty_visibility_token_count": 0,
+    "sensor_file_counts": {
+      "RADAR_FRONT": 2635,
+      "RADAR_FRONT_LEFT": 2686,
+      "RADAR_FRONT_RIGHT": 2673,
+      "RADAR_BACK_LEFT": 2634,
+      "RADAR_BACK_RIGHT": 2635,
+      "LIDAR_TOP": 3935,
+      "CAM_FRONT": 2342,
+      "CAM_FRONT_RIGHT": 2338,
+      "CAM_BACK_RIGHT": 2342,
+      "CAM_BACK": 2315,
+      "CAM_BACK_LEFT": 2327,
+      "CAM_FRONT_LEFT": 2344
+    },
+    "sample_interval_microseconds": {
+      "count": 394,
+      "min": 399197,
+      "median": 499884.0,
+      "p95": 549635,
+      "max": 599961
+    },
+    "keyframe_sensor_offset_to_sample_microseconds": {
+      "RADAR_FRONT": {
+        "count": 404,
+        "min": -37017,
+        "median": 226.0,
+        "p95": 31955,
+        "max": 36946
+      },
+      "RADAR_FRONT_LEFT": {
+        "count": 404,
+        "min": -37056,
+        "median": 595.5,
+        "p95": 33159,
+        "max": 37361
+      },
+      "RADAR_FRONT_RIGHT": {
+        "count": 404,
+        "min": -37305,
+        "median": -2945.0,
+        "p95": 33559,
+        "max": 37310
+      },
+      "RADAR_BACK_LEFT": {
+        "count": 404,
+        "min": -37477,
+        "median": 1083.5,
+        "p95": 31382,
+        "max": 36729
+      },
+      "RADAR_BACK_RIGHT": {
+        "count": 404,
+        "min": -37423,
+        "median": -54.0,
+        "p95": 33899,
+        "max": 37215
+      },
+      "LIDAR_TOP": {
+        "count": 404,
+        "min": 0,
+        "median": 0.0,
+        "p95": 0,
+        "max": 0
+      },
+      "CAM_FRONT": {
+        "count": 404,
+        "min": -40744,
+        "median": -35451.0,
+        "p95": -34297,
+        "max": -33759
+      },
+      "CAM_FRONT_RIGHT": {
+        "count": 404,
+        "min": -32666,
+        "median": -27529.0,
+        "p95": -26303,
+        "max": -25770
+      },
+      "CAM_BACK_RIGHT": {
+        "count": 404,
+        "min": -25035,
+        "median": -19958.0,
+        "p95": -18711,
+        "max": -18139
+      },
+      "CAM_BACK": {
+        "count": 404,
+        "min": -15590,
+        "median": -10358.5,
+        "p95": -9199,
+        "max": -8413
+      },
+      "CAM_BACK_LEFT": {
+        "count": 404,
+        "min": -5743,
+        "median": -481.0,
+        "p95": 671,
+        "max": 1204
+      },
+      "CAM_FRONT_LEFT": {
+        "count": 404,
+        "min": -48349,
+        "median": -43067.0,
+        "p95": -41893,
+        "max": -40362
+      }
+    },
+    "ego_pose_offset_to_sensor_microseconds": {
+      "count": 31206,
+      "min": 0,
+      "median": 0.0,
+      "p95": 0,
+      "max": 0
+    },
+    "annotation_counts_by_category": {
+      "human.pedestrian.adult": 4765,
+      "vehicle.car": 7619,
+      "movable_object.trafficcone": 1378,
+      "vehicle.bicycle": 243,
+      "human.pedestrian.construction_worker": 193,
+      "vehicle.truck": 649,
+      "vehicle.motorcycle": 471,
+      "movable_object.barrier": 2323,
+      "vehicle.bus.rigid": 353,
+      "vehicle.construction": 196,
+      "movable_object.pushable_pullable": 82,
+      "movable_object.debris": 13,
+      "human.pedestrian.child": 46,
+      "static_object.bicycle_rack": 54,
+      "vehicle.trailer": 60,
+      "human.pedestrian.police_officer": 11,
+      "vehicle.bus.bendy": 57,
+      "human.pedestrian.personal_mobility": 25
+    }
+  },
+  "use_conditions": {
+    "scope": "non-commercial research; no dataset redistribution",
+    "license": "CC BY-NC-SA 4.0 plus publisher Dataset Terms",
+    "terms_url": "https://www.nuscenes.org/terms-of-use",
+    "official_terms_body_sha256": "16004e67a806af07ef913d269de0f2a835476b25fa1c585642f1fa1fe1bfeedf",
+    "data_not_covered_by_devkit_Apache_license": true
+  },
+  "validation_limits": {
+    "only_metadata_json_extracted": true,
+    "raw_media_fully_decoded": false,
+    "pointcloud_payload_parsed": false,
+    "model_training_performed": false,
+    "model_inference_performed": false,
+    "runtime_benchmark_performed": false,
+    "vehicle_or_actuator_operated": false,
+    "target_vehicle_calibration_validated": false,
+    "dense_3d_occupancy_ground_truth_provided": false,
+    "independent_performance_holdout": false,
+    "mini_overlaps_full_dataset": true,
+    "dataset_acquisition_implies_no_accuracy_or_safety_gain": true
+  },
+  "private_provenance_hashes": {
+    "archive_verification_json_sha256": "f99374884bb408ff565ea6a045e700697a93ae893f100931ada4cc1d2dac857d",
+    "ingestion_coverage_json_sha256": "90df1a7af3f41b537a945d2ca79a2f8180687b548b36f74a5269998f8f19f4ec"
+  }
+}

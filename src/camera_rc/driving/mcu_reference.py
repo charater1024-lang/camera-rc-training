@@ -58,7 +58,10 @@ class McuSafetyReference:
 
     def _check_clock(self, now_ms):
         if type(now_ms) is not int or now_ms < 0:
-            raise ValueError("MCU reference requires integer monotonic milliseconds")
+            # Invalid timer input is a safety fault, not just an API exception:
+            # a previous enabled output must not survive a failed clock check.
+            self._latch("invalid_mcu_clock")
+            return False
         if self._last_now is not None and now_ms < self._last_now:
             self._latch("mcu_clock_reversed")
             return False
@@ -199,6 +202,8 @@ class McuSafetyReference:
         return self.output
 
     def telemetry(self, now_ms: int) -> dict | None:
+        if not self._check_clock(now_ms):
+            return None
         self.tick(now_ms)
         if self.session is None:
             return None

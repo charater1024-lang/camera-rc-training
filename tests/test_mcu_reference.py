@@ -234,3 +234,42 @@ def test_host_and_mcu_protocol_interoperate_with_independent_clocks():
     assert wire.mcu.output.enabled
     wire.mcu.tick(1154)
     assert not wire.mcu.output.enabled
+
+
+@pytest.mark.parametrize("now_ms", [None, -1, 1020.0, True, "1020", float("nan"), float("inf")])
+@pytest.mark.parametrize("entrypoint", ["tick", "receive_line", "set_inputs", "telemetry"])
+def test_invalid_clock_stops_previous_output_at_every_entrypoint(now_ms, entrypoint):
+    mcu = armed_mcu()
+    previous_clock, previous_ack, previous_telemetry = mcu._last_now, mcu.ack_seq, mcu.telemetry_seq
+    if entrypoint == "receive_line":
+        assert mcu.receive_line(command(3, 10020, True), now_ms) is False
+    elif entrypoint == "set_inputs":
+        mcu.set_inputs(physical_armed=True, estop=False, speed_mps=0, yaw_rate_rps=0,
+                       sensor_seq=1020, sensor_ms=1020, now_ms=now_ms)
+    elif entrypoint == "telemetry":
+        assert mcu.telemetry(now_ms) is None
+    else:
+        assert mcu.tick(now_ms) is mcu.output
+    assert mcu.last_error == "invalid_mcu_clock" and not mcu.armed
+    assert not mcu.output.enabled and mcu.output.throttle == 0 and mcu.output.brake == 1
+    assert mcu._last_now == previous_clock and mcu.ack_seq == previous_ack
+    assert mcu.telemetry_seq == previous_telemetry
+    # A valid timer/sample/command alone cannot revive an invalidated output.
+    mcu.set_inputs(physical_armed=True, estop=False, speed_mps=0, yaw_rate_rps=0,
+                   sensor_seq=1021, sensor_ms=1021, now_ms=1021)
+    assert mcu.receive_line(command(3, 10021, True), 1021)
+    assert not mcu.armed and not mcu.output.enabled
+
+
+def test_clock_fault_requires_a_new_physical_rearm_transition():
+    mcu = armed_mcu()
+    mcu.tick(None)
+    assert not mcu.armed
+    assert mcu.receive_line(command(3, 10020, True), 1020)
+    assert not mcu.output.enabled
+    mcu.set_inputs(physical_armed=False, estop=False, speed_mps=0, yaw_rate_rps=0,
+                   sensor_seq=1021, sensor_ms=1021, now_ms=1021)
+    mcu.set_inputs(physical_armed=True, estop=False, speed_mps=0, yaw_rate_rps=0,
+                   sensor_seq=1022, sensor_ms=1022, now_ms=1022)
+    assert mcu.receive_line(command(4, 10023, True), 1023)
+    assert mcu.armed and mcu.output.enabled

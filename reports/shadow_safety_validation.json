@@ -1,0 +1,498 @@
+{
+  "schema_version": 1,
+  "scope": "synthetic_offline_contract_regression_not_driving_validation",
+  "model_inference_performed": false,
+  "real_sensor_inputs": false,
+  "actuation_enabled": false,
+  "collision_rate_measured": false,
+  "speed_benchmark_performed": false,
+  "passed": 30,
+  "total": 30,
+  "cases": [
+    {
+      "case": "clear_observed_corridor",
+      "expected_reason": "supplied_offline_evidence_passed",
+      "matched": true,
+      "decision": {
+        "mode": "PROPOSAL_ELIGIBLE",
+        "reasons": [
+          "supplied_offline_evidence_passed"
+        ],
+        "proposal_eligible": true,
+        "required_stopping_distance_m": 0.7814606249999994,
+        "checked_cells": 848,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "missing_detector",
+      "expected_reason": "missing_or_duplicate_modules",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "missing_or_duplicate_modules"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "failed_detector",
+      "expected_reason": "module_unavailable",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "module_unavailable"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "stale_observation",
+      "expected_reason": "stale_or_future_observation",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "stale_or_future_observation"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "future_observation",
+      "expected_reason": "stale_or_future_observation",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "stale_or_future_observation"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "exposure_skew",
+      "expected_reason": "sensor_exposure_skew",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "sensor_exposure_skew"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "nan_stamp",
+      "expected_reason": "stale_or_future_observation",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "stale_or_future_observation"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "wrong_clock",
+      "expected_reason": "clock_domain_mismatch",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "clock_domain_mismatch"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "wrong_calibration",
+      "expected_reason": "calibration_mismatch",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "calibration_mismatch"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "unapproved_model",
+      "expected_reason": "producer_identity_mismatch",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "producer_identity_mismatch"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "unknown_cell",
+      "expected_reason": "unobserved_swept_cell",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "unobserved_swept_cell"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "occupied_cell",
+      "expected_reason": "occupied_swept_cell",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "occupied_swept_cell"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "anomaly_cell",
+      "expected_reason": "object_or_anomaly_veto",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "object_or_anomaly_veto"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "nonroad_cell",
+      "expected_reason": "semantic_disagreement_or_nonroad",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "semantic_disagreement_or_nonroad"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "nan_probability",
+      "expected_reason": "invalid_semantic_probability",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "invalid_semantic_probability"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "crossing_track",
+      "expected_reason": "reachable_dynamic_obstacle",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "reachable_dynamic_obstacle"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "uncertain_track",
+      "expected_reason": "reachable_dynamic_obstacle",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "reachable_dynamic_obstacle"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "no_metric_scale",
+      "expected_reason": "metric_scale_unverified",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "metric_scale_unverified"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "braking_fault",
+      "expected_reason": "braking_unavailable",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "braking_unavailable"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "unvalidated_night",
+      "expected_reason": "outside_odd",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "outside_odd"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "outside_area",
+      "expected_reason": "outside_odd",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "outside_odd"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "short_prediction",
+      "expected_reason": "prediction_horizon_too_short",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "prediction_horizon_too_short"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "localization_error",
+      "expected_reason": "localization_uncertainty",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "localization_uncertainty"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "speed_error",
+      "expected_reason": "speed_uncertainty",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "speed_uncertainty"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "short_path",
+      "expected_reason": "insufficient_stopping_horizon",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "insufficient_stopping_horizon"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "grid_boundary",
+      "expected_reason": "swept_body_outside_observed_grid",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "swept_body_outside_observed_grid"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "stale_plan",
+      "expected_reason": "stale_or_future_plan",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "stale_or_future_plan"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "estop",
+      "expected_reason": "estop_or_disarmed",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "estop_or_disarmed"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "overspeed",
+      "expected_reason": "speed_outside_supported_odd",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "speed_outside_supported_odd"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    },
+    {
+      "case": "stale_state",
+      "expected_reason": "stale_or_future_state",
+      "matched": true,
+      "decision": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "stale_or_future_state"
+        ],
+        "proposal_eligible": false,
+        "required_stopping_distance_m": null,
+        "checked_cells": 0,
+        "actuation_enabled": false,
+        "scope": "offline_evidence_contract_only"
+      }
+    }
+  ],
+  "source_sha256": {
+    "src/camera_rc/driving/shadow_safety.py": "7bd4ea04cc6b2e9fbe7274a361ccc1935e763afd6871a09161d1ed2dc1433e05",
+    "src/camera_rc/driving/shadow_scenarios.py": "7741f2ca120423d98372e2b926fb20dc1ad5ce42a3c4e45dc529a77a8150181e",
+    "scripts/check_shadow_safety.py": "40c9c245a66cdb6847b699027ca427d8d8eaad87abc4def32748d806595d3b9c"
+  }
+}

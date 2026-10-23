@@ -4,6 +4,12 @@
 
 > **English scope:** Offline camera-road segmentation research with provenance-aware data preparation, fixed evaluation contracts, regression analysis and dry-run control fixtures. Source code is AGPL-3.0-only. No datasets, labels, pretrained or trained weights are distributed. The initial AI Hub fine-tune improved recall but increased false-road errors. The corrected-label candidate reduced false positives but substantially degraded road recall and failed its development gate; it was not adopted. Training and fixed-set evaluation are complete. Speed comparison was canceled. This is not a validated autonomous-driving product.
 
+## 실차를 염두에 둔 안전 구조 확장
+
+도로 분할 결과만으로 주행을 허용하지 않도록 **[다중 모델·독립 검증 구조](docs/SAFETY_ARCHITECTURE.md)**를 추가했습니다. 새 오프라인 검증 계층은 모듈 실패, 오래된 관측, 보정/좌표 불일치, 미관측 공간, 장애물, 부족한 정지·예측 거리를 거부합니다. 합성 시나리오 30개를 확인했으며, 통과 판정에도 `actuation_enabled=False`입니다. 실제 거리·추적·위치 생산자 연결, 실차 제동 경계 측정과 닫힌 고리 주행 검증은 아직 필요합니다.
+
+이번 변경은 새 모델 정확도나 무사고 성능의 입증이 아닙니다. 기존 성능표와 미채택 판단을 유지합니다. nuScenes mini는 동기화·보정·3D annotation 구조 검토를 위한 비상업 연구용 추가 자료이며, 취득/검증 상태와 한계를 [집계](reports/nuscenes_mini_intake.json)에 기록합니다. 원본 데이터·가중치는 공개하지 않습니다. 이전 속도 측정 취소와 학습/자동화 중지 상태를 유지했습니다.
+
 ## 현재 공개 범위와 상태
 
 | 항목 | 상태 |
@@ -14,6 +20,8 @@
 | CPU 전처리 보정 | 37,864장 풀 재분할, 84프레임 재처리 중 83프레임의 137,436픽셀 수정 완료 |
 | 보정 라벨 후보 | CUDA 3 epoch 완료, 12,462 batch·3,161회 성공 업데이트; 개발셋 채택 기준 미통과; 고정 보고셋 평가 완료, 도로 누락 증가로 미채택 |
 | ACDC 추가 자료 | 학습 1,600 / 검증 406장 다운로드·전처리·독립 검증 완료; 현재 모델 학습/성능표에는 미포함 |
+| 오프라인 안전 구조 | 모듈 상태·시각·보정·미터 점유·추적·정지 범위 계약과 독립 거부 계층; 실차 생산자 미연결, 합성 30개 확인 |
+| nuScenes mini | 4.17GB 원본 취득·전체 압축 검사, 10 scene / 404 sample 메타데이터 검증; 학습·실주행 미수행 |
 | 이번 전후 처리 속도 비교 | 사용자 요청으로 취소; 속도 개선률 없음 |
 | 실제 차량·80km/h·MSI 4/8GB 운용 | 미검증, 자동 모델 교체 없음 |
 

@@ -1,7 +1,9 @@
 """Cross-component contract checks; never open a camera, GPU or serial port."""
 import copy
+import json
 
 import numpy as np
+import pytest
 
 from camera_rc.driving.config import DEFAULTS
 from camera_rc.driving.runtime import ControlLoop
@@ -47,3 +49,59 @@ def test_live_camera_dry_run_does_not_invent_speed_or_arming(tmp_path):
     assert item["state"] is None and item["physical_output"] is False
     assert item["command"]["enabled"] is False
     assert item["command"]["reason"] == "no_vehicle_state"
+
+
+@pytest.mark.parametrize("stamp", [None, float("nan"), float("inf"), -float("inf"),
+                                  True, False, "1.02", -1.0, 10 ** 400])
+def test_invalid_capture_time_stops_existing_motion_and_cannot_be_replaced(tmp_path, stamp):
+    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop.publish(path(), 1.0)
+    assert loop.step(1.01)["command"]["enabled"]
+    loop.publish(path(), stamp)
+    stopped = loop.step(1.03)
+    assert stopped["command"]["reason"] == "plan_capture_time_invalid_restart_required"
+    assert stopped["command"]["enabled"] is False
+    assert stopped["command"]["throttle"] == 0 and stopped["command"]["brake"] == 1
+    assert stopped["plan_age_ms"] is None
+    json.dumps(stopped, allow_nan=False)
+    loop.publish(path(), 1.04)
+    assert loop.step(1.05)["command"]["enabled"] is False
+
+
+@pytest.mark.parametrize("stamp", [None, float("nan"), "missing"])
+def test_command_boundary_rechecks_capture_time_even_when_publication_is_bypassed(tmp_path, stamp):
+    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop.plan, loop.plan_time = path(), stamp
+    item = loop.step(1.0)
+    assert item["command"]["reason"] == "plan_capture_time_invalid_restart_required"
+    assert item["command"]["enabled"] is False and item["command"]["brake"] == 1
+    json.dumps(item, allow_nan=False)
+
+
+def test_future_capture_time_latches_before_any_enabled_command(tmp_path):
+    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop.publish(path(), 1.1)
+    item = loop.step(1.0)
+    assert item["command"]["reason"] == "plan_from_future_restart_required"
+    assert item["command"]["enabled"] is False and item["command"]["brake"] == 1
+    loop.publish(path(), 1.11)
+    assert loop.step(1.12)["command"]["enabled"] is False
+
+
+def test_republishing_same_capture_does_not_refresh_plan_age(tmp_path):
+    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop.publish(path(), 1.0)
+    assert loop.step(1.01)["command"]["enabled"]
+    loop.publish(path(), 1.0)
+    item = loop.step(1.25)
+    assert item["command"]["reason"] == "plan_expired_restart_required"
+    assert item["command"]["enabled"] is False and item["command"]["throttle"] == 0
+
+
+def test_startup_without_a_plan_stays_stopped_without_latching_missing_timestamp(tmp_path):
+    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    item = loop.step(1.0)
+    assert item["command"]["reason"] == "waiting_for_first_plan"
+    assert loop.latched_fault is None
+    loop.publish(path(), 1.01)
+    assert loop.step(1.02)["command"]["enabled"]

@@ -6,6 +6,7 @@ MCU watchdog enforcement remains necessary if the host or Python process hangs.
 from collections import Counter, deque
 from dataclasses import asdict
 import json
+import math
 from pathlib import Path
 import threading
 import time
@@ -49,8 +50,22 @@ class ControlLoop:
         self.shutdown_stop_sent = False
         self.thread = threading.Thread(target=self._run, name="vehicle-control", daemon=True)
 
+    @staticmethod
+    def _valid_capture_time(value):
+        """Require an actual host-monotonic timestamp, never a missing sentinel."""
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return False
+        try:
+            return math.isfinite(value) and value >= 0
+        except OverflowError:
+            return False
+
     def publish(self, plan, captured_at):
         with self.lock:
+            if not self._valid_capture_time(captured_at):
+                self.latched_fault = self.latched_fault or "plan_capture_time_invalid_restart_required"
+                self.plan, self.plan_time = None, None
+                return
             self.plan, self.plan_time = plan, captured_at
 
     def fail(self, reason):
@@ -68,8 +83,15 @@ class ControlLoop:
         state = self.transport.read_state(now)
         with self.lock:
             plan, stamp = self.plan, self.plan_time
-            if stamp is not None and (now < stamp or now - stamp > self.cfg["runtime"]["plan_timeout_s"]):
-                self.latched_fault = "plan_expired_restart_required"
+            valid_stamp = self._valid_capture_time(stamp)
+            # Check again at the command boundary: a plan without capture time
+            # must not silently bypass expiry, even if published by another API.
+            if plan is not None and not valid_stamp:
+                self.latched_fault = self.latched_fault or "plan_capture_time_invalid_restart_required"
+            elif valid_stamp and now < stamp:
+                self.latched_fault = self.latched_fault or "plan_from_future_restart_required"
+            elif valid_stamp and now - stamp > self.cfg["runtime"]["plan_timeout_s"]:
+                self.latched_fault = self.latched_fault or "plan_expired_restart_required"
             if self.state is not None and state is None and self.cfg["transport"]["kind"] == "serial":
                 self.latched_fault = "telemetry_lost_restart_required"
             self.state = state
@@ -86,7 +108,7 @@ class ControlLoop:
         self.counts[actual.reason] += 1
         self.ticks += 1
         return {"monotonic_s": now, "state": asdict(state) if state is not None else None,
-                "command": asdict(actual), "plan_age_ms": (now - stamp) * 1000 if stamp is not None else None,
+                "command": asdict(actual), "plan_age_ms": (now - stamp) * 1000 if valid_stamp else None,
                 "physical_output": self.cfg["transport"]["kind"] == "serial"}
 
     def _run(self):

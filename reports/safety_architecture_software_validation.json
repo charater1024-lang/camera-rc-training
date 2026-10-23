@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-23T02:44:13.978140+00:00",
+  "scope": "synthetic_and_mocked_CPU_software_checks_not_vehicle_safety_or_accuracy_validation",
+  "platform": "Windows",
+  "python": "3.13.15",
+  "packages": {
+    "torch": "2.9.1+cu126",
+    "torchvision": "0.24.1+cu126",
+    "numpy": "2.5.2",
+    "Pillow": "12.3.0",
+    "pytest": "9.1.1",
+    "ultralytics": "8.4.182"
+  },
+  "cuda_disabled_for_tests": true,
+  "real_sensor_inputs": false,
+  "model_training": false,
+  "speed_benchmark": false,
+  "vehicle_actuation": false,
+  "full_suite": {
+    "command": "python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=<new writable directory>",
+    "passed": 1720,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 1,
+    "log_sha256": "6bdc3129d93030058f7f9fc2f7cc2f79b5c962f9b7249f6f045053782f84eecc",
+    "junit_sha256": "a96170c2f503bb423dcb05698058c6b09ec1cf42fccd94ec4363b7d333742fc7"
+  },
+  "shadow_scenarios": {
+    "passed": 30,
+    "total": 30,
+    "report_sha256": "4ff54848f51a6f057e066e9b78296348b838425e654f779f76d8fb12741afcde"
+  },
+  "source_sha256": {
+    "src/camera_rc/driving/shadow_safety.py": "7bd4ea04cc6b2e9fbe7274a361ccc1935e763afd6871a09161d1ed2dc1433e05",
+    "src/camera_rc/driving/shadow_scenarios.py": "7741f2ca120423d98372e2b926fb20dc1ad5ce42a3c4e45dc529a77a8150181e",
+    "src/camera_rc/driving/runtime.py": "1d470f8d38d6dd7e9f99d1afd6ea1c2a87227442d7fa8ea8beddacd1b79e338f",
+    "src/camera_rc/driving/mcu_reference.py": "72f009f0be0f4435cf244412e3623d42d8b6164f842714594781fcdb8f539904",
+    "scripts/check_shadow_safety.py": "40c9c245a66cdb6847b699027ca427d8d8eaad87abc4def32748d806595d3b9c",
+    "tests/test_shadow_safety.py": "ae8ef5797a4e2c246909b9995ba8439f3dcecf70779e792e63c1e5f9bf6a5063",
+    "tests/test_runtime_contract.py": "73642be0a1e9a3a158f5b1ac7036ba6a5638b427ed74a2e219c597e7d8ae21df",
+    "tests/test_mcu_reference.py": "c312257569103f724648d26e87b934b96165f2d737eedb738447089a5cd33182"
+  },
+  "environment_repair": {
+    "initial_attempt_passed": 1692,
+    "initial_attempt_failed": 25,
+    "initial_attempt_teardown_errors": 6,
+    "reason": "Sandbox TEMP/TMP permissions blocked temporary fixture writes and cleanup. Original failure log retained locally. Reran with TEMP/TMP and pytest basetemp inside a new writable scratch folder; no test assertions relaxed."
+  },
+  "prior_full_run_before_final_speed_age_fix": {
+    "passed": 1717,
+    "skipped": 1,
+    "failed": 0
+  },
+  "remote_ci": "See GitHub Actions for the published commit; this report records the local Windows run."
+}
