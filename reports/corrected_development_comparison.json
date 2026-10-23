@@ -126,5 +126,127 @@
     "runtime_threshold": 0.65,
     "precision_condition": "autocast_fp16_logits_fp32_metrics"
   },
-  "images": 4636
+  "images": 4636,
+  "confusion_counts": {
+    "aihub_13": {
+      "images": 727,
+      "matrix_order": "rows ground truth road0/nonroad1; columns predicted road0/nonroad1; ignore255 excluded",
+      "baseline": [
+        [
+          7316658,
+          379763
+        ],
+        [
+          149071,
+          4752814
+        ]
+      ],
+      "candidate": [
+        [
+          7241789,
+          454632
+        ],
+        [
+          124195,
+          4777690
+        ]
+      ]
+    },
+    "aihub_14": {
+      "images": 615,
+      "matrix_order": "rows ground truth road0/nonroad1; columns predicted road0/nonroad1; ignore255 excluded",
+      "baseline": [
+        [
+          12710285,
+          157340
+        ],
+        [
+          51946,
+          2743691
+        ]
+      ],
+      "candidate": [
+        [
+          12720176,
+          147449
+        ],
+        [
+          55579,
+          2740058
+        ]
+      ]
+    },
+    "aihub_15": {
+      "images": 634,
+      "matrix_order": "rows ground truth road0/nonroad1; columns predicted road0/nonroad1; ignore255 excluded",
+      "baseline": [
+        [
+          5150018,
+          203380
+        ],
+        [
+          36944,
+          2073032
+        ]
+      ],
+      "candidate": [
+        [
+          5156127,
+          197271
+        ],
+        [
+          34900,
+          2075076
+        ]
+      ]
+    },
+    "bdd100k_drivable": {
+      "images": 1000,
+      "matrix_order": "rows ground truth road0/nonroad1; columns predicted road0/nonroad1; ignore255 excluded",
+      "baseline": [
+        [
+          9212994,
+          1126554
+        ],
+        [
+          493804,
+          50606648
+        ]
+      ],
+      "candidate": [
+        [
+          8944311,
+          1395237
+        ],
+        [
+          399337,
+          50701115
+        ]
+      ]
+    },
+    "vkitti2_0_3": {
+      "images": 1660,
+      "matrix_order": "rows ground truth road0/nonroad1; columns predicted road0/nonroad1; ignore255 excluded",
+      "baseline": [
+        [
+          40588765,
+          561280
+        ],
+        [
+          87589,
+          60752766
+        ]
+      ],
+      "candidate": [
+        [
+          40375441,
+          774604
+        ],
+        [
+          151210,
+          60689145
+        ]
+      ]
+    }
+  }
 }

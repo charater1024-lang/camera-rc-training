@@ -1,8 +1,8 @@
 # camera-rc-training
 
-카메라 기반 도로 영역 분할, 데이터 검증, 추가 학습의 회귀 분석과 오프라인 RC 소프트웨어 연구를 위한 공개 코드입니다. **현재 결과는 도로를 더 많이 인식하는 대신 비도로·장애물을 도로로 오인하는 문제가 커졌음을 보여 줍니다.** 개선한 부분과 악화한 부분을 모두 기록하고, 확인된 라벨 문제를 별도 버전으로 보정했습니다.
+카메라 기반 도로 영역 분할, 데이터 검증, 추가 학습의 회귀 분석과 오프라인 RC 소프트웨어 연구를 위한 공개 코드입니다. **AI Hub 추가 학습에서는 도로 인식과 오인이 함께 증가했고, 후속 보정 후보에서는 오인이 줄어드는 대신 도로 누락이 크게 늘었습니다. 두 추가 학습 모델 모두 운용 개선 모델로 채택하지 않았습니다.** 데이터 보정·추가 자료 준비·한 번의 후보 학습과 평가를 완료하고, 개선·악화·남은 문제를 함께 공개합니다.
 
-> **English scope:** Offline camera-road segmentation research with provenance-aware data preparation, fixed evaluation contracts, regression analysis and dry-run control fixtures. Source code is AGPL-3.0-only. No datasets, labels, pretrained or trained weights are distributed. Results are mixed: road recall improved while false-road and obstacle errors regressed. Speed comparison was canceled. Corrected-label candidate results are pending. This is not a validated autonomous-driving product.
+> **English scope:** Offline camera-road segmentation research with provenance-aware data preparation, fixed evaluation contracts, regression analysis and dry-run control fixtures. Source code is AGPL-3.0-only. No datasets, labels, pretrained or trained weights are distributed. The initial AI Hub fine-tune improved recall but increased false-road errors. The corrected-label candidate reduced false positives but substantially degraded road recall and failed its development gate; it was not adopted. Training and fixed-set evaluation are complete. Speed comparison was canceled. This is not a validated autonomous-driving product.
 
 ## 현재 공개 범위와 상태
 
@@ -12,37 +12,34 @@
 | AI Hub 추가 학습 | 실제 CUDA 3 epoch 완료; 배치 8, 총 14,199 batch |
 | 데이터 품질 분석 | 잘못된 다각형, 누락된 비도로 감독, ignore 비중, 야간 라벨 부족, 출처별 회귀 확인 |
 | CPU 전처리 보정 | 37,864장 풀 재분할, 84프레임 재처리 중 83프레임의 137,436픽셀 수정 완료 |
-| 보정 라벨 후보 | CUDA 3 epoch 완료, 12,462 batch·3,161회 성공 업데이트; 개발셋 채택 기준 미통과; 공식 비교 평가는 진행 중 |
+| 보정 라벨 후보 | CUDA 3 epoch 완료, 12,462 batch·3,161회 성공 업데이트; 개발셋 채택 기준 미통과; 고정 보고셋 평가 완료, 도로 누락 증가로 미채택 |
 | ACDC 추가 자료 | 학습 1,600 / 검증 406장 다운로드·전처리·독립 검증 완료; 현재 모델 학습/성능표에는 미포함 |
 | 이번 전후 처리 속도 비교 | 사용자 요청으로 취소; 속도 개선률 없음 |
 | 실제 차량·80km/h·MSI 4/8GB 운용 | 미검증, 자동 모델 교체 없음 |
 
 설치나 테스트는 학습 대기열, 자동화, 웹 서버, 카메라/serial 제어를 시작하지 않습니다. 실행 기능은 명시적으로 호출할 때만 작동합니다. 기본 운용 예제는 dry-run입니다.
 
-## 핵심 결과: 좋아진 점과 악화한 점
+## 최종 결과: 오인 감소와 도로 누락의 상충
 
-기존 YOLO26x-sem v2와 AI Hub 추가 학습 모델을 같은 영상·GT·임계값 **0.65**·분모로 비교했습니다. 아래 입력 크기는 **높이×너비**입니다. 일반 검증은 21,489장, 별도 public 장애물 평가 30장입니다. 전체 값은 픽셀 합산값입니다.
+같은 영상·GT·도로 확률 임계값 **0.65**에서 비교했습니다. 입력은 **높이×너비 384×640**, 일반 검증은 21,489장(도로 GT 257,058,999픽셀·비도로 GT 953,163,353픽셀), 별도 public 장애물 평가는 30장(표시 장애물 129,782픽셀)입니다. 값은 픽셀 합산값이며 서로 다른 지표의 분모를 합치지 않습니다.
 
-| 입력 | 지표 | 기존 YOLO v2 | AI Hub 추가 학습 | 변화 |
-|---|---|---:|---:|---:|
-| 192×320 | 도로 IoU ↑ | 73.7804% | 78.9494% | +5.1690pp |
-| 192×320 | 도로 recall ↑ | 75.8606% | 86.3692% | +10.5086pp |
-| 192×320 | 비도로→도로 FPR ↓ | 0.7604% | 2.5346% | **+1.7742pp 악화** |
-| 192×320 | public 장애물→도로 ↓ | 34.6119% | 41.0404% | **+6.4285pp 악화** |
-| 384×640 | 도로 IoU ↑ | 83.2851% | 83.8095% | +0.5245pp |
-| 384×640 | 도로 recall ↑ | 88.3411% | 92.5724% | +4.2313pp |
-| 384×640 | 비도로→도로 FPR ↓ | 1.6372% | 2.8198% | **+1.1826pp, 상대 +72.23% 악화** |
-| 384×640 | public 장애물→도로 ↓ | 28.6974% | 30.5751% | **+1.8778pp, 상대 +6.54% 악화** |
+| 지표 | 기존 YOLO v2 | AI Hub 추가 학습 | 보정 후보 | 부모 AI Hub→후보 변화 |
+|---|---:|---:|---:|---:|
+| 도로 IoU ↑ | 83.2851% | 83.8095% | **77.1234%** | −6.6861pp |
+| 도로 recall ↑ | 88.3411% | 92.5724% | **81.3342%** | −11.2382pp |
+| 도로 precision ↑ | 93.5700% | 89.8516% | 93.7094% | +3.8578pp |
+| 일반 비도로→도로 FPR ↓ | 1.6372% | 2.8198% | **1.4725%** | −1.3473pp, 상대 47.78% 감소 |
+| public 장애물→도로 ↓ | 28.6974% | 30.5751% | **28.9809%** | −1.5942pp, 상대 5.21% 감소 |
 
-`pp`는 퍼센트포인트입니다. 일반 FPR은 GT 비도로 픽셀 중 도로로 예측한 비율이며, 객체 누락률이나 충돌 확률이 아닙니다. 도로 recall이 증가하면서 precision은 384×640에서 93.5700→89.8516%로 낮아졌습니다.
+`pp`는 퍼센트포인트입니다. 일반 FPR은 GT 비도로 픽셀 중 도로로 예측한 비율이며 객체 누락률이나 충돌 확률이 아닙니다. 보정 후보는 부모보다 도로 정답을 맞힌 픽셀이 **28,888,710개 감소**했습니다. 기존 YOLO v2와 비교해도 IoU −6.1616pp·recall −7.0068pp이며, 장애물 오인은 오히려 +0.2836pp입니다. **오인율 감소만을 전체 성능 개선으로 판단하지 않습니다.**
 
 ![동일 조건에서의 도로 인식과 오인율 비교](assets/accuracy_tradeoff.svg)
 
-그림은 공개 집계 JSON에서 재생성합니다. 모든 축은 0에서 시작하며 일반 비도로 오인율 패널만 별도 범위를 사용합니다. 장애물 패널은 원본 해상도 정답을 사용하는 공개 장애물 30장으로, 일반 검증 21,489장의 정답 격자와 구분합니다.
+그림은 공개 집계 JSON에서 재생성합니다. 모든 축은 0에서 시작하며 일반 비도로 오인율 패널만 별도 범위를 사용합니다. 장애물 패널은 원본 해상도 정답을 사용하는 공개 장애물 30장으로, 일반 검증의 192×320 정답 격자와 구분합니다. TinyUNet의 낮은 장애물 오인율도 낮은 도로 recall과 함께 해석해야 합니다.
 
-전체 IoU만 보면 중요한 회귀가 가려집니다. 384×640에서 **AI Hub 출처 IoU는 65.8279→96.0027%**, **기존 4개 출처 합산은 85.0139→82.6446%**입니다. VKITTI/KITTI Road에서 특히 비도로 오인이 증가했습니다. public 장애물의 표시 픽셀 전부를 도로로 판단한 이미지도 11→15장으로 늘었습니다. 이 결과에 따라 추가 학습 모델을 운용 개선 모델로 승인하지 않았습니다.
+후보의 AI Hub 합산 IoU는 부모 대비 96.0027→96.0677%였지만, 기존 네 출처 합산은 **82.6446→75.2218%**로 떨어졌습니다. VKITTI의 도로 recall은 **95.0067→74.1211%**였습니다. 개발셋은 부모가 이미 보았던 자료이고 VKITTI 원본 주행도 고정 보고셋과 달라, 높은 개발 점수가 이 회귀를 배제하지 못했습니다. 확인한 현상과 원인 가설은 [개선 검토](docs/IMPROVEMENT_REVIEW.md)에 구분했습니다.
 
-세 모델 전체 비교, 출처별·주야간·이미지별 회귀, 실제 업데이트 수와 근거 SHA256은 **[RESULTS](docs/RESULTS.md)**에 있습니다. 이 표는 보정 전 완료 모델의 결과입니다. 이후 데이터 수정으로 성능이 개선되었다고 미리 주장하지 않습니다.
+첫 AI Hub 학습의 두 입력 크기 비교, 보정 후보의 출처별 결과, 도로·장애물 오류와 SHA256은 **[RESULTS](docs/RESULTS.md)**에 있습니다. 보정 후보는 384×640만 평가했습니다. 처리 속도 비교는 취소되어 개선률을 제공하지 않습니다. [전체 공개 집계](reports/baseline_accuracy.json)
 
 ## 데이터에서 발견한 문제와 완료한 조치
 
@@ -75,7 +72,7 @@ python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider
 
 Windows PowerShell에서는 `py -3.13 -m venv .venv` 후 `python` 대신 `.\.venv\Scripts\python.exe`를 사용하면 활성화 스크립트나 실행 정책 변경 없이 실행할 수 있습니다. pytest의 `--basetemp`는 매번 새 디렉터리를 지정하고 기존 데이터/실험 폴더를 넣지 않습니다.
 
-CPU 테스트는 합성 fixture, mock과 작은 CPU 모델로 데이터 처리와 실패 경로를 확인합니다. 실제 모델 정확도나 차량 안전 검증은 아닙니다. GitHub Actions는 CPU wheel과 `.[test]`만 설치하며 dataset/weight 다운로드나 GPU를 사용하지 않습니다. 의존성 설치에는 패키지 레지스트리 접근이 필요합니다. Ubuntu/Python 3.13의 새 환경에서도 [검증한 commit의 Actions](https://github.com/charater1024-lang/camera-rc-training/actions/runs/39883338625)가 통과했습니다: **1,561개 통과·2개 생략**, CPU wheel·CLI·의존성 검사 포함. Linux에서는 optional Ultralytics 통합 1개와 Windows 전용 rename 검사 1개를 생략했습니다. Windows 검사와는 설치 의존성·플랫폼 조건이 다릅니다. 이후 commit의 상태는 해당 Actions 결과로 확인합니다.
+CPU 테스트는 합성 fixture, mock과 작은 CPU 모델로 데이터 처리와 실패 경로를 확인합니다. 실제 모델 정확도나 차량 안전 검증은 아닙니다. GitHub Actions는 CPU wheel과 `.[test]`만 설치하며 dataset/weight 다운로드나 GPU를 사용하지 않습니다. 의존성 설치에는 패키지 레지스트리 접근이 필요합니다. Ubuntu/Python 3.13의 새 환경에서도 [검증한 commit의 Actions](https://github.com/charater1024-lang/camera-rc-training/actions/runs/39884356347)가 통과했습니다: **1,594개 통과·2개 생략**, CPU wheel·CLI·의존성 검사 포함. Linux에서는 optional Ultralytics 통합 1개와 Windows 전용 rename 검사 1개를 생략했습니다. Windows 검사와는 설치 의존성·플랫폼 조건이 다릅니다. 이후 commit의 상태는 해당 Actions 결과로 확인합니다.
 
 2026-10-23 로컬 Windows 검사에서는 `tests/`와 BEVFormer wrapper를 합해 **1,551개 통과·1개 생략**을 확인했습니다. 실제 AI Hub best를 이용한 별도 CPU 1프레임 검사에서도 새 인식 어댑터와 기존 평가기의 확률 최대 차이와 마스크 불일치가 모두 0이었습니다. 이는 해당 입력에서의 구현 일치 검사이며 추가 정확도·속도·실차 검증이 아닙니다. [소프트웨어 검사 집계](reports/software_validation.json), [어댑터 검사 집계](reports/runtime_adapter_cpu_parity.json)
 
@@ -108,7 +105,9 @@ native semantic 경로는 **Ultralytics 8.4.182**의 semantic API에 맞췄습�
 - 도로 오인을 줄이면서 recall이 붕괴하는지 함께 확인합니다. 계획된 출처별 조건은 FPR 비증가, 도로 IoU/recall 각각 최대 1pp 하락입니다.
 - 결과가 없는 후보는 pending으로 유지합니다. 실패·악화도 보고하고 실제 차량 모델은 자동 교체하지 않습니다.
 
-보정 후보는 CUDA 3epoch를 완료했습니다. 총 12,462batch에서 optimizer 시도 3,165회 중 3,161회가 성공했고 AMP skip은 4회였습니다. 이는 학습 실행 기록이며 최종 정확도가 아닙니다. [후보 학습 집계와 해시](reports/corrected_candidate_training.json)를 공개하고, 완료된 개발/공식 비교 결과만 성능표에 추가합니다. 보정 후보의 새 정확도는 아직 위 표에 포함되지 않았습니다. 개발 4,636장 비교에서는 BDD IoU −1.7539pp·recall −2.5986pp, AI Hub 주간 고속도로/VKITTI의 FPR 증가로 사전 채택 기준을 통과하지 못했습니다. [개발 비교 집계](reports/corrected_development_comparison.json)는 공식 보고셋 결과와 구분합니다. ACDC 2,006쌍 준비와 독립 검증도 완료했습니다. 후속 검사에서 기존 train/dev 37,864장·공식 21,489장·public 40장의 고정 기록과 바이트/RGB 중복 0건을 확인했습니다. 기존 이미지를 재해독하거나 유사 장면까지 검사한 것은 아닙니다. [교차 감사](reports/acdc_cross_source_audit.json)를 별도 보존하며, ACDC는 현재 후보에 섞지 않아 학습 효과를 주장하지 않습니다.
+보정 후보의 CUDA 3epoch, 개발 4,636장 비교, 고정 보고셋 21,489장+public 40장 평가가 모두 완료됐습니다. 총 12,462batch에서 optimizer 시도 3,165회 중 3,161회가 성공했고 AMP skip은 4회였습니다. [후보 학습 집계와 해시](reports/corrected_candidate_training.json)를 보존했습니다. 개발 비교에서 BDD IoU −1.7539pp·recall −2.5986pp, AI Hub 주간 고속도로/VKITTI의 FPR 증가로 사전 채택 기준을 통과하지 못했고, 고정 보고셋에서도 도로 누락이 크게 증가했습니다. [개발 비교](reports/corrected_development_comparison.json)와 [수정 영역의 작은 진단](reports/corrected_roi_diagnostic.json)을 함께 기록했습니다. 추가 후보를 반복하거나 운용 모델을 교체하지 않았습니다.
+
+ACDC 2,006쌍 준비와 독립 검증도 완료했습니다. 후속 검사에서 기존 train/dev 37,864장·고정 보고셋 21,489장·public 40장의 기록과 바이트/RGB 중복 0건을 확인했습니다. 기존 이미지를 재해독하거나 유사 장면까지 검사한 것은 아닙니다. [교차 감사](reports/acdc_cross_source_audit.json)를 별도 보존하며, ACDC는 이번 후보에 섞지 않아 학습 효과를 주장하지 않습니다.
 
 ## 주간과 야간 모델을 나눠야 하나요?
 
