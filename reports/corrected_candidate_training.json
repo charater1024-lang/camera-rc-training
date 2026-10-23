@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "training_complete": true,
+  "source_training_report_sha256": "3312c61c5edd7f4b5576ae9affe1fe32a98b66be611020ab3670a479f48b11a7",
+  "model_family": "yolo26x-sem",
+  "class_names": [
+    "road_surface",
+    "not_road_surface"
+  ],
+  "road_class_id": 0,
+  "completed_epochs": 3,
+  "completed_utc": "2026-10-23T01:05:38.045754+00:00",
+  "source_config_sha256": "67b3eabd861f30c179a83bca52e3e62e6f085187a2b03b4c221c69fcd448c531",
+  "initialization": {
+    "kind": "completed_best_checkpoint",
+    "parent_checkpoint_sha256": "14e13390eb2b6d052959df88c2510f6f6875ebac07b96658da4782727b98536d",
+    "parent_training_report_sha256": "41fdfe2e9f71fac9b04361490f85e9b85dba656a142e0cb545c7016bbf78f148",
+    "optimizer_state": "fresh",
+    "resume": false
+  },
+  "checkpoint": {
+    "role": "best",
+    "sha256": "b50d3ab19f0f9fbeee6e2bedbabd48a4c512a40cff63cb48b6324201a0559f34",
+    "bytes": 80724917,
+    "best_equals_last": true
+  },
+  "hypothesis_sha256": "31c5667029405e5d4778a223d57c2cb62afe20723dfb08509904c2cd52b21b75",
+  "prepared_report_sha256": "9b6d87a9df44a62309a9f21a1fff122b8b476fa12a5c4f0ba6e0f47f53cbeca2",
+  "export_report_sha256": "5a5dc8e9f95ed18b9b0dd894b9704f2cabf9f29486e1d7402dcc9bcbf44d7078",
+  "development_contract_sha256": "f8d4af15f2f1f8302b8be53e9f3be9e30aa57a7d4451456e3c1bdeea1f787230",
+  "training_images": 33228,
+  "development_images": 4636,
+  "progress": {
+    "train_batches": 12462,
+    "optimizer_attempts": 3165,
+    "optimizer_updates": 3161,
+    "amp_skipped_updates": 4
+  },
+  "objective": "CE + Dice + auxiliary CE; CE class weights [1,2], ignore255",
+  "environment": {
+    "torch": "2.9.1+cu126",
+    "torchvision": "0.24.1+cu126",
+    "torchvision_cuda_nms_preflight": "passed",
+    "ultralytics": "8.4.182",
+    "cuda": "12.6",
+    "device": "NVIDIA GeForce RTX 3080 Laptop GPU",
+    "total_vram_bytes": 17179344896
+  },
+  "settings": {
+    "epochs": 3,
+    "imgsz": 384,
+    "batch": 8,
+    "nbs": 32,
+    "workers": 2,
+    "lr0": 0.0001,
+    "optimizer": "AdamW",
+    "seed": 42,
+    "deterministic": true,
+    "warmup_epochs": 0.05
+  },
+  "amp_enabled": true,
+  "allocator_limit_gib": 5,
+  "epoch_history": [
+    {
+      "epoch": 1.0,
+      "train/ce_loss": 0.04691,
+      "train/dice_loss": 0.0306,
+      "train/aux_loss": 0.02096,
+      "metrics/mIoU": 0.93891,
+      "metrics/pixel_acc": 0.97037,
+      "val/ce_loss": 0.07544,
+      "val/dice_loss": 0.05189,
+      "val/aux_loss": 0.0,
+      "lr/pg0": 9.95192e-05,
+      "lr/pg1": 9.95192e-05,
+      "lr/pg2": 0.000580288
+    },
+    {
+      "epoch": 2.0,
+      "train/ce_loss": 0.04216,
+      "train/dice_loss": 0.02786,
+      "train/aux_loss": 0.01911,
+      "metrics/mIoU": 0.94065,
+      "metrics/pixel_acc": 0.97125,
+      "val/ce_loss": 0.07247,
+      "val/dice_loss": 0.05103,
+      "val/aux_loss": 0.0,
+      "lr/pg0": 7e-05,
+      "lr/pg1": 7e-05,
+      "lr/pg2": 7e-05
+    },
+    {
+      "epoch": 3.0,
+      "train/ce_loss": 0.0384,
+      "train/dice_loss": 0.0257,
+      "train/aux_loss": 0.01752,
+      "metrics/mIoU": 0.94282,
+      "metrics/pixel_acc": 0.97236,
+      "val/ce_loss": 0.06879,
+      "val/dice_loss": 0.04847,
+      "val/aux_loss": 0.0,
+      "lr/pg0": 4e-05,
+      "lr/pg1": 4e-05,
+      "lr/pg2": 4e-05
+    }
+  ],
+  "epoch_history_scope": "Trainer validation metrics on parent-exposed development samples; not frozen-contract threshold-0.65 reporting metrics.",
+  "maximum_candidates": 1,
+  "automatic_batch_retry_allowed": false,
+  "acdc_used": false,
+  "deployment_approved": false,
+  "causal_label_correction_effect_established": false,
+  "speed_comparison": "cancelled; not measured"
+}

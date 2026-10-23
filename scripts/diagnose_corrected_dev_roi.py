@@ -52,9 +52,24 @@ def _count(value, name):
 
 
 def frame_key(row):
-    require(isinstance(row, dict) and isinstance(row.get("dataset_id"), str)
-            and isinstance(row.get("sample_id"), str), "Frame identity required")
-    return row["dataset_id"], row["sample_id"]
+    require(isinstance(row, dict) and isinstance(row.get("dataset_id"), str) and row["dataset_id"]
+            and isinstance(row.get("sample_id"), str) and row["sample_id"], "Frame identity required")
+    return row["dataset_id"], "sample_id", row["sample_id"]
+
+
+def manifest_frame_key(row):
+    """Keep all dev metadata, including VKITTI exports without sample_id.
+
+    Corrected AI Hub frames and the change ledger still require sample_id.
+    Export IDs use a separate namespace: frame_id alone repeats across virtual
+    scene variants/cameras and is not a valid identity.
+    """
+    require(isinstance(row, dict) and isinstance(row.get("dataset_id"), str) and row["dataset_id"],
+            "Frame identity required")
+    if row.get("sample_id") is not None or row["dataset_id"].startswith("aihub_"):
+        return frame_key(row)
+    require(isinstance(row.get("export_id"), str) and row["export_id"], "Manifest export identity required")
+    return row["dataset_id"], "export_id", row["export_id"]
 
 
 def check_accounting(report, changes, accounting):
@@ -131,7 +146,7 @@ def load_prepared(report_path, expected_report_sha, accounting_path, expected_ac
     rows = [json.loads(line) for line in checked_bytes(manifest["path"], manifest["sha256"])
             .decode("utf-8-sig").splitlines() if line.strip()]
     require(len(rows) == manifest["samples"], "Development sample count mismatch")
-    by_id = indexed(rows, frame_key, "development frame")
+    by_id = indexed(rows, manifest_frame_key, "development frame")
     for row in rows:
         require(row.get("split") == row.get("export_split") == "dev", "Non-dev row in dev manifest")
         require(row.get("preprocessing_provenance", {}).get("previous_export_split") == "train"
@@ -139,7 +154,7 @@ def load_prepared(report_path, expected_report_sha, accounting_path, expected_ac
                 "Prepared development ancestry required")
     # Bind every change in dev to the ledger, including zero-change entries.
     ledger_dev = {frame_key(row) for row in changes if row["new_split"] == "dev"}
-    metadata_changed = {frame_key(row) for row in rows if row["target_sha256"] !=
+    metadata_changed = {manifest_frame_key(row) for row in rows if row["target_sha256"] !=
                         row["preprocessing_provenance"]["previous_target_sha256"]}
     require(metadata_changed <= ledger_dev, "Development mask change absent from ledger")
     require(ledger_dev <= set(by_id), "Ledger development frame absent from manifest")

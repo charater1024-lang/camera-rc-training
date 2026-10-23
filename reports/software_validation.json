@@ -13,7 +13,28 @@
   "cuda_disabled_for_tests": true,
   "temporary_directory_note": "TEMP/TMP and pytest basetemp were both set to writable isolated local directories.",
   "pip_check": "No broken requirements found.",
-  "remote_ci": "Not yet run; see Actions for the published commit.",
+  "remote_ci": {
+    "status": "passed",
+    "platform": "GitHub Actions Ubuntu runner",
+    "python": "3.13.16",
+    "commit": "9c9ffff50b264ebd2c97d0acf524225a7a44f32b",
+    "run_url": "https://github.com/charater1024-lang/camera-rc-training/actions/runs/39880385678",
+    "completed_utc": "2026-10-23T00:50:32Z",
+    "passed": 1550,
+    "skipped": 2,
+    "failed": 0,
+    "torch": "2.9.1+cpu",
+    "torchvision": "0.24.1+cpu",
+    "ultralytics_installed": false,
+    "cli_entrypoint_passed": true,
+    "pip_check": "No broken requirements found.",
+    "source_log_sha256": "822cf7eb82c93b12a6c1248ca04fadf1179051666fde252dd4570beeef352e65",
+    "scope": "Synthetic/mocked CPU software tests; no downloaded datasets/weights, CUDA, speed measurement or vehicle actuation.",
+    "skipped_reasons": [
+      "Optional Ultralytics integration unavailable in CPU-only test-extra install",
+      "Windows-only no-overwrite rename semantics test on Linux"
+    ]
+  },
   "combined_suite": {
     "command": "python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=<new writable directory>",
     "passed": 1551,

@@ -95,6 +95,74 @@ def test_load_all_three_changed_dev_without_reading_training_files(tmp_path):
     assert not any("NO_TRAIN_READ" in item["path"] for item in evidence["files_checked"])
 
 
+def unchanged_vkitti_row():
+    return {"dataset_id": "vkitti2_0_3", "export_id": "virtual-frame-export", "frame_id": 89,
+            "split": "dev", "export_split": "dev", "image": "NO_UNCHANGED_IMAGE_READ",
+            "target": "NO_UNCHANGED_MASK_READ", "target_sha256": "a" * 64,
+            "preprocessing_provenance": {"previous_export_split": "train", "previous_target_sha256": "a" * 64,
+                                         "development_role": "parent_exposed_selection_only"}}
+
+
+def add_dev_rows(b, *rows):
+    b["rows"].extend(rows)
+    b["report"]["manifests"]["dev"]["samples"] = len(b["rows"])
+    repin(b)
+
+
+def test_mixed_dev_manifest_keeps_vkitti_without_sample_id_metadata_only(tmp_path):
+    b = bundle(tmp_path)
+    first = unchanged_vkitti_row()
+    second = {**first, "export_id": "another-camera-same-frame-number"}
+    add_dev_rows(b, first, second)
+    frames, evidence = diagnostic.load_prepared(*b["args"])
+    assert len(b["rows"]) == 5 and len(frames) == evidence["selected_frames"] == 3
+    assert all(frame["row"]["dataset_id"] == "aihub_13" for frame in frames)
+    assert not any("NO_UNCHANGED" in item["path"] for item in evidence["files_checked"])
+
+
+@pytest.mark.parametrize("mutation", ["duplicate_export", "missing_export", "changed_mask", "ancestry", "notdev"])
+def test_non_aihub_manifest_rows_still_validated_globally(tmp_path, mutation):
+    b = bundle(tmp_path)
+    row = unchanged_vkitti_row()
+    extra = []
+    if mutation == "duplicate_export":
+        extra.append(dict(row))
+    elif mutation == "missing_export":
+        del row["export_id"]
+    elif mutation == "changed_mask":
+        row["target_sha256"] = "b" * 64
+    elif mutation == "ancestry":
+        row["preprocessing_provenance"]["previous_export_split"] = "val"
+    else:
+        row["split"] = "train"
+    add_dev_rows(b, row, *extra)
+    with pytest.raises(ValueError):
+        diagnostic.load_prepared(*b["args"])
+
+
+def test_export_fallback_cannot_replace_aihub_or_ledger_sample_identity(tmp_path):
+    b = bundle(tmp_path)
+    row = b["rows"][0]
+    row["export_id"] = row.pop("sample_id")
+    repin(b)
+    with pytest.raises(ValueError, match="Frame identity required"):
+        diagnostic.load_prepared(*b["args"])
+    with pytest.raises(ValueError, match="Frame identity required"):
+        diagnostic.frame_key(unchanged_vkitti_row())
+
+
+def test_sample_and_export_id_namespaces_do_not_collide():
+    exported = unchanged_vkitti_row()
+    sampled = {**exported, "sample_id": exported["export_id"]}
+    assert diagnostic.manifest_frame_key(exported) != diagnostic.manifest_frame_key(sampled)
+
+
+@pytest.mark.parametrize("bad_sample", ["", 89, False])
+def test_invalid_present_sample_id_cannot_fall_back_to_export_id(bad_sample):
+    with pytest.raises(ValueError, match="Frame identity required"):
+        diagnostic.manifest_frame_key({**unchanged_vkitti_row(), "sample_id": bad_sample})
+
+
 @pytest.mark.parametrize("filename", ["report.json", ".complete", "changes.json", "mapping.json", "dev.jsonl", "new0.png", "old0.png", "0.png", "annotation0.json"])
 def test_tampered_files_rejected(tmp_path, filename):
     b = bundle(tmp_path)

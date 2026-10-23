@@ -1,0 +1,186 @@
+{
+  "schema": "acdc_preparation_verification_v1",
+  "complete": true,
+  "verified_at_utc": "2026-10-23T01:12:16.065074+00:00",
+  "dataset_id": "acdc",
+  "training_started": false,
+  "included_in_current_candidate": false,
+  "total_samples": 2006,
+  "all_pairs_independently_decoded": true,
+  "all_original_file_and_generated_mask_sha256_verified": true,
+  "all_masks_equal_independent_label_remap": true,
+  "within_acdc_image_byte_duplicates": 0,
+  "within_acdc_decoded_rgb_duplicates": 0,
+  "within_acdc_train_val_group_overlap": 0,
+  "cross_source_or_existing_official_contract_overlap_checked": false,
+  "cross_source_limit": "Before any future mixing, compare image byte/RGB identities with existing training and protected evaluation contracts. This preparation alone makes no cross-source leakage claim.",
+  "split_policy": "Official global geographic train/val split across all conditions (paper section 3.3); no random resplit.",
+  "group_policy": "Official geographic partition is group/origin identity; recording IDs are metadata, not asserted geographic boundaries.",
+  "uncertainty_policy": "Keep valid final semantic labels where invIds=1 (paper sections 3.4 and 4); invIds retained separately, never used as ignore by itself.",
+  "mapping": {
+    "7": 0,
+    "other_18_Cityscapes_evaluation_labels": 1,
+    "void_and_255": 255
+  },
+  "excluded_images": {
+    "train_ref": 1600,
+    "val_ref": 406,
+    "test": 2000,
+    "test_ref": 2000
+  },
+  "test_or_reference_used_for_supervised_learning": false,
+  "report_sha256": "ddc6d8a0ce70ca242208739ceb64fa23d4cce758879a0e46d7766a68e9a0054e",
+  "preparer_script_sha256": "bd1d580492b1fc8983793d3fc81b4777bcc1e4a58b1bc3060be7780d1aca7ba3",
+  "verifier_script_sha256": "86ea43dc78b823b9baa7967dd253ee396c6956e055e2bb9da0fe540481958152",
+  "archive_verification_sha256": "ee249820c190c05791ece3a6c14cf9edefeb55a024ae53e76257f127493b8a51",
+  "archives": {
+    "rgb": {
+      "bytes": 16742344108,
+      "md5": "3350587a08502b4dfee47750bfd2a052",
+      "publisher_md5": "3350587a08502b4dfee47750bfd2a052",
+      "sha256": "f1765e65f077b5f33f9b58fe05b802bdecf24c798f8f95e7d217c223e5bb56d3",
+      "full_crc_rechecked": true,
+      "zip_members": 8225,
+      "extracted_files": 8014,
+      "expanded_bytes": 16788756852,
+      "extracted_member_sizes_match": true,
+      "extraction_marker_sha256": "539097d6deb572247f4a73392a310c7d998e000993056d55ffff5f1ca778f73c",
+      "download_marker_sha256": "a3ac120a42744e0e501b3188c58ebbd16aeed085100d529342af7ba1b58d606b",
+      "download_extraction_marker_link_matches": true
+    },
+    "gt": {
+      "bytes": 133426176,
+      "md5": "54cf06e3f2d8a8c5d297dc55aa107cee",
+      "publisher_md5": "54cf06e3f2d8a8c5d297dc55aa107cee",
+      "sha256": "e4fd19c5516e80cba18d50038f1b8721608ee762be2eb15f26e016a59bc5bbcf",
+      "full_crc_rechecked": true,
+      "extracted_files": 10032,
+      "expanded_bytes": 145519622,
+      "extracted_member_sizes_match": true,
+      "extraction_marker_sha256": "98f4f49fc410f026777c618e188f4e8fb6d15deb00f0bbdd48a50e19d1c85529"
+    }
+  },
+  "splits": {
+    "train": {
+      "images": 1600,
+      "manifest_sha256": "6bdc9cd2a1d6a76cd4612fe902063c76f79c1227806c1c2e9995e5f11bc42f80",
+      "conditions": {
+        "fog": 400,
+        "night": 400,
+        "rain": 400,
+        "snow": 400
+      },
+      "target_pixel_counts": {
+        "0": 612383032,
+        "1": 2447280716,
+        "255": 258096252
+      },
+      "uncertain_pixels": 378187436,
+      "uncertain_semantically_labelled_pixels": 245833314,
+      "condition_details": {
+        "fog": {
+          "images": 400,
+          "target_pixel_counts": {
+            "0": 134606949,
+            "1": 638564491,
+            "255": 56268560
+          },
+          "uncertain_pixels": 34128313,
+          "uncertain_semantically_labelled_pixels": 9036045
+        },
+        "night": {
+          "images": 400,
+          "target_pixel_counts": {
+            "0": 251770125,
+            "1": 492148109,
+            "255": 85521766
+          },
+          "uncertain_pixels": 281900932,
+          "uncertain_semantically_labelled_pixels": 218206683
+        },
+        "rain": {
+          "images": 400,
+          "target_pixel_counts": {
+            "0": 112496471,
+            "1": 647081125,
+            "255": 69862404
+          },
+          "uncertain_pixels": 26642849,
+          "uncertain_semantically_labelled_pixels": 9768201
+        },
+        "snow": {
+          "images": 400,
+          "target_pixel_counts": {
+            "0": 113509487,
+            "1": 669486991,
+            "255": 46443522
+          },
+          "uncertain_pixels": 35515342,
+          "uncertain_semantically_labelled_pixels": 8822385
+        }
+      }
+    },
+    "val": {
+      "images": 406,
+      "manifest_sha256": "02b2be89ae9a38ee860e1bc36e1a170850961d7f4543edb026dbd11c57191d18",
+      "conditions": {
+        "fog": 100,
+        "night": 106,
+        "rain": 100,
+        "snow": 100
+      },
+      "target_pixel_counts": {
+        "0": 140987872,
+        "1": 649724140,
+        "255": 51169588
+      },
+      "uncertain_pixels": 106180729,
+      "uncertain_semantically_labelled_pixels": 76694130,
+      "condition_details": {
+        "fog": {
+          "images": 100,
+          "target_pixel_counts": {
+            "0": 30621122,
+            "1": 165532880,
+            "255": 11205998
+          },
+          "uncertain_pixels": 7401770,
+          "uncertain_semantically_labelled_pixels": 1631484
+        },
+        "night": {
+          "images": 106,
+          "target_pixel_counts": {
+            "0": 53593801,
+            "1": 148841425,
+            "255": 17366374
+          },
+          "uncertain_pixels": 86335677,
+          "uncertain_semantically_labelled_pixels": 71987860
+        },
+        "rain": {
+          "images": 100,
+          "target_pixel_counts": {
+            "0": 28160619,
+            "1": 168318800,
+            "255": 10880581
+          },
+          "uncertain_pixels": 5528688,
+          "uncertain_semantically_labelled_pixels": 1171454
+        },
+        "snow": {
+          "images": 100,
+          "target_pixel_counts": {
+            "0": 28612330,
+            "1": 167031035,
+            "255": 11716635
+          },
+          "uncertain_pixels": 6914594,
+          "uncertain_semantically_labelled_pixels": 1903332
+        }
+      }
+    }
+  },
+  "source_verification_report_sha256": "81ddfbaeeedb3644e5efa3267445f529bc71f1d3f20d0451dc61b707c7f9330b",
+  "recording_names_present_in_both_geographic_splits_count": 15,
+  "recording_name_overlap_notice": "15 shared recording names; geographic partition group IDs are not a claim that recording/clip names are disjoint."
+}
