@@ -34,4 +34,6 @@ jobs:
           python -c "from pathlib import Path; Path('runs').mkdir(exist_ok=True)"
           python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=runs/ci-test-temp
       - name: Check CLI entry point
-        run: python -m camera_rc --help
+        run: |
+          python -m camera_rc --help
+          python -m camera_rc.simulator --help

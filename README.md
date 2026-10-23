@@ -4,6 +4,35 @@
 
 > **English scope:** Offline camera-road segmentation research with provenance-aware data preparation, fixed evaluation contracts, regression analysis and dry-run control fixtures. Source code is AGPL-3.0-only. No datasets, labels, pretrained or trained weights are distributed. The initial AI Hub fine-tune improved recall but increased false-road errors. The corrected-label candidate reduced false positives but substantially degraded road recall and failed its development gate; it was not adopted. Training and fixed-set evaluation are complete. Speed comparison was canceled. This is not a validated autonomous-driving product.
 
+## 실행 가능한 주행 시뮬레이터
+
+브라우저에서 **차량 이동 → 합성 카메라 → 도로 인식 → 경로 제안 → 독립 안전 판단 → 조향·제동 → 다음 관측**을 확인할 수 있는 [Drive Lab](docs/SIMULATOR.md)을 제공합니다. 상단 지도, 카메라/도로 마스크, 정지 근거, 충돌·이탈·목표 도달과 실행 로그를 같은 화면에서 봅니다. 자율 모드와 키보드 수동 모드, 직선/곡선/장애물/횡단 보행자/야간/안개/센서 고정·단절/제동 저하의 9개 시나리오를 포함합니다.
+
+아래 명령은 저장소의 기본 의존성을 설치한 환경에서 실행합니다. 기본 데모는 CPU만 사용하며 모델 가중치·데이터를 다운로드하지 않습니다. 출력 폴더는 매번 새 이름을 지정합니다.
+
+```bash
+python -m pip install -e .
+python -m camera_rc.simulator serve --port 8766 --output runs/simulator-demo-001
+```
+
+브라우저에서 **http://127.0.0.1:8766/**을 열고 **시작**을 누릅니다. 처음에는 일시정지 상태입니다. WASD/방향키 수동 조작, 한 단계 진행, 초기화, JSON 결과 내보내기를 지원합니다. 콘솔의 `Ctrl+C`로 서버를 종료합니다. 저장소를 설치해도 서버가 자동 실행되지는 않습니다.
+
+```bash
+# 창 없이 동일한 합성 시나리오들을 실행하고 결과 저장
+python -m camera_rc.simulator evaluate --steps 600 --output runs/simulator-eval-001
+
+# 자신이 신뢰하는 로컬 학습 가중치와 출처 보고서를 연결 (설정 예: SIMULATOR.md)
+python -m camera_rc.simulator serve --perception-config configs/local/simulator-model.json --device cpu --output runs/simulator-model-001
+```
+
+**기본 모드는 합성 정답 센서 데모입니다.** 실제 학습 모델을 연결하면 합성 RGB의 도로 확률이 안전 검사의 통행 가능 여부를 바꿉니다. 모델 오류 때 합성 정답으로 대체하지 않습니다. 다만 지도 경로, 미터 거리·점유·추적은 두 모드 모두 합성 세계의 정답을 사용합니다. 가상 카메라는 차량 뒤에서 내려다보는 추적 시점이며 실차 장착 카메라가 아닙니다. 저속 2D 운동학과 보수적인 원형 차체의 충돌 검사로 구성한 소프트웨어 연구 환경이며, 마찰·접촉 응답·실센서 지연이나 80km/h 주행을 검증하지 않습니다. 기존 정확도 성능표와도 별개의 검사입니다.
+
+실제 장치 출력은 항상 꺼져 있습니다. 상세 실행법·모델 연결·기록 형식·검증 범위는 [SIMULATOR](docs/SIMULATOR.md), 실행 결과는 [시뮬레이터 검증 집계](reports/simulator_validation.json)를 확인하세요. 기존 학습/벤치마크·자동화는 다시 시작하지 않습니다.
+
+![Drive Lab 실제 실행 화면](assets/simulator-ui.png)
+
+합성 9개 시나리오와 전체 Windows CPU 회귀 **1,782개 통과·1개 생략**을 확인했습니다. 정상 코스 2개는 목표에 도달했고 위험/오류 7개는 정지했습니다. 기존 YOLO v2 연결 검사는 CPU 추론 3/3에 성공했으나 합성 장면의 도로 근거 부족으로 전진이 거부됐습니다. 이를 실제 주행 성능 개선으로 해석하지 않습니다.
+
 ## 실차를 염두에 둔 안전 구조 확장
 
 도로 분할 결과만으로 주행을 허용하지 않도록 **[다중 모델·독립 검증 구조](docs/SAFETY_ARCHITECTURE.md)**를 추가했습니다. 새 오프라인 검증 계층은 모듈 실패, 오래된 관측, 보정/좌표 불일치, 미관측 공간, 장애물, 부족한 정지·예측 거리를 거부합니다. 합성 시나리오 30개를 확인했으며, 통과 판정에도 `actuation_enabled=False`입니다. 실제 거리·추적·위치 생산자 연결, 실차 제동 경계 측정과 닫힌 고리 주행 검증은 아직 필요합니다.

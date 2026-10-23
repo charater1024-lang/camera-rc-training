@@ -22,9 +22,13 @@ runtime = ["opencv-python>=4.10,<6", "pyserial>=3.5,<4", "psutil>=5.9,<8", "nvid
 
 [project.scripts]
 camera-rc = "camera_rc.cli:main"
+camera-rc-sim = "camera_rc.simulator.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"camera_rc.simulator" = ["assets/*.html", "assets/*.js", "assets/*.css"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

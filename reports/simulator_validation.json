@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "scope": "synthetic closed-loop software verification; no real-driving, accident-risk or road-accuracy claim",
+  "date": "2026-10-23",
+  "physical_output": false,
+  "training_restarted": false,
+  "speed_benchmark_restarted": false,
+  "oracle_suite": {
+    "seed": 42,
+    "requested_steps_per_scenario": 600,
+    "fixed_dt_s": 0.1,
+    "perception": "synthetic oracle",
+    "route_map": "synthetic ground truth",
+    "metric_range_and_tracks": "synthetic ground truth",
+    "full_report_sha256": "d92eda4bd70bb8ee37289d711f71ef8872b1e3bf968764dff7eff7e5226c8d19",
+    "scenario_results": [
+      {
+        "scenario": "clear",
+        "steps": 198,
+        "sim_time_s": 19.8,
+        "distance_m": 36.68320314245981,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": null,
+        "interventions": 0,
+        "goal_reached": true,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "PROPOSAL_ELIGIBLE",
+          "reasons": [
+            "supplied_offline_evidence_passed"
+          ],
+          "proposal_eligible": true,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "reach_goal_and_stop",
+        "expected_behavior_observed": true
+      },
+      {
+        "scenario": "curved",
+        "steps": 201,
+        "sim_time_s": 20.1,
+        "distance_m": 37.28356163944886,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": null,
+        "interventions": 0,
+        "goal_reached": true,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "PROPOSAL_ELIGIBLE",
+          "reasons": [
+            "supplied_offline_evidence_passed"
+          ],
+          "proposal_eligible": true,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "reach_goal_and_stop",
+        "expected_behavior_observed": true
+      },
+      {
+        "scenario": "static_obstacle",
+        "steps": 600,
+        "sim_time_s": 60.0,
+        "distance_m": 13.18203848919771,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 7.537126349647058,
+        "interventions": 1,
+        "goal_reached": false,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "LATCHED_STOP",
+          "reasons": [
+            "occupied_swept_cell"
+          ],
+          "proposal_eligible": false,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "veto_and_stop",
+        "expected_behavior_observed": true
+      },
+      {
+        "scenario": "crossing_pedestrian",
+        "steps": 600,
+        "sim_time_s": 60.0,
+        "distance_m": 8.90256245107159,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 5.997437548928409,
+        "interventions": 1,
+        "goal_reached": false,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "LATCHED_STOP",
+          "reasons": [
+            "explicit_stopped_reset_required"
+          ],
+          "proposal_eligible": false,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "veto_and_stop",
+        "expected_behavior_observed": true
+      },
+      {
+        "scenario": "night",
+        "steps": 600,
+        "sim_time_s": 60.0,
+        "distance_m": 13.18203848919771,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 7.537126349647058,
+        "interventions": 1,
+        "goal_reached": false,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "LATCHED_STOP",
+          "reasons": [
+            "occupied_swept_cell"
+          ],
+          "proposal_eligible": false,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "veto_and_stop",
+        "expected_behavior_observed": true
+      },
+      {
+        "scenario": "fog",
+        "steps": 600,
+        "sim_time_s": 60.0,
+        "distance_m": 0.0,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": null,
+        "interventions": 1,
+        "goal_reached": false,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "LATCHED_STOP",
+          "reasons": [
+            "unobserved_swept_cell"
+          ],
+          "proposal_eligible": false,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "veto_and_stop",
+        "expected_behavior_observed": true
+      },
+      {
+        "scenario": "sensor_freeze",
+        "steps": 600,
+        "sim_time_s": 60.0,
+        "distance_m": 3.930145434506764,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": null,
+        "interventions": 1,
+        "goal_reached": false,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "LATCHED_STOP",
+          "reasons": [
+            "stale_or_future_observation"
+          ],
+          "proposal_eligible": false,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "veto_and_stop",
+        "expected_behavior_observed": true
+      },
+      {
+        "scenario": "sensor_dropout",
+        "steps": 600,
+        "sim_time_s": 60.0,
+        "distance_m": 3.930145434506764,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": null,
+        "interventions": 1,
+        "goal_reached": false,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "LATCHED_STOP",
+          "reasons": [
+            "module_unavailable"
+          ],
+          "proposal_eligible": false,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "veto_and_stop",
+        "expected_behavior_observed": true
+      },
+      {
+        "scenario": "braking_degraded",
+        "steps": 600,
+        "sim_time_s": 60.0,
+        "distance_m": 8.095377617898542,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 12.623787220946227,
+        "interventions": 1,
+        "goal_reached": false,
+        "end_speed_mps": 0.0,
+        "safety": {
+          "mode": "LATCHED_STOP",
+          "reasons": [
+            "braking_unavailable"
+          ],
+          "proposal_eligible": false,
+          "actuation_enabled": false
+        },
+        "expected_behavior": "veto_and_stop",
+        "expected_behavior_observed": true
+      }
+    ]
+  },
+  "negative_control": {
+    "scenario": "static_obstacle",
+    "mode": "manual",
+    "steps": 75,
+    "controls": {
+      "steering": 0,
+      "throttle": 1,
+      "brake": 0
+    },
+    "metrics": {
+      "distance_m": 48.51890726970719,
+      "collisions": 1,
+      "offroad_events": 0,
+      "min_clearance_m": -3.4949805261006013,
+      "interventions": 1,
+      "goal_reached": false
+    },
+    "safety_veto_intentionally_bypassed_in_virtual_physics": true,
+    "meaning": "Independent geometry detects one contact even when the safety gate rejects the route; contact response is not modeled."
+  },
+  "learned_integration_smoke": {
+    "model_identity": {
+      "backend": "yolo26x_semantic",
+      "checkpoint_sha256": "9740dc363816ea661cf7d7e19877c5803eae1778ee152db0cfbacbe55acd9a14",
+      "checkpoint_bytes": 80724597,
+      "config_sha256": "47fa455a055e9f7fb87263112a593380d6e5c560b98b1bcbaf9eee08fb1b5271",
+      "device": "cpu",
+      "diagnostic": false,
+      "physical_output": false,
+      "synthetic_render_domain": true,
+      "road_accuracy_validation": false
+    },
+    "scenario": "clear",
+    "steps": 3,
+    "successful_inferences": 3,
+    "metrics": {
+      "distance_m": 0.0,
+      "collisions": 0,
+      "offroad_events": 0,
+      "min_clearance_m": null,
+      "interventions": 1,
+      "goal_reached": false
+    },
+    "safety": {
+      "mode": "LATCHED_STOP",
+      "reasons": [
+        "semantic_disagreement_or_nonroad"
+      ],
+      "proposal_eligible": false,
+      "actuation_enabled": false
+    },
+    "full_report_sha256": "5c8de83ad35b44728e3a4bf615de36aa6b6d47336dc944352f451bd2e7c22a1c",
+    "meaning": "Existing YOLO v2 loaded from pinned completed report and returned masks; the synthetic chase scene was vetoed. Not evidence of driving success or accuracy. Smoke occurred before render cache/goal-region refinements; final regression tests verify those paths separately."
+  },
+  "software_checks": {
+    "local_os": "Windows",
+    "device": "CPU",
+    "full_suite_passed": 1782,
+    "full_suite_skipped": 1,
+    "command": "python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider",
+    "log_sha256": "ebffa8f8765a15f30fa3e0477c724f67d6d6d4bbc848b9e29d2359b72b17342c",
+    "simulator_engine_tests": 31,
+    "simulator_server_cli_tests": 31,
+    "wheel_assets_verified": [
+      "index.html",
+      "app.js",
+      "style.css"
+    ],
+    "browser_actions_verified": [
+      "paused startup",
+      "autonomous advance and pause",
+      "mode switch",
+      "reset preserves old run",
+      "keyboard throttle and release brake",
+      "static obstacle veto and stop",
+      "two camera frames rendered"
+    ],
+    "github_ci": "See Actions for the published commit; this local report does not preclaim remote CI success."
+  },
+  "source_sha256": {
+    "src/camera_rc/simulator/__init__.py": "57ab9ce4a0692cdc7a0722fbcea8908d6a4ecab0ad9d81fce1e93fb534666f2b",
+    "src/camera_rc/simulator/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/camera_rc/simulator/__pycache__/__init__.cpython-313.pyc": "74f3a90886982889883cb88ffc04aaf15093e8262d4b3e465043dda010e3f595",
+    "src/camera_rc/simulator/__pycache__/engine.cpython-313.pyc": "487eaa5eed11f792f062cde391fdf9b2194e2a24ed6b1e98d357969c4d946664",
+    "src/camera_rc/simulator/assets/app.js": "6d78ac9cfc28509bf03929af5046a48f308f545f842caf5aa5f56c4311bcc9e5",
+    "src/camera_rc/simulator/assets/index.html": "0f979aff287d1f891bb57bfd32978c0406b964f346a067a3b301971d6fdfca64",
+    "src/camera_rc/simulator/assets/style.css": "aebbbe009ae12afd9d08eb56ee8eb97c2fe3b21be26e68c3499e38e9495f4869",
+    "src/camera_rc/simulator/cli.py": "1be60041c26d68a9e4ec52cf3a6062a7e019f719805e7c70a3a3c50d54ef9d86",
+    "src/camera_rc/simulator/engine.py": "e868077007f8027f12b301d20ea285802b17879b64de3bfdb8f346772d499075",
+    "src/camera_rc/simulator/rendering.py": "9be845796ae78d6684243bfad2d787489be828b87edf56eb5b6db635dce26414",
+    "src/camera_rc/simulator/server.py": "badb6e10c2b0c5d877d0c7dab2751310dd2fc1783888dc18a181cfd6af054486",
+    "tests/test_simulator_engine.py": "8432db7fe3fc88d7a373210ae507ec9f8c13e760fcae16a901592d1e991a4fd4",
+    "tests/test_simulator_server.py": "b5b5c0994db4d443083674d5fd94dc9ac68d5470c09d142c9c50a5b090d75ca8"
+  },
+  "limitations": [
+    "Low-speed 2D kinematic bicycle with conservative circular body, not contact/tyre/suspension dynamics.",
+    "Camera is synthetic chase perspective: 6m behind rear axle, 3m high, not a mounted real camera.",
+    "Map, localization, metric range and tracks are privileged synthetic values in both modes.",
+    "Learned masks veto a known-map proposal; no model-only autonomous-driving claim.",
+    "Simulated time excludes wall-clock inference/computation delay; this is not a speed benchmark.",
+    "Fog and night imagery are stylized; oracle-mode success does not validate adverse-weather perception.",
+    "No actual camera, serial, vehicle, deployment or safety certification."
+  ]
+}

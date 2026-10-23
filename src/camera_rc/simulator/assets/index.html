@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Drive Lab · 오프라인 주행 시뮬레이터</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="scope-banner"><span class="scope-mark" aria-hidden="true">◇</span><strong>시뮬레이션 전용</strong><span>실제 차량·카메라·조향 장치로 출력하지 않습니다. 이 화면은 무사고 성능을 입증하지 않습니다.</span></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Drive Lab 시뮬레이터"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span><span>DRIVE<span class="brand-light">LAB</span><small>OFFLINE RESEARCH</small></span></a>
+    <div class="topbar-right"><span id="connection" class="connection"><i></i><span>연결 중</span></span><span class="local-only">LOCAL / 127.0.0.1</span></div>
+  </header>
+  <main>
+    <section class="page-heading" aria-labelledby="page-title">
+      <div><p class="eyebrow">PERCEPTION → PLANNING → SAFETY</p><h1 id="page-title">주행 시뮬레이션 <span id="run-state" class="badge neutral">준비 중</span></h1><p class="subtitle">카메라 관측, 경로 제안, 안전 판단을 같은 장면에서 확인합니다.</p></div>
+      <a id="export-report" class="button secondary export-button" href="/api/report" download="simulator-report.json" aria-label="현재 시뮬레이션 결과 JSON 저장"><span aria-hidden="true">↓</span> 결과 내보내기</a>
+    </section>
+    <div id="error-banner" class="error-banner" role="alert" hidden></div>
+    <div class="workspace">
+      <aside class="setup-panel panel" aria-label="시나리오 및 운전 설정">
+        <div class="section-heading"><span class="section-number">01</span><h2>실험 설정</h2></div>
+        <label class="field-label" for="scenario">시나리오</label>
+        <select id="scenario" disabled><option>시나리오 불러오는 중…</option></select>
+        <p id="scenario-description" class="field-help">서버에서 제공하는 합성 장면을 선택합니다.</p>
+        <label class="field-label" for="seed">재현 시드 <span class="optional">SEED</span></label>
+        <input id="seed" type="number" min="0" max="2147483647" step="1" value="0" inputmode="numeric" disabled>
+        <p class="field-help">시나리오와 시드는 초기화할 때 적용됩니다.</p>
+        <button id="reset" class="button secondary full" disabled><span aria-hidden="true">↺</span> 선택한 설정으로 초기화</button>
+        <div class="divider"></div>
+        <span class="field-label" id="mode-label">운전 모드</span>
+        <div class="mode-switch" role="group" aria-labelledby="mode-label">
+          <button id="mode-auto" class="mode-card selected" aria-pressed="true" disabled><span class="mode-symbol" aria-hidden="true">◎</span><span><strong>자율 주행</strong><small>엔진의 경로·안전 판단</small></span><i aria-hidden="true"></i></button>
+          <button id="mode-manual" class="mode-card" aria-pressed="false" disabled><span class="mode-symbol" aria-hidden="true">⌘</span><span><strong>수동 조작</strong><small>키보드 또는 방향 버튼</small></span><i aria-hidden="true"></i></button>
+        </div>
+        <p class="field-help">모드 전환 시 일시정지합니다. 다시 시작하려면 시작 버튼을 누르세요.</p>
+        <section id="manual-panel" class="manual-panel" aria-label="수동 조작" hidden>
+          <div class="keypad" aria-label="누르는 동안 조작. 버튼을 놓으면 제동합니다.">
+            <button class="drive-key key-forward" data-drive="forward" aria-label="앞으로 가속, W 또는 위쪽 화살표" disabled>↑<small>W</small></button>
+            <button class="drive-key key-left" data-drive="left" aria-label="좌회전, A 또는 왼쪽 화살표" disabled>←<small>A</small></button>
+            <button class="drive-key key-brake" data-drive="brake" aria-label="제동, S 또는 아래쪽 화살표 또는 스페이스" disabled>↓<small>S</small></button>
+            <button class="drive-key key-right" data-drive="right" aria-label="우회전, D 또는 오른쪽 화살표" disabled>→<small>D</small></button>
+          </div>
+          <p class="field-help"><kbd>WASD</kbd> / <kbd>방향키</kbd> · <kbd>Space</kbd> 제동<br>키를 놓거나 창을 벗어나면 제동합니다.</p>
+        </section>
+        <div class="source-note"><span class="small-dot"></span><div><strong>센서의 출처를 구분하세요</strong><p>기본 영상과 관측은 합성입니다. 정답 기반 거리 관측은 실제 센서 추정 성능을 뜻하지 않습니다.</p></div></div>
+      </aside>
+      <section class="world-column" aria-label="주행 세계와 안전 상태">
+        <div class="world-panel panel">
+          <div class="panel-toolbar"><div class="section-heading"><span class="section-number">02</span><h2>주행 세계</h2><span class="tiny-label">TOP VIEW</span></div><button id="view-toggle" class="text-button" aria-pressed="false">차량 따라가기</button></div>
+          <div class="world-stage"><canvas id="world-canvas" aria-label="차량, 도로, 장애물, 제안 경로의 위에서 본 합성 세계" role="img"></canvas><div id="canvas-loading" class="canvas-loading"><span class="loading-ring"></span><strong>시뮬레이터 연결 중</strong><small>시작 버튼을 누르기 전까지 정지 상태를 유지합니다.</small></div><div class="world-corner"><span id="world-scenario">—</span><span id="world-coordinate">미터 좌표 · 전방 +x / 좌측 +y</span></div><div id="world-scale" class="world-scale" aria-hidden="true"><span></span><small>—</small></div></div>
+          <div class="world-legend"><span><i class="legend-road"></i>도로</span><span><i class="legend-car"></i>차량</span><span><i class="legend-route"></i>제안 경로</span><span><i class="legend-obstacle"></i>장애물</span><span class="legend-note">합성 세계의 정답 위치</span></div>
+          <div class="playback"><div class="playback-buttons"><button id="start-pause" class="button primary" disabled><span id="play-icon" aria-hidden="true">▶</span><span id="play-label">시작</span></button><button id="step" class="button secondary" disabled><span aria-hidden="true">▸│</span> 한 단계</button></div><div class="clock"><span>시뮬레이션 시간</span><strong id="sim-time">—</strong><small id="step-count">STEP —</small></div></div>
+        </div>
+        <div class="safety-panel panel"><div class="safety-top"><div class="section-heading"><span class="safety-shield" aria-hidden="true">◇</span><h2>안전 판단</h2></div><span id="safety-mode" class="badge neutral">증거 대기</span></div><p id="safety-reason" class="safety-reason">엔진의 판단 근거가 여기에 표시됩니다.</p><p id="safety-manual-note" class="manual-warning" hidden>수동 모드는 합성 실패 재현용입니다. 안전 판단을 표시하지만 운전자 입력으로 거부를 우회할 수 있습니다.</p><div class="safety-bottom"><span class="hard-stop-label"><span aria-hidden="true">⊘</span> 실제 장치 출력 없음</span><button id="reset-safety" class="text-button" disabled>정지 잠금 해제 요청</button></div></div>
+      </section>
+      <aside class="perception-column" aria-label="카메라 영상 및 인식 결과">
+        <div class="panel perception-panel"><div class="panel-toolbar"><div class="section-heading"><span class="section-number">03</span><h2>카메라 관측</h2></div><span class="tiny-label">SYNTHETIC</span></div><div class="frame-box"><img id="camera-image" alt="차량 뒤에서 바라보는 엔진의 합성 추적 카메라 영상" hidden><div id="camera-placeholder" class="frame-placeholder"><span aria-hidden="true">▧</span><small>카메라 프레임 대기</small></div></div><div class="frame-caption"><span class="frame-dot"></span>합성 추적 카메라<span id="camera-step">엔진 생성</span></div></div>
+        <div class="panel perception-panel"><div class="panel-toolbar"><div class="section-heading"><h2>도로 인식</h2></div><span id="perception-kind" class="badge neutral compact">—</span></div><div class="frame-box"><img id="segmentation-image" alt="엔진이 생성한 도로 인식 결과 영상" hidden><div id="segmentation-placeholder" class="frame-placeholder"><span aria-hidden="true">▦</span><small>인식 프레임 대기</small></div></div><div class="perception-info"><strong id="perception-label">모델 정보 대기</strong><p id="range-source">거리 관측의 출처를 확인하는 중입니다.</p><p id="model-error" class="inline-error" hidden></p></div></div>
+        <div class="panel telemetry-panel"><div class="section-heading"><h2>차량 상태</h2><span class="tiny-label">ENGINE STATE</span></div><div class="speed-reading"><strong id="speed">—</strong><span>m/s<small id="speed-kmh">— km/h</small></span></div><div class="telemetry-line"><span>조향각</span><strong id="steering">—</strong></div><div class="signal-line"><label for="throttle-meter">가속</label><meter id="throttle-meter" min="0" max="1" value="0" aria-label="실제 엔진 가속 명령"></meter><span id="throttle-value">—</span></div><div class="signal-line"><label for="brake-meter">제동</label><meter id="brake-meter" min="0" max="1" value="0" aria-label="실제 엔진 제동 명령"></meter><span id="brake-value">—</span></div><p id="command-reason" class="command-reason">명령 근거 대기</p></div>
+      </aside>
+    </div>
+    <section class="metrics-panel panel" aria-labelledby="metrics-title"><div class="metrics-header"><h2 id="metrics-title">이번 실행 기록</h2><span>엔진이 계산한 합성 시뮬레이션 지표</span></div><div class="metrics-grid"><div class="metric"><span>이동 거리</span><strong id="metric-distance">—</strong><small>m</small></div><div class="metric"><span>충돌</span><strong id="metric-collisions">—</strong><small>events</small></div><div class="metric"><span>도로 이탈</span><strong id="metric-offroad">—</strong><small>events</small></div><div class="metric"><span>최소 여유 거리</span><strong id="metric-clearance">—</strong><small>m · 관측 없으면 —</small></div><div class="metric"><span>개입</span><strong id="metric-interventions">—</strong><small>engine count</small></div><div class="metric"><span>목표 도달</span><strong id="metric-goal" class="word-value">—</strong><small>이번 장면 기준</small></div></div></section>
+    <section class="events-panel panel" aria-labelledby="events-title"><div class="metrics-header"><h2 id="events-title">이벤트 로그</h2><span id="session-label">SESSION —</span></div><ol id="events" class="events"><li class="empty-event">기록된 이벤트가 없습니다.</li></ol></section>
+    <footer><span>DRIVE LAB <span aria-hidden="true">/</span> 재현 가능한 오프라인 연구</span><span>합성 장면에서의 결과를 실차 안전성이나 실제 카메라 정확도로 해석하지 마세요.</span></footer>
+  </main>
+  <p id="announcer" class="sr-only" role="status" aria-live="polite"></p>
+</body>
+</html>
