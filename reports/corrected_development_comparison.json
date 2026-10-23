@@ -1,0 +1,130 @@
+{
+  "protocol_id": "parent_exposed_selection_only_v1",
+  "development_gate_passed": false,
+  "criteria": "Each source: no nonroad FPR increase; road recall and IoU decrease <=1 pp; at least one source FPR strictly decreases (numerical tolerance 1e-12)",
+  "sources_with_strict_false_road_decrease": [
+    "aihub_13",
+    "aihub_15",
+    "bdd100k_drivable"
+  ],
+  "derived_metrics_recomputed_from_confusion": true,
+  "failures": [
+    "aihub_14: nonroad false-road increased",
+    "bdd100k_drivable: road_iou decreased by more than 1 pp",
+    "bdd100k_drivable: road_recall decreased by more than 1 pp",
+    "vkitti2_0_3: nonroad false-road increased"
+  ],
+  "sources": {
+    "aihub_13": {
+      "road_iou": {
+        "baseline": 0.9325939023327027,
+        "candidate": 0.9259870322235486,
+        "difference_pp": -0.6606870109154062
+      },
+      "road_recall": {
+        "baseline": 0.9506571950780759,
+        "candidate": 0.9409294268076032,
+        "difference_pp": -0.9727768270472725
+      },
+      "false_road_rate": {
+        "baseline": 0.03041095415335121,
+        "candidate": 0.02533617169721444,
+        "difference_pp": -0.507478245613677
+      }
+    },
+    "aihub_14": {
+      "road_iou": {
+        "baseline": 0.9838008553070376,
+        "candidate": 0.9842896544850642,
+        "difference_pp": 0.04887991780265777
+      },
+      "road_recall": {
+        "baseline": 0.9877724133241371,
+        "candidate": 0.9885410866418628,
+        "difference_pp": 0.07686733177256766
+      },
+      "false_road_rate": {
+        "baseline": 0.01858109618666515,
+        "candidate": 0.019880621124988687,
+        "difference_pp": 0.1299524938323537
+      }
+    },
+    "aihub_15": {
+      "road_iou": {
+        "baseline": 0.9554158159166896,
+        "candidate": 0.9569119970721738,
+        "difference_pp": 0.1496181155484222
+      },
+      "road_recall": {
+        "baseline": 0.9620091762278836,
+        "candidate": 0.9631503206001123,
+        "difference_pp": 0.11411443722286752
+      },
+      "false_road_rate": {
+        "baseline": 0.017509203896158062,
+        "candidate": 0.016540472498265384,
+        "difference_pp": -0.09687313978926776
+      }
+    },
+    "bdd100k_drivable": {
+      "road_iou": {
+        "baseline": 0.8504287500304615,
+        "candidate": 0.8328900998567356,
+        "difference_pp": -1.7538650173725912
+      },
+      "road_recall": {
+        "baseline": 0.8910441733042875,
+        "candidate": 0.8650582211137277,
+        "difference_pp": -2.598595219055988
+      },
+      "false_road_rate": {
+        "baseline": 0.009663397889318083,
+        "candidate": 0.007814744965465276,
+        "difference_pp": -0.18486529238528077
+      }
+    },
+    "vkitti2_0_3": {
+      "road_iou": {
+        "baseline": 0.9842651253949245,
+        "candidate": 0.9775838772938014,
+        "difference_pp": -0.6681248101123138
+      },
+      "road_recall": {
+        "baseline": 0.9863601607240041,
+        "candidate": 0.9811761080698697,
+        "difference_pp": -0.5184052654134463
+      },
+      "false_road_rate": {
+        "baseline": 0.0014396530066269338,
+        "candidate": 0.002485356964140002,
+        "difference_pp": 0.10457039575130682
+      }
+    }
+  },
+  "deployment_approved": false,
+  "causal_label_correction_effect_established": false,
+  "notice": "Parent-exposed selection data; not independent generalization or vehicle safety evidence.",
+  "source_reports": {
+    "baseline": "167a461fd088868ee6d0c9ae5ee58f4fd76e38ed1cc7ba373e63c760b7752b54",
+    "candidate": "9eb6fee4c1654972633508466f7df044a64a5a32e279e8daf6371cdb0bc4c155"
+  },
+  "checkpoint_sha256": {
+    "baseline": "14e13390eb2b6d052959df88c2510f6f6875ebac07b96658da4782727b98536d",
+    "candidate": "b50d3ab19f0f9fbeee6e2bedbabd48a4c512a40cff63cb48b6324201a0559f34"
+  },
+  "prepared_report_sha256": "9b6d87a9df44a62309a9f21a1fff122b8b476fa12a5c4f0ba6e0f47f53cbeca2",
+  "dev_manifest_sha256": "10a163954611de7f0002b5576663ed45d8e2cf094ea49568a280687173833dfd",
+  "conditions": {
+    "input_size": [
+      384,
+      640
+    ],
+    "native_gt_size": [
+      192,
+      320
+    ],
+    "runtime_threshold": 0.65,
+    "precision_condition": "autocast_fp16_logits_fp32_metrics"
+  },
+  "images": 4636
+}

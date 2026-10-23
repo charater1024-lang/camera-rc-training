@@ -79,4 +79,4 @@ AI Hub 13–15번의 polygon JSON 21,571프레임 중 잘못된 다각형이 있
 
 ACDC 내부 이미지 바이트/RGB 중복은 각각 0건입니다. 공식 geographic train/val을 유지했으며 **recording name 15개가 양쪽에 존재**합니다. group ID는 공식 지리적 partition을 나타내므로 녹화 ID·클립이 모두 분리되었다고 주장하지 않습니다. 대응 정상조건 reference 2,006장과 test/test reference 각 2,000장은 감독 학습 목록에서 제외했습니다.
 
-현재 후보는 ACDC를 학습하지 않았습니다. 기존 AI Hub·기타 학습 자료·공식 평가계약과의 교차 중복 검사는 아직 수행하지 않았으며, 향후 혼합 전에 별도로 검사해야 합니다. 이 준비 결과는 새 모델의 정확도 개선 증거가 아닙니다. [완료 집계·원본/보고서/manifest 해시](../reports/acdc_preparation.json)
+현재 후보는 ACDC를 학습하지 않았습니다. 후속 CPU 감사에서 ACDC 2,006장 원본 바이트를 재검증하고 RGB를 다시 해독했습니다. 기존 train 33,228/dev 4,636/공식 21,489/public 40장의 고정 기록과 정확한 바이트/RGB 중복은 모두 0건이었습니다. ACDC와 기존 기록의 RGB 해시 인코딩이 달라 기존 공통 방식 `RGB:width:height:`로 재계산한 별도 sidecar를 사용했으며, 원래 manifest는 보존했습니다. 기존 이미지 재개방은 0장으로 현재 디스크 상태를 재검증한 것은 아닙니다. crop/resize/재압축·유사 장면·지리적 겹침·모든 조상 및 외부 사전학습은 검사 범위 밖입니다. [별도 교차 감사 집계](../reports/acdc_cross_source_audit.json). 아래 초기 준비 집계의 교차 미검사 표시는 당시 기록을 보존한 것입니다. 이 준비 결과는 새 모델의 정확도 개선 증거가 아닙니다. [완료 집계·원본/보고서/manifest 해시](../reports/acdc_preparation.json)

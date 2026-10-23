@@ -12,7 +12,7 @@
 | AI Hub 추가 학습 | 실제 CUDA 3 epoch 완료; 배치 8, 총 14,199 batch |
 | 데이터 품질 분석 | 잘못된 다각형, 누락된 비도로 감독, ignore 비중, 야간 라벨 부족, 출처별 회귀 확인 |
 | CPU 전처리 보정 | 37,864장 풀 재분할, 84프레임 재처리 중 83프레임의 137,436픽셀 수정 완료 |
-| 보정 라벨 후보 | CUDA 3 epoch 완료, 12,462 batch·3,161회 성공 업데이트; 개발/공식 비교 평가는 진행 중 |
+| 보정 라벨 후보 | CUDA 3 epoch 완료, 12,462 batch·3,161회 성공 업데이트; 개발셋 채택 기준 미통과; 공식 비교 평가는 진행 중 |
 | ACDC 추가 자료 | 학습 1,600 / 검증 406장 다운로드·전처리·독립 검증 완료; 현재 모델 학습/성능표에는 미포함 |
 | 이번 전후 처리 속도 비교 | 사용자 요청으로 취소; 속도 개선률 없음 |
 | 실제 차량·80km/h·MSI 4/8GB 운용 | 미검증, 자동 모델 교체 없음 |
@@ -61,6 +61,8 @@
 Python 3.13용 고정 프로필 예입니다. 저장소를 내려받아 루트로 이동한 뒤 실행합니다. CUDA 학습이나 데이터 다운로드는 하지 않습니다.
 
 ```bash
+git clone https://github.com/charater1024-lang/camera-rc-training.git
+cd camera-rc-training
 python3.13 -m venv .venv
 source .venv/bin/activate
 python -m pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
@@ -73,7 +75,7 @@ python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider
 
 Windows PowerShell에서는 `py -3.13 -m venv .venv` 후 `python` 대신 `.\.venv\Scripts\python.exe`를 사용하면 활성화 스크립트나 실행 정책 변경 없이 실행할 수 있습니다. pytest의 `--basetemp`는 매번 새 디렉터리를 지정하고 기존 데이터/실험 폴더를 넣지 않습니다.
 
-CPU 테스트는 합성 fixture, mock과 작은 CPU 모델로 데이터 처리와 실패 경로를 확인합니다. 실제 모델 정확도나 차량 안전 검증은 아닙니다. GitHub Actions는 CPU wheel과 `.[test]`만 설치하며 dataset/weight 다운로드나 GPU를 사용하지 않습니다. 의존성 설치에는 패키지 레지스트리 접근이 필요합니다. Ubuntu/Python 3.13의 새 환경에서도 [검증한 commit의 Actions](https://github.com/charater1024-lang/camera-rc-training/actions/runs/39880385678)가 통과했습니다: **1,550개 통과·2개 생략**, CPU wheel·CLI·의존성 검사 포함. Linux에서는 optional Ultralytics 통합 1개와 Windows 전용 rename 검사 1개를 생략했습니다. Windows 검사와는 설치 의존성·플랫폼 조건이 다릅니다. 이후 commit의 상태는 해당 Actions 결과로 확인합니다.
+CPU 테스트는 합성 fixture, mock과 작은 CPU 모델로 데이터 처리와 실패 경로를 확인합니다. 실제 모델 정확도나 차량 안전 검증은 아닙니다. GitHub Actions는 CPU wheel과 `.[test]`만 설치하며 dataset/weight 다운로드나 GPU를 사용하지 않습니다. 의존성 설치에는 패키지 레지스트리 접근이 필요합니다. Ubuntu/Python 3.13의 새 환경에서도 [검증한 commit의 Actions](https://github.com/charater1024-lang/camera-rc-training/actions/runs/39883338625)가 통과했습니다: **1,561개 통과·2개 생략**, CPU wheel·CLI·의존성 검사 포함. Linux에서는 optional Ultralytics 통합 1개와 Windows 전용 rename 검사 1개를 생략했습니다. Windows 검사와는 설치 의존성·플랫폼 조건이 다릅니다. 이후 commit의 상태는 해당 Actions 결과로 확인합니다.
 
 2026-10-23 로컬 Windows 검사에서는 `tests/`와 BEVFormer wrapper를 합해 **1,551개 통과·1개 생략**을 확인했습니다. 실제 AI Hub best를 이용한 별도 CPU 1프레임 검사에서도 새 인식 어댑터와 기존 평가기의 확률 최대 차이와 마스크 불일치가 모두 0이었습니다. 이는 해당 입력에서의 구현 일치 검사이며 추가 정확도·속도·실차 검증이 아닙니다. [소프트웨어 검사 집계](reports/software_validation.json), [어댑터 검사 집계](reports/runtime_adapter_cpu_parity.json)
 
@@ -106,7 +108,7 @@ native semantic 경로는 **Ultralytics 8.4.182**의 semantic API에 맞췄습�
 - 도로 오인을 줄이면서 recall이 붕괴하는지 함께 확인합니다. 계획된 출처별 조건은 FPR 비증가, 도로 IoU/recall 각각 최대 1pp 하락입니다.
 - 결과가 없는 후보는 pending으로 유지합니다. 실패·악화도 보고하고 실제 차량 모델은 자동 교체하지 않습니다.
 
-보정 후보는 CUDA 3epoch를 완료했습니다. 총 12,462batch에서 optimizer 시도 3,165회 중 3,161회가 성공했고 AMP skip은 4회였습니다. 이는 학습 실행 기록이며 최종 정확도가 아닙니다. [후보 학습 집계와 해시](reports/corrected_candidate_training.json)를 공개하고, 완료된 개발/공식 비교 결과만 성능표에 추가합니다. 보정 후보의 새 정확도는 아직 위 표에 포함되지 않았습니다. ACDC 2,006쌍 준비와 독립 검증도 완료했습니다. 기존 데이터/공식 평가계약과의 교차 중복 검사는 아직 하지 않았으므로 현재 후보에 섞지 않았으며, 새 자료의 학습 효과를 주장하지 않습니다.
+보정 후보는 CUDA 3epoch를 완료했습니다. 총 12,462batch에서 optimizer 시도 3,165회 중 3,161회가 성공했고 AMP skip은 4회였습니다. 이는 학습 실행 기록이며 최종 정확도가 아닙니다. [후보 학습 집계와 해시](reports/corrected_candidate_training.json)를 공개하고, 완료된 개발/공식 비교 결과만 성능표에 추가합니다. 보정 후보의 새 정확도는 아직 위 표에 포함되지 않았습니다. 개발 4,636장 비교에서는 BDD IoU −1.7539pp·recall −2.5986pp, AI Hub 주간 고속도로/VKITTI의 FPR 증가로 사전 채택 기준을 통과하지 못했습니다. [개발 비교 집계](reports/corrected_development_comparison.json)는 공식 보고셋 결과와 구분합니다. ACDC 2,006쌍 준비와 독립 검증도 완료했습니다. 후속 검사에서 기존 train/dev 37,864장·공식 21,489장·public 40장의 고정 기록과 바이트/RGB 중복 0건을 확인했습니다. 기존 이미지를 재해독하거나 유사 장면까지 검사한 것은 아닙니다. [교차 감사](reports/acdc_cross_source_audit.json)를 별도 보존하며, ACDC는 현재 후보에 섞지 않아 학습 효과를 주장하지 않습니다.
 
 ## 주간과 야간 모델을 나눠야 하나요?
 

@@ -1,0 +1,120 @@
+{
+  "protocol_id": "corrected_parent_exposed_dev_original_roi_cpu_v1",
+  "diagnostic_complete": true,
+  "scope": "parent_exposed_development_label_correction_diagnostic_only",
+  "conditions": {
+    "device": "cpu",
+    "precision": "float32",
+    "cpu_threads": 2,
+    "input_size_hw": [
+      384,
+      640
+    ],
+    "threshold": 0.65,
+    "roi_grid": "original_mask_resolution_before_any_resize",
+    "probability": "RGB PIL bilinear resize /255; FP32 logits bilinear to input, softmax road0, probability bilinear to original size; >= threshold",
+    "one_forward_per_model_per_frame": true,
+    "context_nearest_gt_size_hw": [
+      192,
+      320
+    ]
+  },
+  "coverage": {
+    "frames": 3,
+    "datasets": {
+      "aihub_13": 3
+    },
+    "corrected_class_frame_counts": {
+      "trafficDrum": 3
+    },
+    "day_night": "Dataset IDs only; no inferred illumination annotation",
+    "changed_roi_pixels_at_192x320_nearest_context_only": 42
+  },
+  "models": {
+    "baseline": {
+      "training_report_sha256": "41fdfe2e9f71fac9b04361490f85e9b85dba656a142e0cb545c7016bbf78f148",
+      "checkpoint_sha256": "14e13390eb2b6d052959df88c2510f6f6875ebac07b96658da4782727b98536d",
+      "checkpoint_role": "best"
+    },
+    "candidate": {
+      "training_report_sha256": "3312c61c5edd7f4b5576ae9affe1fe32a98b66be611020ab3670a479f48b11a7",
+      "checkpoint_sha256": "b50d3ab19f0f9fbeee6e2bedbabd48a4c512a40cff63cb48b6324201a0559f34",
+      "checkpoint_role": "best"
+    }
+  },
+  "aggregate_results": {
+    "baseline": {
+      "changed_roi_pixels": 1482,
+      "changed_roi_false_road_pixels": 96,
+      "same_frames_road_gt_pixels": 1261112,
+      "same_frames_road_tp_pixels": 1190051,
+      "same_frames_road_fn_pixels": 71061,
+      "frames": 3,
+      "forwards": 3,
+      "changed_roi_false_road_rate": 0.06477732793522267,
+      "changed_roi_image_mean_false_road_rate": 0.344361398817316,
+      "same_frames_road_recall": 0.9436521102011558
+    },
+    "candidate": {
+      "changed_roi_pixels": 1482,
+      "changed_roi_false_road_pixels": 199,
+      "same_frames_road_gt_pixels": 1261112,
+      "same_frames_road_tp_pixels": 1181307,
+      "same_frames_road_fn_pixels": 79805,
+      "frames": 3,
+      "forwards": 3,
+      "changed_roi_false_road_rate": 0.13427800269905532,
+      "changed_roi_image_mean_false_road_rate": 0.3791043611649068,
+      "same_frames_road_recall": 0.9367185468063106
+    }
+  },
+  "differences": {
+    "changed_roi_false_road_rate": {
+      "baseline": 0.06477732793522267,
+      "candidate": 0.13427800269905532,
+      "delta_percentage_points": 6.950067476383265,
+      "relative_change_percent": 107.29166666666666,
+      "relative_improvement_percent": -107.29166666666666,
+      "lower_is_better": true
+    },
+    "changed_roi_image_mean_false_road_rate": {
+      "baseline": 0.344361398817316,
+      "candidate": 0.3791043611649068,
+      "delta_percentage_points": 3.474296234759083,
+      "relative_change_percent": 10.089098971868797,
+      "relative_improvement_percent": -10.089098971868797,
+      "lower_is_better": true
+    },
+    "same_frames_road_recall": {
+      "baseline": 0.9436521102011558,
+      "candidate": 0.9367185468063106,
+      "delta_percentage_points": -0.6933563394845188,
+      "relative_change_percent": -0.7347584263195447,
+      "relative_improvement_percent": -0.7347584263195447,
+      "lower_is_better": false
+    }
+  },
+  "limitations": [
+    "수정된 개발 프레임 최대 3장만 포함하는 진단이며 전체 데이터 성능이 아닙니다.",
+    "부모 모델이 이미 본 개발 자료입니다. 독립 일반화나 통계적 유의성을 입증하지 않습니다.",
+    "추가 학습과 라벨 교정의 효과를 인과적으로 분리하지 않습니다.",
+    "원본 좌표의 255→1 변화 영역을 측정합니다. 기존 192×320 GT 평가와 합산하지 않습니다.",
+    "nearest 축소 시 작은 변화 영역이 사라질 수 있습니다. 원본 ROI 결과는 탐지 거리/객체 재현율이 아닙니다.",
+    "공식 검증/공개 장애물 40장, 임계값 튜닝, 새 모델 선택 기준에 사용하지 않습니다.",
+    "포함되지 않은 클래스·주야간 조건에는 결론을 내리지 않습니다. 80km/h·물리 제어·무사고를 검증하지 않습니다.",
+    "CPU 정확도 진단이며 속도 측정이나 탑재 GPU 성능 검증이 아닙니다."
+  ],
+  "runtime_comparison_performed": false,
+  "training_performed": false,
+  "threshold_tuning_performed": false,
+  "model_selection_gate_performed": false,
+  "package_versions": {
+    "python": "3.13.15",
+    "torch": "2.9.1+cu126",
+    "numpy": "2.5.2",
+    "Pillow": "12.3.0",
+    "ultralytics": "8.4.182"
+  },
+  "source_private_diagnostic_sha256": "73e2075255108df5e0c4b03b9856b8785b5d32aea74bea6b8e98c0a71fe92672",
+  "source_aggregate_sha256": "50e2b0120164fce2f6d584f3bed2982c696753918ff5927cee3ba865c5e60f12"
+}

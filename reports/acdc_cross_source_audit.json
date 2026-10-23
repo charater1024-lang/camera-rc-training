@@ -1,0 +1,125 @@
+{
+  "schema": "acdc_cross_source_audit_v1",
+  "complete": true,
+  "started_utc": "2026-10-23T01:25:50.264747+00:00",
+  "completed_utc": "2026-10-23T01:27:55.285085+00:00",
+  "training_started": false,
+  "gpu_used": false,
+  "inference_used": false,
+  "candidate_or_dataset_changed": false,
+  "acdc_rgb_images_redecoded": 2006,
+  "acdc_original_image_byte_sha256_revalidated": 2006,
+  "reference_images_reopened": 0,
+  "acdc_splits": {
+    "train": 1600,
+    "val": 406
+  },
+  "reference_record_counts": {
+    "existing_train": 33228,
+    "existing_dev": 4636,
+    "official": 21489,
+    "public": 40
+  },
+  "reference_sources": {
+    "existing_train": {
+      "aihub_13": 5551,
+      "aihub_14": 5736,
+      "aihub_15": 5669,
+      "bdd100k_drivable": 9000,
+      "vkitti2_0_3": 7272
+    },
+    "existing_dev": {
+      "aihub_13": 727,
+      "aihub_14": 615,
+      "aihub_15": 634,
+      "bdd100k_drivable": 1000,
+      "vkitti2_0_3": 1660
+    },
+    "official": {
+      "bdd": 10000,
+      "source_00_vkitti2_v1": 8940,
+      "source_01_camvid_road_v1": 124,
+      "source_02_kitti_road_v2": 58,
+      "aihub_13_day_city": 783,
+      "aihub_14_day_expressway": 799,
+      "aihub_15_night_expressway": 785
+    },
+    "public": {
+      "obstacle": 30,
+      "anomaly": 10
+    }
+  },
+  "input_sha256": {
+    "acdc_report": "ddc6d8a0ce70ca242208739ceb64fa23d4cce758879a0e46d7766a68e9a0054e",
+    "acdc_train": "6bdc9cd2a1d6a76cd4612fe902063c76f79c1227806c1c2e9995e5f11bc42f80",
+    "acdc_val": "02b2be89ae9a38ee860e1bc36e1a170850961d7f4543edb026dbd11c57191d18",
+    "acdc_verification": "81ddfbaeeedb3644e5efa3267445f529bc71f1d3f20d0451dc61b707c7f9330b",
+    "existing_report": "9b6d87a9df44a62309a9f21a1fff122b8b476fa12a5c4f0ba6e0f47f53cbeca2",
+    "existing_train": "541cc507798cc632b9b5900f02a6c91469bbcfcf94a7dd8dcbea686cf3b311f9",
+    "existing_dev": "10a163954611de7f0002b5576663ed45d8e2cf094ea49568a280687173833dfd",
+    "frozen_contract": "a87bf6004f930d3cb807130d7ec5944426992a64f59c3875ffaaa7e0a843ae63",
+    "acdc_preparer": "bd1d580492b1fc8983793d3fc81b4777bcc1e4a58b1bc3060be7780d1aca7ba3",
+    "reference_rgb_implementation": "ec5d55113ad9a120cc307a80a4bf74e019551952f1a1ca6fb83966d61055e0d1",
+    "training_rgb_implementation": "d84e5a75464c1916feb6a3c27cb8e7f3302ed8fa23a4c37212deadf14cff4a76"
+  },
+  "algorithm_sha256": "4621611d448477fb3f29a5ab4d9466966b494fb7bbcc674d6132394310baa912",
+  "private_sidecar_sha256": "0889b16a667b7b7f6b7860eeda2f3418cca4a354b4d62dec411096691a5f1d97",
+  "matches_by_split_and_reference_pool": {
+    "train": {
+      "existing_train": {
+        "byte_matching_acdc_frames": 0,
+        "rgb_matching_acdc_frames": 0,
+        "any_matching_acdc_frames": 0
+      },
+      "existing_dev": {
+        "byte_matching_acdc_frames": 0,
+        "rgb_matching_acdc_frames": 0,
+        "any_matching_acdc_frames": 0
+      },
+      "official": {
+        "byte_matching_acdc_frames": 0,
+        "rgb_matching_acdc_frames": 0,
+        "any_matching_acdc_frames": 0
+      },
+      "public": {
+        "byte_matching_acdc_frames": 0,
+        "rgb_matching_acdc_frames": 0,
+        "any_matching_acdc_frames": 0
+      }
+    },
+    "val": {
+      "existing_train": {
+        "byte_matching_acdc_frames": 0,
+        "rgb_matching_acdc_frames": 0,
+        "any_matching_acdc_frames": 0
+      },
+      "existing_dev": {
+        "byte_matching_acdc_frames": 0,
+        "rgb_matching_acdc_frames": 0,
+        "any_matching_acdc_frames": 0
+      },
+      "official": {
+        "byte_matching_acdc_frames": 0,
+        "rgb_matching_acdc_frames": 0,
+        "any_matching_acdc_frames": 0
+      },
+      "public": {
+        "byte_matching_acdc_frames": 0,
+        "rgb_matching_acdc_frames": 0,
+        "any_matching_acdc_frames": 0
+      }
+    }
+  },
+  "any_matching_acdc_frames": {
+    "train": 0,
+    "val": 0
+  },
+  "no_exact_byte_or_rgb_overlap_against_pinned_records": true,
+  "limits": [
+    "Reference comparisons use pinned manifest/contract records; existing reference images were not reopened or decoded, and their current on-disk state was not revalidated.",
+    "Exact original bytes and decoded RGB only; no perceptual, crop, resize, lossy re-encoding similarity, scene/geographic, or near-duplicate search.",
+    "Scope covers existing corrected train/dev 37,864 records, frozen official 21,489 records and public 40 records; it does not cover all ancestors, all external pretraining or unlisted datasets.",
+    "ACDC normal-condition references and hidden-label test images are excluded; only prepared adverse train/val 2,006 images were checked.",
+    "This audit does not mix datasets, approve candidate training/deployment, or establish accuracy gains. Original ACDC manifests retain their legacy RGB hash; the compatible hash exists only in the separate private sidecar."
+  ]
+}
