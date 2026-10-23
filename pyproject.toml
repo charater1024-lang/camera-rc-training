@@ -28,7 +28,7 @@ camera-rc-sim = "camera_rc.simulator.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"camera_rc.simulator" = ["assets/*.html", "assets/*.js", "assets/*.css"]
+"camera_rc.simulator" = ["assets/*.html", "assets/*.js", "assets/*.css", "assets/*.json", "assets/*.md", "assets/maps/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-23T10:47:02.246801+00:00",
+  "scope": "map_derived_synthetic_software_checks_not_real_driving_validation",
+  "physical_output": false,
+  "runtime_speed_benchmark": false,
+  "learned_accuracy_measured": false,
+  "seed": 42,
+  "requested_steps": 600,
+  "perception": "idealized_synthetic_semantics_and_metric_visibility",
+  "region": {
+    "id": "seoul_seongsu",
+    "name": "서울 성수동",
+    "roads": 161,
+    "buildings": 554,
+    "geometry_sha256": "6478cc8550104254bb54533b9923050af60a03dd6178659c21703cc5963e4207",
+    "route_m": 80.0001,
+    "full_source_route_m": 473.5527,
+    "provenance": {
+      "attribution": "© OpenStreetMap contributors",
+      "fetched_at_utc": "2026-10-23T10:28:40.770306Z",
+      "license": "ODbL-1.0",
+      "license_url": "https://www.openstreetmap.org/copyright",
+      "osm_base_timestamp": "2026-10-23T10:26:41Z",
+      "query": "[out:json][timeout:45][maxsize:16777216];(way[\"highway\"][\"area\"!=\"yes\"](37.5415,127.0500,37.5485,127.0610);way[\"building\"](37.5415,127.0500,37.5485,127.0610););out body geom;",
+      "raw_response_sha256": "13e32047b0389f1dd6c84c729baa8fd9ba51bbcccfa086363c867755c9b829cd",
+      "source": "OpenStreetMap via Overpass API",
+      "source_asset": "seoul_seongsu.source.json",
+      "source_sha256": "851812449263a7c6ebee2fdfbd26e410990f906ead4cb7560a285207c43c578e",
+      "source_url": "https://overpass-api.de/api/interpreter"
+    }
+  },
+  "source_sha256": {
+    "src/camera_rc/simulator/engine.py": "a7d7976269ac42ba4d6b62e57f1f6b56555e0b6cdf6f84cbd59cb385796dc40e",
+    "src/camera_rc/simulator/rendering.py": "f3c19b8860a12775683a8e464ad9cd13faa116e3fe2168238a372c55f139635d",
+    "src/camera_rc/simulator/region.py": "9be5decc9c5c509e995889e1de098d4a83c78e42f710531351b8af8029fea80a",
+    "src/camera_rc/simulator/assets/maps/seoul_seongsu.json": "a42dd3cb0579c687c1eb4e53c6305bade4106a2591305bb507a4166da4e9dc9b",
+    "src/camera_rc/simulator/assets/maps/seoul_seongsu.source.json": "851812449263a7c6ebee2fdfbd26e410990f906ead4cb7560a285207c43c578e"
+  },
+  "scenarios": [
+    {
+      "scenario": "seoul_day",
+      "steps": 415,
+      "sim_time_s": 41.5,
+      "metrics": {
+        "distance_m": 80.08784237643597,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 1.4500063188662835,
+        "interventions": 0,
+        "goal_reached": true,
+        "route_progress_m": 80.00005279687674
+      },
+      "safety": {
+        "mode": "PROPOSAL_ELIGIBLE",
+        "reasons": [
+          "supplied_offline_evidence_passed"
+        ],
+        "proposal_eligible": true,
+        "actuation_enabled": false
+      },
+      "actor_count": 44,
+      "visibility": {
+        "idealized_range_m": 25.0,
+        "visible_actor_ids": [
+          "kerb_10",
+          "kerb_11",
+          "kerb_9"
+        ],
+        "hidden_or_out_of_range_actors": 41,
+        "unobserved_grid_cells": 0,
+        "grid_cells": 4020
+      },
+      "configuration": {
+        "scope": "synthetic_closed_loop_demo_not_vehicle_validation",
+        "scenario": "seoul_day",
+        "seed": 42,
+        "mode": "autonomous",
+        "fixed_dt_s": 0.1,
+        "wheelbase_m": 2.6,
+        "body_disk_radius_m": 2.7,
+        "road_half_width_m": 5.0,
+        "autonomous_target_speed_mps": 2.0,
+        "normal_braking_deceleration_mps2": 3.5,
+        "degraded_braking_deceleration_mps2": 0.7,
+        "camera": "synthetic chase perspective, 6m behind rear axle and 3m high; not onboard calibration",
+        "physics": "2D kinematic bicycle; conservative circular body; no tyre/suspension/contact solver",
+        "oracle_metric_range_and_tracks": true,
+        "real_vehicle_actuation_enabled": false,
+        "model_identity": null,
+        "collision_metric": "distinct world-geometry obstacle contacts; no rigid-body response",
+        "goal_region": {
+          "center_xy_m": [
+            168.2261,
+            43.2191
+          ],
+          "radius_m": 1.5,
+          "min_route_progress_m": 79.00005279687674,
+          "max_heading_error_rad": 0.4,
+          "whole_body_inside_road_union": true,
+          "no_prior_collision_or_offroad_event": true
+        },
+        "synthetic_collision_detection_independent_of_supervisor": true,
+        "wallclock_inference_changes_playback_speed_only": true,
+        "map_derived_synthetic_not_digital_twin": true,
+        "synthetic_actor_count": 44,
+        "synthetic_vehicle_disk": {
+          "radius_m": 2.2,
+          "assumed_length_m": 4.0,
+          "assumed_width_m": 1.8,
+          "reference": "geometric vehicle center; conservative circumscribed disk"
+        },
+        "actor_dynamics": "Seeded circles; parked kerbside or bounded shuttles along actual OSM polylines. No traffic-law or agent-interaction model.",
+        "road_union_containment": "Conservative complete body-disk square cover (0.4m cells), tested against the union of drivable OSM centerline capsules with disclosed assumed widths.",
+        "sensor_visibility": "Idealized 360-degree simulator metric rays, range25m day/14m night; opaque building footprints and actor disks occlude. Not camera-derived metric depth.",
+        "map_footways_grant_vehicle_passage": false
+      }
+    },
+    {
+      "scenario": "seoul_night",
+      "steps": 415,
+      "sim_time_s": 41.5,
+      "metrics": {
+        "distance_m": 80.08784237643597,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 1.4500063188662835,
+        "interventions": 0,
+        "goal_reached": true,
+        "route_progress_m": 80.00005279687674
+      },
+      "safety": {
+        "mode": "PROPOSAL_ELIGIBLE",
+        "reasons": [
+          "supplied_offline_evidence_passed"
+        ],
+        "proposal_eligible": true,
+        "actuation_enabled": false
+      },
+      "actor_count": 44,
+      "visibility": {
+        "idealized_range_m": 14.0,
+        "visible_actor_ids": [
+          "kerb_11"
+        ],
+        "hidden_or_out_of_range_actors": 43,
+        "unobserved_grid_cells": 626,
+        "grid_cells": 4020
+      },
+      "configuration": {
+        "scope": "synthetic_closed_loop_demo_not_vehicle_validation",
+        "scenario": "seoul_night",
+        "seed": 42,
+        "mode": "autonomous",
+        "fixed_dt_s": 0.1,
+        "wheelbase_m": 2.6,
+        "body_disk_radius_m": 2.7,
+        "road_half_width_m": 5.0,
+        "autonomous_target_speed_mps": 2.0,
+        "normal_braking_deceleration_mps2": 3.5,
+        "degraded_braking_deceleration_mps2": 0.7,
+        "camera": "synthetic chase perspective, 6m behind rear axle and 3m high; not onboard calibration",
+        "physics": "2D kinematic bicycle; conservative circular body; no tyre/suspension/contact solver",
+        "oracle_metric_range_and_tracks": true,
+        "real_vehicle_actuation_enabled": false,
+        "model_identity": null,
+        "collision_metric": "distinct world-geometry obstacle contacts; no rigid-body response",
+        "goal_region": {
+          "center_xy_m": [
+            168.2261,
+            43.2191
+          ],
+          "radius_m": 1.5,
+          "min_route_progress_m": 79.00005279687674,
+          "max_heading_error_rad": 0.4,
+          "whole_body_inside_road_union": true,
+          "no_prior_collision_or_offroad_event": true
+        },
+        "synthetic_collision_detection_independent_of_supervisor": true,
+        "wallclock_inference_changes_playback_speed_only": true,
+        "map_derived_synthetic_not_digital_twin": true,
+        "synthetic_actor_count": 44,
+        "synthetic_vehicle_disk": {
+          "radius_m": 2.2,
+          "assumed_length_m": 4.0,
+          "assumed_width_m": 1.8,
+          "reference": "geometric vehicle center; conservative circumscribed disk"
+        },
+        "actor_dynamics": "Seeded circles; parked kerbside or bounded shuttles along actual OSM polylines. No traffic-law or agent-interaction model.",
+        "road_union_containment": "Conservative complete body-disk square cover (0.4m cells), tested against the union of drivable OSM centerline capsules with disclosed assumed widths.",
+        "sensor_visibility": "Idealized 360-degree simulator metric rays, range25m day/14m night; opaque building footprints and actor disks occlude. Not camera-derived metric depth.",
+        "map_footways_grant_vehicle_passage": false
+      }
+    },
+    {
+      "scenario": "seoul_hazard",
+      "steps": 600,
+      "sim_time_s": 60.0,
+      "metrics": {
+        "distance_m": 13.587542986749916,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 1.899894247751371,
+        "interventions": 1,
+        "goal_reached": false,
+        "route_progress_m": 13.587542433351471
+      },
+      "safety": {
+        "mode": "LATCHED_STOP",
+        "reasons": [
+          "unobserved_swept_cell"
+        ],
+        "proposal_eligible": false,
+        "actuation_enabled": false
+      },
+      "actor_count": 45,
+      "visibility": {
+        "idealized_range_m": 25.0,
+        "visible_actor_ids": [
+          "kerb_0",
+          "kerb_1",
+          "kerb_2",
+          "kerb_3",
+          "kerb_4",
+          "route_blocking_vehicle"
+        ],
+        "hidden_or_out_of_range_actors": 39,
+        "unobserved_grid_cells": 722,
+        "grid_cells": 4020
+      },
+      "configuration": {
+        "scope": "synthetic_closed_loop_demo_not_vehicle_validation",
+        "scenario": "seoul_hazard",
+        "seed": 42,
+        "mode": "autonomous",
+        "fixed_dt_s": 0.1,
+        "wheelbase_m": 2.6,
+        "body_disk_radius_m": 2.7,
+        "road_half_width_m": 5.0,
+        "autonomous_target_speed_mps": 2.0,
+        "normal_braking_deceleration_mps2": 3.5,
+        "degraded_braking_deceleration_mps2": 0.7,
+        "camera": "synthetic chase perspective, 6m behind rear axle and 3m high; not onboard calibration",
+        "physics": "2D kinematic bicycle; conservative circular body; no tyre/suspension/contact solver",
+        "oracle_metric_range_and_tracks": true,
+        "real_vehicle_actuation_enabled": false,
+        "model_identity": null,
+        "collision_metric": "distinct world-geometry obstacle contacts; no rigid-body response",
+        "goal_region": {
+          "center_xy_m": [
+            168.2261,
+            43.2191
+          ],
+          "radius_m": 1.5,
+          "min_route_progress_m": 79.00005279687674,
+          "max_heading_error_rad": 0.4,
+          "whole_body_inside_road_union": true,
+          "no_prior_collision_or_offroad_event": true
+        },
+        "synthetic_collision_detection_independent_of_supervisor": true,
+        "wallclock_inference_changes_playback_speed_only": true,
+        "map_derived_synthetic_not_digital_twin": true,
+        "synthetic_actor_count": 45,
+        "synthetic_vehicle_disk": {
+          "radius_m": 2.2,
+          "assumed_length_m": 4.0,
+          "assumed_width_m": 1.8,
+          "reference": "geometric vehicle center; conservative circumscribed disk"
+        },
+        "actor_dynamics": "Seeded circles; parked kerbside or bounded shuttles along actual OSM polylines. No traffic-law or agent-interaction model.",
+        "road_union_containment": "Conservative complete body-disk square cover (0.4m cells), tested against the union of drivable OSM centerline capsules with disclosed assumed widths.",
+        "sensor_visibility": "Idealized 360-degree simulator metric rays, range25m day/14m night; opaque building footprints and actor disks occlude. Not camera-derived metric depth.",
+        "map_footways_grant_vehicle_passage": false
+      }
+    }
+  ],
+  "manual_negative_control": {
+    "scenario": "seoul_hazard",
+    "mode": "manual",
+    "steps": 41,
+    "input": {
+      "steering": 0.0,
+      "throttle": 1.0,
+      "brake": 0.0
+    },
+    "metrics": {
+      "distance_m": 21.31890726970739,
+      "collisions": 1,
+      "offroad_events": 0,
+      "min_clearance_m": -0.21408724917504074,
+      "interventions": 1,
+      "goal_reached": false,
+      "route_progress_m": 21.31567790781216
+    },
+    "safety": {
+      "mode": "LATCHED_STOP",
+      "reasons": [
+        "speed_outside_supported_odd"
+      ],
+      "proposal_eligible": false,
+      "actuation_enabled": false
+    },
+    "purpose": "Failure reproduction bypasses virtual safety; world geometry must record contact."
+  },
+  "limitations": [
+    "No measured traffic, lane/signal compliance or lane changes.",
+    "Short centreline reference route; no city-wide autonomous traversal claim.",
+    "Assumed road widths, actor bodies, missing heights and idealized visibility.",
+    "No real camera/depth/tracking accuracy or collision-rate claim."
+  ],
+  "software_checks": {
+    "platform": "Windows CPU",
+    "command": "python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=<fresh-directory>",
+    "passed": 1808,
+    "skipped": 1,
+    "failed": 3,
+    "new_seoul_tests_passed": 29,
+    "failure_reason": "Existing runtime integration checks encountered actual host available RAM below the unchanged 1GiB floor.",
+    "failed_tests": [
+      "tests/test_driving_integration.py::test_replay_native_inference_to_control_and_stop",
+      "tests/test_headless.py::test_sigterm_enters_existing_runtime_shutdown_stop",
+      "tests/test_multisource.py::test_multiview_pipeline_and_independent_control_integration"
+    ],
+    "safety_guard_weakened": false,
+    "unrelated_processes_terminated": false,
+    "full_log_sha256": "3193936d85e8604d391054ead7adac7ff26b5e465166418ec134a91bd2023d1a",
+    "ci": "Independent CPU results for the published commit are available in GitHub Actions; this local record is not replaced by CI results."
+  },
+  "wheel_check": {
+    "wheel_name": "camera_rc_training-0.1.0-py3-none-any.whl",
+    "wheel_sha256": "15e78909eeecfaf3ba66ca309453423cd52a44c36944372870449a581c4a7c26",
+    "map_and_ui_assets_present": true,
+    "region_load_from_wheel": true,
+    "seoul_engine_step_from_wheel": true,
+    "region_geometry_sha256": "6478cc8550104254bb54533b9923050af60a03dd6178659c21703cc5963e4207"
+  },
+  "browser_checks": {
+    "actual_browser": true,
+    "map_overview": true,
+    "vehicle_follow_and_zoom": true,
+    "day_start_pause": true,
+    "day_night_reset": true,
+    "night_camera_visually_checked": true,
+    "final_state": "seoul_day, paused, step 0, regional overview",
+    "observed_console_errors": 0,
+    "screenshots": [
+      "assets/seoul-simulator-ui.png",
+      "assets/seoul-simulator-follow.png",
+      "assets/seoul-simulator-night.png"
+    ]
+  }
+}

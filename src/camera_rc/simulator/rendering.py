@@ -19,6 +19,9 @@ FOCAL = 90.0
 CAMERA_HEIGHT_M = 3.0
 CAMERA_X_M = -6.0
 HORIZON = 45.0
+# Mapped scenes use a bounded local view; original fixtures retain their view.
+MAP_RENDER_RANGE_M = 100.0
+_NEAR_PLANE_M = 0.1
 
 
 def project_ground(
@@ -64,6 +67,202 @@ def ground_coordinates() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
 
 # Reuse this fixed camera grid.  Render operations only read these arrays.
 _GROUND_X, _GROUND_Y, _GROUND_VALID = ground_coordinates()
+_PIXEL_LEFT_RAY = (WIDTH / 2.0 - np.arange(WIDTH)) / FOCAL
+_PIXEL_UP_RAY = (HORIZON - np.arange(HEIGHT)) / FOCAL
+
+
+def point_in_polygon(x, y, polygon: np.ndarray) -> np.ndarray:
+    """Even-odd inclusion for a simple, possibly concave footprint.
+
+    Polygon edges count as inside. Coordinates broadcast; vertices use world
+    metres. This helper does not assume a particular polygon winding.
+    """
+    x, y = np.broadcast_arrays(np.asarray(x, dtype=np.float64), np.asarray(y, dtype=np.float64))
+    points = np.asarray(polygon, dtype=np.float64)
+    inside = np.zeros(x.shape, dtype=bool)
+    boundary = np.zeros(x.shape, dtype=bool)
+    for a, b in zip(points, np.roll(points, -1, axis=0)):
+        dx, dy = b - a
+        length_squared = dx * dx + dy * dy
+        if length_squared <= 1e-16:
+            continue
+        cross = (x - a[0]) * dy - (y - a[1]) * dx
+        along = (x - a[0]) * dx + (y - a[1]) * dy
+        boundary |= (np.abs(cross) <= 1e-8 * np.sqrt(length_squared)) & (along >= 0) & (along <= length_squared)
+        if abs(dy) > 1e-12:
+            intersection = a[0] + (y - a[1]) * dx / dy
+            inside ^= ((a[1] > y) != (b[1] > y)) & (x < intersection)
+    return inside | boundary
+
+
+def _feature_points(value, minimum: int, label: str) -> np.ndarray:
+    points = np.asarray(value, dtype=np.float64)
+    if points.ndim != 2 or points.shape[1] != 2 or len(points) < minimum or not np.isfinite(points).all():
+        raise ValueError(f"{label} must contain at least {minimum} finite (x, y) points")
+    return points
+
+
+def _near_camera(points: np.ndarray, camera_xy: np.ndarray, margin: float = 0.0) -> bool:
+    """Conservative AABB cull; long features crossing the view are retained."""
+    nearest = np.clip(camera_xy, points.min(axis=0), points.max(axis=0))
+    return bool(np.hypot(*(nearest - camera_xy)) <= MAP_RENDER_RANGE_M + margin)
+
+
+def _mapped_road_masks(world_x, world_y, roads, camera_xy):
+    surface = np.zeros(world_x.shape, dtype=bool)
+    drivable = np.zeros(world_x.shape, dtype=bool)
+    interior = np.zeros(world_x.shape, dtype=bool)
+    dashed = np.zeros(world_x.shape, dtype=bool)
+    in_range = np.hypot(world_x - camera_xy[0], world_y - camera_xy[1]) <= MAP_RENDER_RANGE_M
+    for feature in roads:
+        # This renderer has one ground plane. Flattening a bridge or tunnel
+        # onto that plane would invent a connection that the map does not have.
+        if feature.get("ground_geometry_supported", True) is False:
+            continue
+        points = _feature_points(feature["points"], 2, "road points")
+        width = float(feature["half_width_m"])
+        if not np.isfinite(width) or width <= 0:
+            raise ValueError("road half_width_m must be finite and positive")
+        if not _near_camera(points, camera_xy, width):
+            continue
+        lower, upper = points.min(axis=0) - width, points.max(axis=0) + width
+        candidate = in_range & (world_x >= lower[0]) & (world_x <= upper[0]) & (world_y >= lower[1]) & (world_y <= upper[1])
+        if not candidate.any():
+            continue
+        # Segment culling avoids spending raster work on a long map way's
+        # remote bends while preserving segments that cross the local view.
+        segment_lower = np.minimum(points[:-1], points[1:]) - width
+        segment_upper = np.maximum(points[:-1], points[1:]) + width
+        keep = np.all(segment_lower <= camera_xy + MAP_RENDER_RANGE_M, axis=1) & np.all(segment_upper >= camera_xy - MAP_RENDER_RANGE_M, axis=1)
+        distance_squared = np.full(np.count_nonzero(candidate), np.inf, dtype=np.float64)
+        px, py = world_x[candidate], world_y[candidate]
+        for index in np.flatnonzero(keep):
+            distance_squared = np.minimum(distance_squared, _road_distance_squared(px, py, points[index : index + 2]))
+        surface[candidate] |= distance_squared <= width * width
+        interior[candidate] |= distance_squared < max(0.0, width - 0.09) ** 2
+        if feature.get("drivable", True) is not False:
+            drivable[candidate] |= distance_squared <= width * width
+            dashed[candidate] |= (distance_squared < 0.055**2) & (np.remainder(px + py, 8.0) < 4.0)
+    return surface, drivable, dashed & drivable, surface & ~interior
+
+
+def _building_views(buildings, pose, cosine, sine):
+    camera_xy = pose[:2] + CAMERA_X_M * np.array((cosine, sine))
+    views = []
+    for feature in buildings:
+        polygon = _feature_points(feature["polygon"], 3, "building polygon")
+        height = float(feature["height_m"])
+        if not np.isfinite(height) or not 0 < height <= 2000:
+            raise ValueError("building height_m must be finite and in (0, 2000]")
+        if not _near_camera(polygon, camera_xy):
+            continue
+        offset = polygon - camera_xy
+        local = np.column_stack((cosine * offset[:, 0] + sine * offset[:, 1], -sine * offset[:, 0] + cosine * offset[:, 1]))
+        if local[:, 0].max() < _NEAR_PLANE_M:
+            continue
+        # IDs only choose a stable material; Python's randomized hash is not
+        # used, and feature iteration order cannot change facade colors.
+        identity = str(feature.get("id", "building"))
+        tone = sum((i + 1) * ord(char) for i, char in enumerate(identity)) % 5
+        base = np.array(((155, 160, 158), (168, 159, 146), (151, 160, 168), (177, 166, 150), (149, 153, 145))[tone])
+        views.append((polygon, local, height, base))
+    return views
+
+
+def _shade_building(colors, depth, left, condition):
+    colors = np.asarray(colors, dtype=np.float64)
+    if condition == "fog":
+        mist = (1.0 - np.exp(-depth / 38.0))[..., None]
+        return colors * (1.0 - mist) + np.array((186, 194, 197)) * mist
+    if condition == "night":
+        beam_width = 2.0 + 0.18 * np.maximum(depth + CAMERA_X_M, 0.0)
+        exposure = 0.18 + 0.78 * np.exp(-((left / beam_width) ** 4)) * np.exp(-np.maximum(depth - 6.0, 0.0) / 55.0)
+        return colors * exposure[..., None]
+    return colors
+
+
+def _draw_buildings(rgb, probability, depth_buffer, views, condition):
+    """Intersect camera rays with extruded polygons and keep nearest hits.
+
+    A vertical facade has one depth per image column. Testing its height for
+    each row yields exact planar facade coverage, with near/range clipping
+    before projection. This avoids giant screen polygons at the near plane
+    and handles concave buildings without convex roof triangulation.
+    """
+    for polygon, local, height, base in views:
+        for a, b in zip(local, np.roll(local, -1, axis=0)):
+            delta = b - a
+            edge_length = float(np.hypot(*delta))
+            if edge_length < 1e-8:
+                continue
+            denominator = delta[1] - _PIXEL_LEFT_RAY * delta[0]
+            depth = np.full(WIDTH, np.inf)
+            fraction = np.full(WIDTH, np.inf)
+            nonparallel = np.abs(denominator) > 1e-10
+            np.divide(a[0] * delta[1] - a[1] * delta[0], denominator, out=depth, where=nonparallel)
+            np.divide(a[0] * _PIXEL_LEFT_RAY - a[1], denominator, out=fraction, where=nonparallel)
+            valid = nonparallel & (fraction >= 0.0) & (fraction <= 1.0) & (depth >= _NEAR_PLANE_M)
+            valid &= np.abs(depth) <= MAP_RENDER_RANGE_M / np.sqrt(1.0 + _PIXEL_LEFT_RAY**2)
+            columns = np.flatnonzero(valid)
+            if not len(columns):
+                continue
+            face_depth = depth[columns]
+            z = CAMERA_HEIGHT_M + _PIXEL_UP_RAY[:, None] * face_depth[None, :]
+            visible = (z >= 0.0) & (z <= height) & (face_depth[None, :] < depth_buffer[:, columns])
+            if not visible.any():
+                continue
+            # The same world-facing material is used on every face, with a
+            # modest orientation shade and metre-anchored window pattern.
+            shade = 0.78 + 0.20 * abs(delta[1]) / edge_length
+            colors = np.broadcast_to(base * shade, (HEIGHT, len(columns), 3)).copy()
+            horizontal = np.remainder(fraction[columns] * edge_length, 3.0)
+            windows = (z > 1.1) & (np.remainder(z, 3.2) > 1.0) & (np.remainder(z, 3.2) < 2.4)
+            windows &= (horizontal[None, :] > 0.65) & (horizontal[None, :] < 2.15)
+            colors[windows] = (76, 103, 117) if condition != "night" else (169, 145, 93)
+            colors = _shade_building(colors, face_depth[None, :], (_PIXEL_LEFT_RAY[columns] * face_depth)[None, :], condition)
+            rows, indices = np.nonzero(visible)
+            cols = columns[indices]
+            rgb[rows, cols] = np.clip(colors[rows, indices], 0, 255).astype(np.uint8)
+            probability[rows, cols] = 0.0
+            depth_buffer[rows, cols] = face_depth[indices]
+        # Roof tops can only be seen when the camera is above their plane.
+        # Even-odd inclusion preserves notches in concave outlines.
+        if height < CAMERA_HEIGHT_M:
+            roof_depth = np.full(HEIGHT, np.inf)
+            np.divide(height - CAMERA_HEIGHT_M, _PIXEL_UP_RAY, out=roof_depth, where=_PIXEL_UP_RAY < 0)
+            candidate_rows = np.flatnonzero((roof_depth >= _NEAR_PLANE_M) & (roof_depth <= MAP_RENDER_RANGE_M))
+            if not len(candidate_rows):
+                continue
+            x = np.broadcast_to(roof_depth[candidate_rows, None], (len(candidate_rows), WIDTH))
+            y = x * _PIXEL_LEFT_RAY[None, :]
+            lower, upper = local.min(axis=0), local.max(axis=0)
+            candidate = (x >= lower[0]) & (x <= upper[0]) & (y >= lower[1]) & (y <= upper[1])
+            candidate &= np.hypot(x, y) <= MAP_RENDER_RANGE_M
+            candidate &= x < depth_buffer[candidate_rows]
+            if not candidate.any():
+                continue
+            inside = point_in_polygon(x[candidate], y[candidate], local)
+            rows, cols = np.nonzero(candidate)
+            rows, cols = rows[inside], cols[inside]
+            actual_rows = candidate_rows[rows]
+            colors = _shade_building(base * 1.1, x[rows, cols], y[rows, cols], condition)
+            rgb[actual_rows, cols] = np.clip(colors, 0, 255).astype(np.uint8)
+            probability[actual_rows, cols] = 0.0
+            depth_buffer[actual_rows, cols] = x[rows, cols]
+
+
+def _draw_depth_actors(rgb, probability, depth_buffer, obstacle_views, condition):
+    for x_forward, y_left, radius, kind in obstacle_views:
+        depth = x_forward - CAMERA_X_M
+        if depth < _NEAR_PLANE_M or np.hypot(depth, y_left) - radius > MAP_RENDER_RANGE_M:
+            continue
+        actor_image = Image.new("RGB", (WIDTH, HEIGHT))
+        actor_mask = Image.new("L", (WIDTH, HEIGHT))
+        _draw_obstacle(ImageDraw.Draw(actor_image), ImageDraw.Draw(actor_mask), x_forward, y_left, radius, kind, condition)
+        visible = (np.asarray(actor_mask) != 0) & (depth < depth_buffer)
+        rgb[visible] = np.asarray(actor_image)[visible]
+        probability[visible] = 0.0
+        depth_buffer[visible] = depth
 
 
 def _road_distance_squared(
@@ -211,6 +410,9 @@ def render_observation(
     obstacles: Sequence[Mapping[str, object]],
     condition: str,
     seed: int,
+    *,
+    roads: Sequence[Mapping[str, object]] | None = None,
+    buildings: Sequence[Mapping[str, object]] | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Render RGB pixels and exact visible-road probabilities on the CPU.
 
@@ -218,6 +420,12 @@ def render_observation(
     The vehicle yaw rotates its forward axis counterclockwise from world x.
     Road paint and texture stay anchored in world coordinates as it moves.
     Obstacle ground footprints and their visible silhouettes are non-road.
+    When supplied, ``roads`` replaces the single route with the union of map
+    polylines (``points``, ``half_width_m``). Buildings contain ``polygon`` and
+    ``height_m`` and occlude road and actor pixels through a depth buffer.
+    Map features beyond the 100-metre camera neighbourhood are culled.
+    Unsupported elevated ways are omitted; non-drivable ways are pavement
+    visually, but never contribute to the returned road probability.
     """
     if condition not in {"day", "night", "fog"}:
         raise ValueError("condition must be 'day', 'night', or 'fog'")
@@ -231,12 +439,27 @@ def render_observation(
         raise ValueError("vehicle position and yaw must be finite")
 
     cosine, sine = np.cos(pose[2]), np.sin(pose[2])
+    camera_xy = pose[:2] + CAMERA_X_M * np.array((cosine, sine))
+    mapped = roads is not None or buildings is not None
+    building_views = _building_views(buildings or (), pose, cosine, sine)
     local_x = _GROUND_X[_GROUND_VALID]
     local_y = _GROUND_Y[_GROUND_VALID]
     world_x = (pose[0] + cosine * local_x - sine * local_y).astype(np.float32)
     world_y = (pose[1] + sine * local_x + cosine * local_y).astype(np.float32)
-    distance_squared = _road_distance_squared(world_x, world_y, road)
-    road_surface = distance_squared <= road_half_width_m * road_half_width_m
+    if roads is None:
+        distance_squared = _road_distance_squared(world_x, world_y, road)
+        road_surface = distance_squared <= road_half_width_m * road_half_width_m
+        dashed = (np.remainder(world_x, 8.0) < 4.0) & (distance_squared < 0.055**2)
+        edge = road_surface & (distance_squared > max(0.0, road_half_width_m - 0.09) ** 2)
+        painted_surface = road_surface.copy()
+    else:
+        painted_surface, road_surface, dashed, edge = _mapped_road_masks(world_x, world_y, roads, camera_xy)
+    if mapped:
+        in_range = np.hypot(world_x - camera_xy[0], world_y - camera_xy[1]) <= MAP_RENDER_RANGE_M
+        road_surface &= in_range
+        painted_surface &= in_range
+        dashed &= in_range
+        edge &= in_range
 
     rng = np.random.default_rng(seed)
     texture_phase = rng.uniform(0.0, 2.0 * np.pi, size=3)
@@ -247,14 +470,23 @@ def render_observation(
     ground = np.empty((len(world_x), 3), dtype=np.float32)
     ground[:] = (72, 113, 65)
     ground += (texture * 2.2)[:, None]
-    ground[road_surface] = np.array((91, 96, 100)) + texture[road_surface, None]
+    ground[painted_surface] = np.array((91, 96, 100)) + texture[painted_surface, None]
+    ground[painted_surface & ~road_surface] = (142, 141, 132)
 
     # Dashed paint follows world x, ensuring forward motion is visible even
     # on a straight, constant-width road.  It is never added outside asphalt.
-    dashed = (np.remainder(world_x, 8.0) < 4.0) & (distance_squared < 0.055**2)
-    edge = road_surface & (distance_squared > max(0.0, road_half_width_m - 0.09) ** 2)
     ground[dashed & road_surface] = (220, 199, 113)
     ground[edge] = (219, 222, 214)
+
+    for polygon, _local, _height, _base in building_views:
+        lower, upper = polygon.min(axis=0), polygon.max(axis=0)
+        candidate = (world_x >= lower[0]) & (world_x <= upper[0]) & (world_y >= lower[1]) & (world_y <= upper[1])
+        if not candidate.any():
+            continue
+        indices = np.flatnonzero(candidate)
+        footprint = indices[point_in_polygon(world_x[candidate], world_y[candidate], polygon)]
+        road_surface[footprint] = False
+        ground[footprint] = (127, 128, 122)
 
     obstacle_views: list[tuple[float, float, float, str]] = []
     for obstacle in obstacles:
@@ -303,10 +535,18 @@ def render_observation(
 
     occlusion = Image.new("L", (WIDTH, HEIGHT), 0)
     mask_drawing = ImageDraw.Draw(occlusion)
-    for x_forward, y_left, radius, kind in sorted(obstacle_views, key=lambda item: item[0], reverse=True):
-        _draw_obstacle(drawing, mask_drawing, x_forward, y_left, radius, kind, condition)
+    if not mapped:
+        for x_forward, y_left, radius, kind in sorted(obstacle_views, key=lambda item: item[0], reverse=True):
+            _draw_obstacle(drawing, mask_drawing, x_forward, y_left, radius, kind, condition)
     probability = np.zeros((HEIGHT, WIDTH), dtype=np.float32)
     probability[_GROUND_VALID] = road_surface.astype(np.float32)
+    if mapped:
+        pixels = np.asarray(image).copy()
+        depth_buffer = np.full((HEIGHT, WIDTH), np.inf, dtype=np.float64)
+        depth_buffer[_GROUND_VALID] = _GROUND_X[_GROUND_VALID] - CAMERA_X_M
+        _draw_buildings(pixels, probability, depth_buffer, building_views, condition)
+        _draw_depth_actors(pixels, probability, depth_buffer, obstacle_views, condition)
+        return pixels, probability
     probability[np.asarray(occlusion) != 0] = 0.0
     return np.asarray(image).copy(), probability
 

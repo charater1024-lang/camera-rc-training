@@ -8,7 +8,7 @@
   const keyMap = {KeyW: "forward", ArrowUp: "forward", KeyA: "left", ArrowLeft: "left", KeyS: "brake", ArrowDown: "brake", Space: "brake", KeyD: "right", ArrowRight: "right"};
   const keys = new Set();
   const pointerKeys = new Map();
-  let state = null, connected = false, actionPending = false, followVehicle = false;
+  let state = null, connected = false, actionPending = false, followVehicle = false, mapZoom = 1;
   let scenarioSignature = "", lastSession = null, lastAnnounced = "", eventsSignature = "", actionError = "";
   let actionGeneration = 0;
   let controlsPending = false, controlsDirty = false, lastControlError = false;
@@ -43,7 +43,10 @@
     fog: ["제한된 가시거리", "관측 거리가 정지에 필요한 경로보다 짧은 상황을 확인합니다."],
     sensor_freeze: ["카메라 프레임 동결", "시뮬레이션 3초 후 노출 시각과 프레임 식별자가 멈춥니다."],
     sensor_dropout: ["카메라 관측 손실", "시뮬레이션 3초 후 카메라 증거가 사라집니다."],
-    braking_degraded: ["제동 성능 저하", "제동 가능 상태가 실패하고 합성 감속 성능도 낮아집니다."]
+    braking_degraded: ["제동 성능 저하", "제동 가능 상태가 실패하고 합성 감속 성능도 낮아집니다."],
+    seoul_day: ["서울 성수 · 주간 도심", "실제 OSM 도로·건물 지도 위에서 합성 차량·보행자·콘과 주행합니다."],
+    seoul_night: ["서울 성수 · 야간 도심", "실제 지도와 어두운 합성 카메라를 사용합니다. 거리·추적은 합성 정답입니다."],
+    seoul_hazard: ["서울 성수 · 복합 장애물", "도심 지도에 배치된 합성 교통과 복합 위험 상황의 정지·거부를 확인합니다."]
   };
   function showError(message) { text("error-banner", String(message)); $("error-banner").hidden = !message; }
   function announce(message) { if (message !== lastAnnounced) { text("announcer", message); lastAnnounced = message; } }
@@ -171,7 +174,7 @@
     if (!snapshot || typeof snapshot !== "object" || !snapshot.vehicle || !snapshot.world) throw new Error("시뮬레이터 상태 형식이 올바르지 않습니다.");
     const previous = state; state = snapshot;
     if (previous && (previous.mode !== state.mode || previous.running && !state.running || previous.session_id !== state.session_id)) releaseControls();
-    if (snapshot.session_id !== lastSession) { lastSession = snapshot.session_id; for (const item of images) item.version = null; }
+    if (snapshot.session_id !== lastSession) { lastSession = snapshot.session_id; mapZoom = 1; for (const item of images) item.version = null; }
     fillScenarios(snapshot.scenarios);
     if (!selectedScenarioDirty && snapshot.scenario?.id) { $("scenario").value = snapshot.scenario.id; describeScenario(); }
     if (!selectedSeedDirty && number(snapshot.seed)) $("seed").value = snapshot.seed;
@@ -210,6 +213,18 @@
     $("metric-collisions").classList.toggle("alert-value", number(metrics.collisions) && metrics.collisions > 0);
     $("metric-offroad").classList.toggle("alert-value", number(metrics.offroad_events) && metrics.offroad_events > 0);
     text("metric-goal", metrics.goal_reached === true ? "도달" : metrics.goal_reached === false ? "미도달" : "—");
+    const region = snapshot.world.region, city = region && typeof region === "object";
+    for (const id of ["region-summary", "map-attribution", "region-assumptions"]) $(id).hidden = !city;
+    canvas.setAttribute("aria-label", city ? `${region.name || "서울 지역"} 실제 지도와 합성 차량·장애물·주행 경로` : "차량, 도로, 장애물, 제안 경로의 위에서 본 합성 세계");
+    if (city) {
+      const roads = Array.isArray(region.roads) ? region.roads : [], buildings = Array.isArray(region.buildings) ? region.buildings : [];
+      const actors = Array.isArray(snapshot.world.obstacles) ? snapshot.world.obstacles : [];
+      const count = (kind) => actors.filter((item) => item.kind === kind).length;
+      const moving = actors.filter((item) => number(item.vx_mps) && number(item.vy_mps) && Math.hypot(item.vx_mps,item.vy_mps) > .01).length;
+      text("region-name", region.name || "서울 성수 지역");
+      text("region-counts", `도로·보행로 ${format(roads.length)} · 건물 윤곽 ${format(buildings.length)}${number(snapshot.world.route_length_m) ? ` · 주행 경로 ${format(snapshot.world.route_length_m)}m` : ""}`);
+      text("actor-counts", `합성 교통 · 차량 ${count("vehicle")} · 보행자 ${count("pedestrian")} · 콘 ${count("cone")} · 움직이는 객체 ${moving}`);
+    }
     updateEvents(snapshot.events); drawWorld();
     const version = `${snapshot.session_id || "local"}-${snapshot.seed}-${snapshot.step}-${snapshot.mode}-${snapshot.scenario?.id || "scene"}`;
     for (const item of images) updateImage(item, version);
@@ -235,62 +250,133 @@
     }
     return clipped;
   }
+  function projectWorldPoint(point, viewport) {
+    const {width, height, centerX, centerY, scale, eastNorth} = viewport;
+    return eastNorth
+      ? [width / 2 + (point[0] - centerX) * scale, height / 2 - (point[1] - centerY) * scale]
+      : [width / 2 - (point[1] - centerY) * scale, height / 2 - (point[0] - centerX) * scale];
+  }
   function drawWorld() {
     if (!context || !state) return;
     const width = canvas.clientWidth, height = canvas.clientHeight, ratio = Math.min(window.devicePixelRatio || 1, 2);
     if (!width || !height) return;
     if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) { canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio); }
     context.setTransform(ratio, 0, 0, ratio, 0, 0); context.clearRect(0, 0, width, height);
-    context.fillStyle = "#edf2ef"; context.fillRect(0, 0, width, height);
-    const world = state.world, car = state.vehicle;
+    const world = state.world, car = state.vehicle, region = world.region;
+    const city = region && typeof region === "object", eastNorth = city || world.coordinates === "east_north_m";
+    context.fillStyle = city ? "#edf0e9" : "#edf2ef"; context.fillRect(0, 0, width, height);
     const validPoint = (point) => Array.isArray(point) && point.length >= 2 && number(point[0]) && number(point[1]);
     const road = Array.isArray(world.road_points) ? world.road_points.filter(validPoint) : [];
     if (road.length < 2 || !number(car.x_m) || !number(car.y_m)) return;
     const halfWidth = number(world.road_half_width_m) ? Math.max(0, world.road_half_width_m) : 0;
     const obstacles = Array.isArray(world.obstacles) ? world.obstacles.filter((item) => number(item.x_m) && number(item.y_m) && number(item.radius_m)) : [];
-    const course = number(world.goal_x_m) ? clipRoadToXRange(road, Math.min(0,car.x_m)-6, Math.max(world.goal_x_m,car.x_m)+10) : road;
+    const roads = city && Array.isArray(region.roads) ? region.roads.map((item) => ({...item, points: Array.isArray(item.points) ? item.points.filter(validPoint) : []})).filter((item) => item.points.length > 1) : [];
+    const buildings = city && Array.isArray(region.buildings) ? region.buildings.map((item) => ({...item, polygon: Array.isArray(item.polygon) ? item.polygon.filter(validPoint) : []})).filter((item) => item.polygon.length > 2) : [];
+    const course = city ? road : number(world.goal_x_m) ? clipRoadToXRange(road, Math.min(0,car.x_m)-6, Math.max(world.goal_x_m,car.x_m)+10) : road;
     const bounds = [...course, [car.x_m, car.y_m], ...obstacles.map((item) => [item.x_m, item.y_m])];
-    const xs = bounds.map((point) => point[0]), ys = bounds.map((point) => point[1]);
-    const margin = halfWidth + 5;
-    let minX = Math.min(...xs) - margin, maxX = Math.max(...xs) + margin, minY = Math.min(...ys) - margin, maxY = Math.max(...ys) + margin;
+    if (city) { for (const item of roads) bounds.push(...item.points); for (const item of buildings) bounds.push(...item.polygon); }
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const [x,y] of bounds) { minX = Math.min(minX,x); maxX = Math.max(maxX,x); minY = Math.min(minY,y); maxY = Math.max(maxY,y); }
+    const margin = city ? 12 : halfWidth + 5;
+    minX -= margin; maxX += margin; minY -= margin; maxY += margin;
     let centerX = (minX + maxX) / 2, centerY = (minY + maxY) / 2;
-    let scale = Math.min((width - 48) / Math.max(1, maxY - minY), (height - 75) / Math.max(1, maxX - minX));
-    if (followVehicle) { centerX = car.x_m + 12; centerY = car.y_m; scale = Math.min(width / 46, height / 54); }
+    let scale = eastNorth
+      ? Math.min((width - 42) / Math.max(1,maxX-minX),(height - 45) / Math.max(1,maxY-minY))
+      : Math.min((width - 48) / Math.max(1,maxY-minY),(height - 75) / Math.max(1,maxX-minX));
+    if (followVehicle) {
+      const yaw = number(car.yaw_rad) ? car.yaw_rad : 0, lookAhead = city ? 9 : 12;
+      centerX = car.x_m + Math.cos(yaw) * lookAhead; centerY = car.y_m + Math.sin(yaw) * lookAhead;
+      scale = city ? Math.min(width / 110,height / 90) : Math.min(width / 46,height / 54);
+    }
+    scale *= mapZoom;
     if (!number(scale) || scale <= 0) return;
-    const project = (x, y) => [width / 2 - (y - centerY) * scale, height / 2 - (x - centerX) * scale];
-    const path = (points) => { context.beginPath(); points.forEach((point, index) => { const [x,y] = project(point[0], point[1]); if (!index) context.moveTo(x,y); else context.lineTo(x,y); }); };
-    const gridSpacing = 5;
-    minX = centerX - height / scale / 2; maxX = centerX + height / scale / 2; minY = centerY - width / scale / 2; maxY = centerY + width / scale / 2;
-    context.strokeStyle = "#dde6e2"; context.lineWidth = .65;
-    for (let x = Math.ceil(minX / gridSpacing) * gridSpacing; x < maxX; x += gridSpacing) { path([[x,minY],[x,maxY]]); context.stroke(); }
-    for (let y = Math.ceil(minY / gridSpacing) * gridSpacing; y < maxY; y += gridSpacing) { path([[minX,y],[maxX,y]]); context.stroke(); }
+    const viewport = {width,height,centerX,centerY,scale,eastNorth};
+    const project = (x,y) => projectWorldPoint([x,y],viewport);
+    const path = (points, close = false) => { context.beginPath(); points.forEach((point,index) => { const [x,y] = project(point[0],point[1]); if (!index) context.moveTo(x,y); else context.lineTo(x,y); }); if (close) context.closePath(); };
+    const gridSpacing = city ? (scale > 4 ? 5 : scale > 2 ? 10 : scale > .8 ? 25 : 50) : 5;
+    minX = centerX - (eastNorth ? width : height) / scale / 2; maxX = centerX + (eastNorth ? width : height) / scale / 2;
+    minY = centerY - (eastNorth ? height : width) / scale / 2; maxY = centerY + (eastNorth ? height : width) / scale / 2;
+    context.strokeStyle = city ? "#dfe6db" : "#dde6e2"; context.lineWidth = .6;
+    for (let x = Math.ceil(minX/gridSpacing)*gridSpacing; x < maxX; x += gridSpacing) { path([[x,minY],[x,maxY]]); context.stroke(); }
+    for (let y = Math.ceil(minY/gridSpacing)*gridSpacing; y < maxY; y += gridSpacing) { path([[minX,y],[maxX,y]]); context.stroke(); }
     context.lineJoin = "round"; context.lineCap = "round";
-    path(road); context.lineWidth = 2 * halfWidth * scale + 3; context.strokeStyle = "#bacdca"; context.stroke();
-    path(road); context.lineWidth = Math.max(.5, 2 * halfWidth * scale); context.strokeStyle = "#d2dedb"; context.stroke();
-    path(road); context.lineWidth = 1; context.strokeStyle = "#f7faf8"; context.setLineDash([7,8]); context.stroke(); context.setLineDash([]);
-    if (number(world.goal_x_m)) {
-      const nearest = road.reduce((best, point) => Math.abs(point[0] - world.goal_x_m) < Math.abs(best[0] - world.goal_x_m) ? point : best);
-      path([[world.goal_x_m,nearest[1] - halfWidth],[world.goal_x_m,nearest[1] + halfWidth]]); context.lineWidth = 1.5; context.strokeStyle = "#79a793"; context.setLineDash([3,3]); context.stroke(); context.setLineDash([]);
-      const [gx,gy] = project(world.goal_x_m, nearest[1]); context.fillStyle = "#729687"; context.font = "9px system-ui"; context.textAlign = "center"; context.fillText("GOAL",gx,gy - 8);
+    if (city) {
+      // Each footprint and road is its own path; disconnected OSM ways are never joined.
+      for (const building of buildings) {
+        path(building.polygon,true); context.fillStyle = "#dce2d6"; context.fill(); context.strokeStyle = "#c4cfc0"; context.lineWidth = .7; context.stroke();
+      }
+      for (const item of roads) {
+        const roadWidth = number(item.half_width_m) ? Math.max(0,item.half_width_m)*2*scale : 1;
+        path(item.points); context.lineWidth = roadWidth + 1.6; context.strokeStyle = "#c7d1c8"; context.stroke();
+      }
+      for (const item of roads) {
+        const roadWidth = number(item.half_width_m) ? Math.max(0,item.half_width_m)*2*scale : 1;
+        path(item.points); context.lineWidth = Math.max(.7,roadWidth); context.strokeStyle = ["footway","path","pedestrian","steps"].includes(item.highway) ? "#e5eadd" : "#fafbf6"; context.stroke();
+      }
+      const names = new Set(), labelCenters = [];
+      for (const item of roads) {
+        if (typeof item.name !== "string" || !item.name || names.has(item.name) || names.size >= 18) continue;
+        const middle = item.points[Math.floor(item.points.length/2)], [x,y] = project(middle[0],middle[1]);
+        const first = project(item.points[0][0],item.points[0][1]), last = project(item.points.at(-1)[0],item.points.at(-1)[1]);
+        if (Math.hypot(first[0]-last[0],first[1]-last[1]) < 40 || x < 50 || x > width-50 || y < 48 || y > height-32 || labelCenters.some((point) => Math.hypot(point[0]-x,point[1]-y)<65)) continue;
+        context.font = "9px system-ui"; context.textAlign = "center"; context.lineWidth = 3; context.strokeStyle = "#fafbf4"; context.strokeText(item.name,x,y); context.fillStyle = "#82917f"; context.fillText(item.name,x,y);
+        names.add(item.name); labelCenters.push([x,y]);
+      }
+      path(road); context.lineWidth = 7; context.strokeStyle = "#ffffffd9"; context.stroke();
+      path(road); context.lineWidth = 3.8; context.strokeStyle = "#458f847d"; context.stroke();
+      path(road); context.lineWidth = 1.5; context.strokeStyle = "#388f83"; context.setLineDash([4,5]); context.stroke(); context.setLineDash([]);
+    } else {
+      path(road); context.lineWidth = 2*halfWidth*scale+3; context.strokeStyle = "#bacdca"; context.stroke();
+      path(road); context.lineWidth = Math.max(.5,2*halfWidth*scale); context.strokeStyle = "#d2dedb"; context.stroke();
+      path(road); context.lineWidth = 1; context.strokeStyle = "#f7faf8"; context.setLineDash([7,8]); context.stroke(); context.setLineDash([]);
+    }
+    const marker = (point,label,color) => {
+      const [x,y] = project(point[0],point[1]); context.beginPath(); context.arc(x,y,5,0,Math.PI*2); context.fillStyle = "#fff"; context.fill(); context.lineWidth = 2; context.strokeStyle = color; context.stroke();
+      context.font = "bold 9px system-ui"; context.textAlign = "center"; context.lineWidth = 4; context.strokeStyle = "#fbfcf7"; context.strokeText(label,x,y-10); context.fillStyle = color; context.fillText(label,x,y-10);
+    };
+    if (city) {
+      marker(road[0],"출발", "#648ba3");
+      marker(validPoint(world.goal_position_m) ? world.goal_position_m : road.at(-1),"목표", "#197d6f");
+    } else if (number(world.goal_x_m)) {
+      const candidates = clipRoadToXRange(road,world.goal_x_m,world.goal_x_m);
+      const goal = candidates[0] || road.reduce((best,point) => Math.abs(point[0]-world.goal_x_m)<Math.abs(best[0]-world.goal_x_m)?point:best);
+      path([[world.goal_x_m,goal[1]-halfWidth],[world.goal_x_m,goal[1]+halfWidth]]); context.lineWidth = 1.5; context.strokeStyle = "#79a793"; context.setLineDash([3,3]); context.stroke(); context.setLineDash([]);
+      const [gx,gy] = project(world.goal_x_m,goal[1]); context.fillStyle = "#729687"; context.font = "9px system-ui"; context.textAlign = "center"; context.fillText("GOAL",gx,gy-8);
     }
     const planned = Array.isArray(state.plan_world) ? state.plan_world.filter(validPoint) : [];
-    if (planned.length > 1) { path(planned); context.lineWidth = 3; context.strokeStyle = "#259f9da8"; context.stroke(); path(planned); context.lineWidth = 1; context.strokeStyle = "#d5f4ec"; context.setLineDash([3,5]); context.stroke(); context.setLineDash([]); }
+    if (planned.length > 1) { path(planned); context.lineWidth = 3; context.strokeStyle = "#159eacd9"; context.stroke(); path(planned); context.lineWidth = 1; context.strokeStyle = "#dcf9f5"; context.setLineDash([3,5]); context.stroke(); context.setLineDash([]); }
     for (const item of obstacles) {
-      const [x,y] = project(item.x_m,item.y_m), radius = Math.max(2.5,item.radius_m * scale);
-      context.beginPath(); context.arc(x,y,radius + 3,0,Math.PI * 2); context.fillStyle = "#d4945620"; context.fill();
-      context.beginPath(); context.arc(x,y,radius,0,Math.PI * 2); context.fillStyle = item.kind === "pedestrian" ? "#ca785e" : "#d29960"; context.fill(); context.lineWidth = 1.2; context.strokeStyle = "#fff5e8"; context.stroke();
+      const [x,y] = project(item.x_m,item.y_m), radius = Math.max(3,item.radius_m*scale);
+      if (x < -radius || y < -radius || x > width+radius || y > height+radius) continue;
+      const moving = number(item.vx_mps) && number(item.vy_mps) && Math.hypot(item.vx_mps,item.vy_mps) > .01;
+      if (moving) { const [tx,ty] = project(item.x_m+item.vx_mps*.8,item.y_m+item.vy_mps*.8); context.beginPath(); context.moveTo(x,y); context.lineTo(tx,ty); context.lineWidth = 1.2; context.strokeStyle = item.kind === "pedestrian" ? "#c8806c88" : "#7f9cad88"; context.stroke(); }
+      context.save(); context.translate(x,y);
+      if (item.kind === "vehicle") {
+        const heading = number(item.yaw_rad) ? item.yaw_rad : moving ? Math.atan2(item.vy_mps,item.vx_mps) : 0;
+        context.rotate(eastNorth ? Math.PI/2-heading : -heading);
+        context.beginPath(); context.roundRect(-radius*.55,-radius,radius*1.1,radius*2,Math.min(2,radius/3)); context.fillStyle = moving ? "#6d91a8" : "#91a6ae"; context.fill(); context.lineWidth = 1; context.strokeStyle = "#fff"; context.stroke();
+        if (radius > 4) { context.fillStyle = "#cce0e6"; context.fillRect(-radius*.36,-radius*.55,radius*.72,radius*.42); }
+      } else if (item.kind === "cone") {
+        context.beginPath(); context.moveTo(0,-radius); context.lineTo(-radius*.8,radius*.7); context.lineTo(radius*.8,radius*.7); context.closePath(); context.fillStyle = "#dca05e"; context.fill(); context.lineWidth = .8; context.strokeStyle = "#fff7e7"; context.stroke();
+        context.beginPath(); context.moveTo(-radius*.36,0); context.lineTo(radius*.36,0); context.strokeStyle = "#fff7e7"; context.lineWidth = Math.max(1,radius*.2); context.stroke();
+      } else {
+        context.beginPath(); context.arc(0,0,radius,0,Math.PI*2); context.fillStyle = item.kind === "pedestrian" ? "#c87f70" : "#d29960"; context.fill(); context.lineWidth = 1.1; context.strokeStyle = "#fff7ee"; context.stroke();
+        if (item.kind === "pedestrian" && radius > 3.5) { context.beginPath(); context.arc(0,-radius*.2,radius*.3,0,Math.PI*2); context.fillStyle = "#ffe9dd"; context.fill(); }
+      }
+      context.restore();
     }
     const [cx,cy] = project(car.x_m,car.y_m);
-    context.beginPath(); context.arc(cx,cy,15,0,Math.PI * 2); context.fillStyle = "#138a7b16"; context.fill();
-    context.save(); context.translate(cx,cy); context.rotate(number(car.yaw_rad) ? -car.yaw_rad : 0);
+    context.beginPath(); context.arc(cx,cy,15,0,Math.PI*2); context.fillStyle = "#138a7b16"; context.fill();
+    context.save(); context.translate(cx,cy); const yaw = number(car.yaw_rad) ? car.yaw_rad : 0; context.rotate(eastNorth ? Math.PI/2-yaw : -yaw);
     context.fillStyle = "#d7e9e5"; context.strokeStyle = "#fff"; context.lineWidth = 1.2; context.beginPath(); context.roundRect(-6.5,-11,13,22,4); context.fill(); context.stroke();
-    context.fillStyle = "#128478"; context.beginPath(); context.roundRect(-5.5,-10,11,20,3); context.fill();
-    context.fillStyle = "#a9e0d5"; context.beginPath(); context.roundRect(-4,-6,8,5,1); context.fill(); context.fillStyle = "#58aa9a"; context.fillRect(-3.5,5,7,3);
+    context.fillStyle = "#128478"; context.beginPath(); context.roundRect(-5.5,-10,11,20,3); context.fill(); context.fillStyle = "#a9e0d5"; context.beginPath(); context.roundRect(-4,-6,8,5,1); context.fill(); context.fillStyle = "#58aa9a"; context.fillRect(-3.5,5,7,3);
     context.beginPath(); context.moveTo(0,-18); context.lineTo(-3,-14); context.lineTo(3,-14); context.closePath(); context.fillStyle = "#05776d"; context.fill(); context.restore();
-    context.strokeStyle = "#94aaa5"; context.fillStyle = "#8da39e"; context.lineWidth = 1; context.beginPath(); context.moveTo(22,height-21); context.lineTo(22,height-37); context.moveTo(19,height-33); context.lineTo(22,height-37); context.lineTo(25,height-33); context.stroke(); context.font = "8px system-ui"; context.textAlign = "left"; context.fillText("+x",29,height-27);
-    const scaleMetres = scale > 8 ? 2 : scale > 3 ? 5 : 10;
-    $("world-scale").querySelector("span").style.width = `${scaleMetres * scale}px`; $("world-scale").querySelector("small").textContent = `${scaleMetres} m`;
-    text("world-coordinate", `전방 +x / 좌측 +y · 차량 기호는 도식`);
+    context.strokeStyle = "#94aaa5"; context.fillStyle = "#8da39e"; context.lineWidth = 1; context.beginPath(); context.moveTo(22,height-21); context.lineTo(22,height-37); context.moveTo(19,height-33); context.lineTo(22,height-37); context.lineTo(25,height-33); context.stroke(); context.font = "9px system-ui"; context.textAlign = "left"; context.fillText(eastNorth?"N":"+x",29,height-27);
+    const scaleMetres = [1,2,5,10,20,50,100,200].filter((value) => value*scale <= 75).at(-1) || 1;
+    $("world-scale").querySelector("span").style.width = `${scaleMetres*scale}px`; $("world-scale").querySelector("small").textContent = `${scaleMetres} m`;
+    text("world-coordinate", eastNorth ? "동쪽 +x / 북쪽 +y · 객체 기호는 도식" : "전방 +x / 좌측 +y · 객체 기호는 도식");
+    $("view-fit").textContent = city ? "지역 전체" : "전체 보기";
+    $("zoom-out").disabled = mapZoom <= .7; $("zoom-in").disabled = mapZoom >= 8;
   }
   async function poll() {
     const generation = actionGeneration;
@@ -316,7 +402,10 @@
   $("scenario").addEventListener("change", () => { selectedScenarioDirty = true; describeScenario(); });
   $("seed").addEventListener("input", () => { selectedSeedDirty = true; });
   $("export-report").addEventListener("click", (event) => { if (!connected) event.preventDefault(); });
-  $("view-toggle").addEventListener("click", () => { followVehicle = !followVehicle; $("view-toggle").setAttribute("aria-pressed", String(followVehicle)); text("view-toggle", followVehicle ? "전체 경로 보기" : "차량 따라가기"); drawWorld(); });
+  $("view-toggle").addEventListener("click", () => { followVehicle = !followVehicle; mapZoom = 1; $("view-toggle").setAttribute("aria-pressed", String(followVehicle)); drawWorld(); });
+  $("view-fit").addEventListener("click", () => { followVehicle = false; mapZoom = 1; $("view-toggle").setAttribute("aria-pressed", "false"); drawWorld(); });
+  $("zoom-out").addEventListener("click", () => { mapZoom = Math.max(.7,mapZoom/1.4); drawWorld(); });
+  $("zoom-in").addEventListener("click", () => { mapZoom = Math.min(8,mapZoom*1.4); drawWorld(); });
   document.addEventListener("keydown", (event) => {
     if (!keyMap[event.code] || /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName) || event.code === "Space" && event.target.tagName === "BUTTON" || event.target.isContentEditable || !state || state.mode !== "manual" || !state.running || actionPending || !connected) return;
     event.preventDefault(); if (event.repeat) return;
