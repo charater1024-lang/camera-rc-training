@@ -30,6 +30,8 @@ jobs:
       - name: Assert CPU-only environment
         run: python -c "import torch; assert torch.version.cuda is None; assert not torch.cuda.is_available()"
       - name: Run synthetic and mocked software tests
-        run: python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=runs/ci-test-temp
+        run: |
+          python -c "from pathlib import Path; Path('runs').mkdir(exist_ok=True)"
+          python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=runs/ci-test-temp
       - name: Check CLI entry point
         run: python -m camera_rc --help

@@ -67,6 +67,7 @@ python -m pip install torch==2.9.1 torchvision==0.24.1 --index-url https://downl
 python -m pip install -e '.[test]' -c constraints/cpu.txt
 python -m pip check
 python -m camera_rc --help
+python -c "from pathlib import Path; Path('runs').mkdir(exist_ok=True)"
 python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=runs/cpu-check-001
 ```
 

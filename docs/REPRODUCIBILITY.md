@@ -16,6 +16,7 @@ python -m pip install torch==2.9.1 torchvision==0.24.1 --index-url https://downl
 python -m pip install -e '.[test]' -c constraints/cpu.txt
 python -m pip check
 python -m camera_rc --help
+python -c "from pathlib import Path; Path('runs').mkdir(exist_ok=True)"
 python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=runs/cpu-check-001
 ```
 
@@ -29,6 +30,7 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip check
 .\.venv\Scripts\python.exe -m camera_rc --help
 $env:CUDA_VISIBLE_DEVICES = ''
+.\.venv\Scripts\python.exe -c "from pathlib import Path; Path('runs').mkdir(exist_ok=True)"
 .\.venv\Scripts\python.exe -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=runs/cpu-check-001
 ```
 
