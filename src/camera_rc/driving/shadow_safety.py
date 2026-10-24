@@ -214,7 +214,29 @@ class ShadowSafetySupervisor:
                                   required_stopping_distance_m=distance, checked_cells=cells)
         return ShadowDecision("PROPOSAL_ELIGIBLE", ("supplied_offline_evidence_passed",), True, distance, cells)
 
-    def _check(self, plan, state, scene, now):
+    def recheck(self, plan, state, scene, now_s):
+        """Revalidate an already consumed immutable observation at control rate.
+
+        Does not count another healthy camera cycle or accept a new sequence.
+        Braking, age, dynamic reachability and all geometry are recomputed.
+        """
+        try:
+            _require(_number(now_s) and (self._last_now is None or now_s > self._last_now), "nonmonotonic_review_clock")
+            self._last_now = now_s
+            distance, cells = self._check(plan, state, scene, now_s, consume_new=False)
+        except _Reject as exc:
+            self._latched, self._healthy_cycles = True, 0
+            return ShadowDecision("LATCHED_STOP", (str(exc),))
+        except (TypeError, ValueError, AttributeError, KeyError, OverflowError):
+            self._latched, self._healthy_cycles = True, 0
+            return ShadowDecision("LATCHED_STOP", ("malformed_evidence",))
+        if self._latched:
+            return ShadowDecision("LATCHED_STOP", ("explicit_stopped_reset_required",))
+        eligible = self._healthy_cycles >= self.policy.healthy_cycles_to_reset
+        return ShadowDecision("PROPOSAL_ELIGIBLE" if eligible else "WARMUP_STOP",
+            ("supplied_offline_evidence_passed" if eligible else "fresh_healthy_cycles_required",), eligible, distance, cells)
+
+    def _check(self, plan, state, scene, now, *, consume_new=True):
         p = self.policy
         _require(isinstance(scene, SceneEvidence) and isinstance(state, VehicleState)
                  and isinstance(plan, Plan), "invalid_input_contract")
@@ -252,16 +274,19 @@ class ShadowSafetySupervisor:
             _require(evidence.artifact_sha256 == self._artifacts[evidence.name], "producer_identity_mismatch")
             _require(_number(evidence.captured_at_s) and 0 <= now - evidence.captured_at_s <= p.max_observation_age_s,
                      "stale_or_future_observation")
-            _require(evidence.captured_at_s > self._captures.get(evidence.name, -math.inf), "frozen_or_reversed_capture")
+            _require((evidence.captured_at_s > self._captures.get(evidence.name, -math.inf)) if consume_new
+                     else evidence.captured_at_s == self._captures.get(evidence.name), "frozen_or_reversed_capture")
             _require(type(evidence.sequence) is int and evidence.sequence >= 0
-                     and evidence.sequence > self._sequences.get(evidence.name, -1), "replayed_observation")
+                     and ((evidence.sequence > self._sequences.get(evidence.name, -1)) if consume_new
+                          else evidence.sequence == self._sequences.get(evidence.name)), "replayed_observation")
             stamps.append(evidence.captured_at_s)
             sequences[evidence.name] = evidence.sequence
         _require(names == REQUIRED_MODULES, "missing_or_duplicate_modules")
         _require(max(stamps) - min(stamps) <= p.max_skew_s, "sensor_exposure_skew")
         # Consume validated identities even if spatial evidence then vetoes.
-        self._sequences.update(sequences)
-        self._captures.update({e.name: e.captured_at_s for e in scene.modules})
+        if consume_new:
+            self._sequences.update(sequences)
+            self._captures.update({e.name: e.captured_at_s for e in scene.modules})
         _require(plan.valid is True and _number(plan.target_speed_mps)
                  and 0 < plan.target_speed_mps <= p.max_speed_mps, "invalid_or_stop_proposal")
         _require(_number(plan.curvature) and abs(plan.curvature) <= p.max_curvature_per_m, "invalid_curvature")

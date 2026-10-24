@@ -1,4 +1,4 @@
-"""Low-speed synthetic world, vehicle dynamics and independent outcome checks.
+"""Synthetic world, adjustable speed and independent outcome checks.
 
 The default sensor is an explicitly privileged oracle. A learned callback can
 replace image semantics, while metric occupancy/tracks remain synthetic. This
@@ -7,7 +7,7 @@ is a closed-loop software demonstration, not a real-vehicle safety assessment.
 from __future__ import annotations
 
 from collections import deque
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 import math
@@ -22,11 +22,17 @@ from ..driving.shadow_safety import (
     ShadowSafetySupervisor, Track,
 )
 from ..driving.types import Command, Perception, Plan, VehicleState
-from . import rendering
+from . import rendering, objects as object_display
+from .lane import LaneCorridor, road_lane_layout
+from .traffic import TrafficScene, vehicle_clearance
+from .performance import PerformanceTracker
+from .speed import MAX_SPEED_KMH, MAX_SPEED_MPS, speed_for_distance, stopping_distance, validate_speed
+from .trajectory import pure_pursuit_rollout
 
 
 SCOPE = "synthetic_closed_loop_demo_not_vehicle_validation"
 SCENARIOS = [
+    {"id":"traffic_interaction","title":"교통 상호작용 · 왕복 2차로","description":"차로를 따라 이동·정지하는 차량과 신호 횡단 보행자의 합성 규칙 시나리오. 실제 교통 검증 아님."},
     {"id": "clear", "title": "Clear closed course", "description": "Follow a clear wide road and stop at the goal."},
     {"id": "curved", "title": "Curved road", "description": "Steering changes pose and the following camera observation."},
     {"id": "static_obstacle", "title": "Stopped obstacle", "description": "An obstacle blocks the route; autonomous mode must stop."},
@@ -39,6 +45,10 @@ SCENARIOS = [
     {"id": "seoul_day", "title": "서울 성수동 · 낮", "description": "OSM road/building geometry, 80m reference route and seeded synthetic actors; not a digital twin."},
     {"id": "seoul_night", "title": "서울 성수동 · 밤", "description": "The same mapped course with dark synthetic images and a shorter idealized visible range."},
     {"id": "seoul_hazard", "title": "서울 성수동 · 경로 장애물", "description": "A synthetic blocking vehicle on the mapped route; independent world contacts remain active."},
+    {"id": "busan_day", "title": "부산 · 해안과 구릉", "description": "지역 특성을 표현한 합성 해안·구릉 코스. 실제 도로·고도 지도가 아닙니다."},
+    {"id": "gwangju_day", "title": "광주 · 도심 평지", "description": "긴 직선과 도심 배경의 합성 코스. 실제 도로·고도 지도가 아닙니다."},
+    {"id": "suncheon_day", "title": "전남 순천 · 평야와 완만한 구릉", "description": "평야·수변과 완만한 구릉의 합성 코스. 실제 도로·고도 지도가 아닙니다."},
+    {"id": "gangwon_day", "title": "강원 산지 · 산악 곡선", "description": "고도 변화와 굽은 길의 합성 코스. 실제 도로·고도 지도가 아닙니다."},
 ]
 _SCENARIOS = {s["id"]: s for s in SCENARIOS}
 
@@ -90,6 +100,13 @@ def _polyline_projection(point, points):
     return float(np.sum(lengths[:index])+fractions[index]*lengths[index]),projections[index]
 
 
+def _arc_points(curvature, distance):
+    if abs(curvature)<1e-7:
+        return np.column_stack((distance,np.zeros_like(distance)))
+    return np.column_stack((np.sin(curvature*distance)/curvature,
+                            (1-np.cos(curvature*distance))/curvature))
+
+
 def _inside_polygon(x,y,polygon):
     x,y=np.broadcast_arrays(np.asarray(x),np.asarray(y))
     inside=np.zeros(x.shape,dtype=bool)
@@ -131,10 +148,15 @@ class Engine:
     BODY_RADIUS_M = 2.7
     ROAD_HALF_WIDTH_M = 5.5
     MAX_STEERING_RAD = 0.45
-    MAX_SPEED_MPS = 8.0  # manual negative controls only; autonomous target is 2 m/s.
+    MAX_SPEED_MPS = MAX_SPEED_MPS
     MAX_STEPS = 900
 
-    def __init__(self, scenario="clear", seed=42, mode="autonomous", perception=None, output_dir=None):
+    def __init__(self, scenario="clear", seed=42, mode="autonomous", perception=None, output_dir=None,
+                 speed_mode="automatic", target_speed_kmh=None):
+        validate_speed(speed_mode, 150.0 if target_speed_kmh is None else target_speed_kmh)
+        self.speed_mode = speed_mode
+        self._speed_explicit = target_speed_kmh is not None or speed_mode != "automatic"
+        self.target_speed_kmh = target_speed_kmh
         if perception is not None and not callable(perception):
             raise ValueError("perception must be a callable accepting RGB uint8")
         self.perception_callback = perception
@@ -190,11 +212,41 @@ class Engine:
         self._region_actors = []
         self._regional_visibility = {}
         self._road_near_origin = None
-        self.goal_x_m = 36.0
+        self._traffic=TrafficScene(seed) if self.scenario=="traffic_interaction" else None
+        self.goal_x_m = 110.0 if self._traffic else 36.0
         xs = np.arange(-20.0, 102.0, 2.0) if self.scenario == "curved" else np.array([-20.0,100.0])
+        if self._traffic is not None:
+            xs=np.array([-40.,180.])
         self._road = np.column_stack((xs, self._road_y(xs)))
-        if self.scenario.startswith('seoul_'):
+        self._course_id = self.scenario.removesuffix('_day')
+        self._extended_course = self._course_id in {'busan', 'gwangju', 'suncheon', 'gangwon'}
+        self._step_budget=6000 if self._extended_course else self.MAX_STEPS
+        if self.scenario.startswith('seoul_') or self._extended_course:
             self._prepare_region()
+        if self._region is not None:
+            reference=self._road.copy()
+        else:
+            # The outcome route starts at the initial pose and ends at the
+            # goal; the render road also contains extra approach/runoff area.
+            inner=self._road[(self._road[:,0]>0)&(self._road[:,0]<self.goal_x_m)]
+            reference=np.vstack(([0.,float(self._road_y(0.))],inner,
+                                 [self.goal_x_m,float(self._road_y(self.goal_x_m))]))
+        self._performance=PerformanceTracker(reference)
+        self._lane=LaneCorridor(reference)
+        self._road_lanes=road_lane_layout(self._lane,3.0 if self._region and not self._extended_course else 3.6)
+        self._lane_direction_allowed=True
+        self._lane_outside=False
+        self._lane_samples=0
+        self._lane_duration=0.
+        self._lane_outside_time=0.
+        self._lane_departures=0
+        self._lane_guard_allowed=True
+        self._lane_guard_checked=False
+        if not self._speed_explicit or self.target_speed_kmh is None:
+            self.target_speed_kmh = 150.0 if self._extended_course else 28.8
+        self._effective_target_mps = 2.0
+        self._speed_reasons = []
+        self._path_length_m = 8.0
         self._render_cache_key, self._render_cache = None, None
         rng = np.random.default_rng(seed)
         self._obstacle_x = 24.0 + float(rng.uniform(-0.4, 0.4))
@@ -204,20 +256,24 @@ class Engine:
                         "proposal_eligible": False, "actuation_enabled": False}
         self._controller = Controller({"wheelbase_m": self.WHEELBASE_M, "max_steering_rad": self.MAX_STEERING_RAD,
             "steering_rate_rad_s": 0.8, "lookahead_m": 4.0, "lookahead_speed_gain_s": 0.2,
-            "max_speed_mps": 2.0, "max_accel_mps2": 1.0, "max_decel_mps2": 3.0,
+            "max_speed_mps": MAX_SPEED_MPS, "max_accel_mps2": 1.0, "max_decel_mps2": 3.0,
             "max_throttle": 1.0, "nominal_dt_s": self.DT_S, "stop_to_align": False})
         self._policy = ShadowPolicy(clock_id="sim_fixed_dt", calibration_sha256=_digest("synthetic_chase_camera_v1"),
             artifacts={n:_digest("synthetic_v1_"+n) for n in REQUIRED_MODULES},
             allowed_conditions=("synthetic_day", "synthetic_night", "synthetic_fog"),
-            max_speed_mps=4.0, min_braking_deceleration_mps2=3.0, acceleration_during_delay_mps2=0.5,
+            max_speed_mps=MAX_SPEED_MPS+.12, min_braking_deceleration_mps2=3.0, acceleration_during_delay_mps2=0.5,
             reaction_bound_s=0.2, stopping_margin_m=0.3, body_radius_m=self.BODY_RADIUS_M,
             lateral_margin_m=0.1, max_localization_error_m=0.1, max_speed_error_mps=0.1,
             max_motion_compensation_error_m=0.1, max_observation_age_s=0.15, max_state_age_s=0.15,
             max_plan_age_s=0.15, max_skew_s=0.05, max_curvature_per_m=0.3,
             max_lateral_acceleration_mps2=2.0, max_path_sampling_m=0.12,
-            healthy_cycles_to_reset=2)
+            healthy_cycles_to_reset=2, max_path_points=8192, max_dense_points=8192)
         self._supervisor = ShadowSafetySupervisor(self._policy)
+        if self._extended_course or self._speed_explicit:
+            self._plan()
         self._rgb, self._probability = self._render()
+        self._object_view=self._capture_objects()
+        self._object_frame_frozen=False
         if self.perception_callback is not None:
             self._probability = np.zeros_like(self._probability)
             self._model_error = "inference_pending"
@@ -235,7 +291,11 @@ class Engine:
 
     def _prepare_region(self):
         from .region import load_region
-        self._region=load_region()
+        if self._extended_course:
+            from .terrain import load_course
+            self._region=load_course(self._course_id)
+        else:
+            self._region=load_region()
         self._road=np.asarray(self._region['route']['points'],dtype=float)
         self._route_length=float(np.linalg.norm(np.diff(self._road,axis=0),axis=1).sum())
         self._car.x_m,self._car.y_m=map(float,self._road[0])
@@ -279,22 +339,40 @@ class Engine:
         indices=np.flatnonzero(np.sum(delta*delta,axis=1)<=distance*distance)
         return [self._buildings[int(index)] for index in indices]
 
-    def _road_union_margin(self,x,y):
+    def _road_union_margin(self,x,y,search_radius=35.):
         x,y=np.broadcast_arrays(np.asarray(x),np.asarray(y))
         origin=np.array([self._car.x_m,self._car.y_m])
-        if self._road_near_origin is None or np.linalg.norm(origin-self._road_near_origin)>2:
+        if (self._road_near_origin is None or np.linalg.norm(origin-self._road_near_origin)>2
+                or getattr(self,'_road_search_radius',None)!=search_radius):
             delta=np.maximum(np.maximum(self._segment_low-origin,origin-self._segment_high),0)
-            self._near_segment_indices=np.flatnonzero(np.sum(delta*delta,axis=1)<=35**2)
+            self._near_segment_indices=np.flatnonzero(np.sum(delta*delta,axis=1)<=search_radius**2)
             self._road_near_origin=origin
+            self._road_search_radius=search_radius
         margin=np.full(x.shape,-np.inf)
         for index in self._near_segment_indices:
             a,b=self._segments_a[index],self._segments_b[index]
             vector=b-a
-            fraction=np.clip(((x-a[0])*vector[0]+(y-a[1])*vector[1])/float(vector@vector),0,1)
-            margin=np.maximum(margin,self._segment_widths[index]-np.hypot(x-a[0]-fraction*vector[0],y-a[1]-fraction*vector[1]))
+            candidate=((x>=self._segment_low[index,0])&(x<=self._segment_high[index,0])
+                       &(y>=self._segment_low[index,1])&(y<=self._segment_high[index,1]))
+            if not np.any(candidate):continue
+            px,py=x[candidate],y[candidate]
+            fraction=np.clip(((px-a[0])*vector[0]+(py-a[1])*vector[1])/float(vector@vector),0,1)
+            margin[candidate]=np.maximum(margin[candidate],self._segment_widths[index]-np.hypot(px-a[0]-fraction*vector[0],py-a[1]-fraction*vector[1]))
         return margin
 
     def _body_inside_road_union(self):
+        origin=np.array([self._car.x_m,self._car.y_m])
+        # A disk contained in one road capsule is already a complete geometric
+        # certificate. Only intersections need the more costly union cover.
+        delta=np.maximum(np.maximum(self._segment_low-origin,origin-self._segment_high),0)
+        indices=np.flatnonzero(np.sum(delta*delta,axis=1)<=self.BODY_RADIUS_M**2)
+        if len(indices):
+            starts=self._segments_a[indices]
+            vectors=self._segments_b[indices]-starts
+            fractions=np.clip(np.sum((origin-starts)*vectors,axis=1)/np.sum(vectors*vectors,axis=1),0,1)
+            distances=np.linalg.norm(origin-starts-vectors*fractions[:,None],axis=1)
+            if np.any(distances+self.BODY_RADIUS_M<=self._segment_widths[indices]):
+                return True
         points=self._body_offsets+np.array([self._car.x_m,self._car.y_m])
         return bool(np.all(self._road_union_margin(points[:,0],points[:,1])>=self._body_cover_radius))
 
@@ -349,6 +427,8 @@ class Engine:
 
     def _obstacles(self, at_time=None):
         t = self._time if at_time is None else at_time
+        if self._traffic is not None:
+            return self._traffic.obstacles()
         if self._region is not None:
             result=[]
             for actor in self._region_actors:
@@ -386,7 +466,9 @@ class Engine:
         if key != self._render_cache_key:
             self._render_cache = rendering.render_observation(asdict(self._car), self._road,
                           self.ROAD_HALF_WIDTH_M,obstacles,self._condition(),self.seed,
-                          **({'roads':self._region['roads'],'buildings':self._region['buildings']} if self._region else {}))
+                          lane_layout=self._road_lanes,traffic=self._traffic.snapshot() if self._traffic else None,
+                          **({'roads':self._region['roads'],'buildings':self._region['buildings'],
+                              'terrain':self._region.get('terrain')} if self._region else {}))
             self._render_cache_key = key
         # Cache only deterministic image construction. Learned callbacks still
         # run on each fresh observation, with fresh exposure/sequence evidence.
@@ -406,21 +488,62 @@ class Engine:
             self._command = Command(reason="mode_change_brake")
             self._event("mode", mode)
 
+    def set_speed(self, speed_mode, target_speed_kmh):
+        if self._closed:
+            raise RuntimeError("simulator is closed")
+        mode,target=validate_speed(speed_mode,target_speed_kmh)
+        self.speed_mode,self.target_speed_kmh=mode,target
+        self._speed_explicit=True
+        self._controller.reset()
+        self._controller._target_speed=self._car.speed_mps
+        self._plan()
+        self._event('speed_setting',f'{mode}: {target:g} km/h requested')
+        return self.snapshot()
+
+    def _sensor_range_m(self):
+        if self._traffic is not None and self.perception_callback is None:
+            return 80.
+        if self._extended_course and self.perception_callback is None:
+            return 400.0
+        if self._region is not None:
+            return 14.0 if self._condition()=='night' else 25.0
+        return 7.5 if self.scenario=='fog' else 16.0
+
+    def _terrain_state(self):
+        if not self._extended_course:
+            return 0.0,0.0
+        from .terrain import elevation_at,grade_at
+        progress,_=_polyline_projection(np.array([self._car.x_m,self._car.y_m]),self._road)
+        return elevation_at(self._region,progress),grade_at(self._region,progress)
+
+    def _capture_objects(self):
+        actors=self._obstacles()
+        visible=None
+        if self._region is not None:
+            visible={actor['id'] for actor in actors if bool(self._visible_region_points(
+                np.array([actor['x_m'],actor['y_m']]),actors,actor['id']))}
+        return object_display.observation(actors,(self._car.x_m,self._car.y_m,self._car.yaw_rad),
+            self._sensor_range_m(),visible,self._time,self._road)
+
     def _observe(self):
+        self._object_frame_frozen=False
         self._capture_time = self._time
         sequence = self._step
         frozen = self.scenario == "sensor_freeze" and self._time >= 3.0
         dropout = self.scenario == "sensor_dropout" and self._time >= 3.0
         if frozen and self._camera_frozen is not None:
+            self._object_frame_frozen=True
             self._rgb, self._probability = (a.copy() for a in self._camera_frozen)
             self._capture_time = self._frozen_capture
             return self._frozen_capture, self._frozen_sequence, "ok"
         self._rgb, oracle_mask = self._render()
+        self._object_view=self._capture_objects()
         self._model_error = None
         if dropout:
             self._rgb = np.zeros_like(self._rgb)
             self._probability = np.zeros(oracle_mask.shape, dtype=np.float32)
             self._model_error = "synthetic_camera_dropout"
+            self._object_view.update(status='camera_unavailable',objects=[],camera_box_count=0)
             return self._time, sequence, "failed"
         if self.perception_callback is None:
             self._probability = oracle_mask
@@ -455,23 +578,92 @@ class Engine:
         return self._car.x_m+c*x-s*y, self._car.y_m+s*x+c*y
 
     def _plan(self):
+        adaptive=self._extended_course or self._speed_explicit
+        target_speed=2.0
+        reasons=[]
+        lookahead=7.0 if not adaptive else max(7.,self._car.speed_mps*1.2)
         if self._region is not None:
             progress,_=_polyline_projection(np.array([self._car.x_m,self._car.y_m]),self._road)
-            target,_=_polyline_position(self._road,progress+7.)
+            remaining=self._route_length-progress
+            target,_=_polyline_position(self._road,progress+lookahead)
             x,y=self._to_local(*target)
         else:
-            target_x = self._car.x_m+7.0
+            remaining=self.goal_x_m-self._car.x_m
+            target_x = self._car.x_m+lookahead
             x,y = self._to_local(target_x,float(self._road_y(target_x)))
         curvature = float(np.clip(2*y/max(1.0,x*x+y*y), -.12, .12))
-        distance = np.linspace(0.0,8.0,81)
-        if abs(curvature) < 1e-7:
-            points = np.column_stack((distance,np.zeros_like(distance)))
+        if adaptive:
+            target_speed=self.target_speed_kmh/3.6
+            limits=[('visibility',speed_for_distance(self._sensor_range_m()-8.0)),
+                    ('goal_distance',speed_for_distance(remaining-.65))]
+            if abs(curvature)>1e-8:
+                limits.append(('curvature',max(0.,math.sqrt(1.4/abs(curvature))-.12)))
+            if self._region is not None:
+                vectors=np.diff(self._road,axis=0)
+                lengths=np.linalg.norm(vectors,axis=1)
+                headings=np.unwrap(np.arctan2(vectors[:,1],vectors[:,0]))
+                turning=np.abs(np.diff(headings))/((lengths[:-1]+lengths[1:])/2)
+                ahead=np.cumsum(lengths)[:-1]-progress
+                window=max(80.,stopping_distance(max(self._car.speed_mps,target_speed))+40.)
+                indices=np.flatnonzero((ahead>=-5.)&(ahead<=window)&(turning>1e-7))
+                for index in indices:
+                    corner=max(0.,math.sqrt(1.3/turning[index])-.12)
+                    cap=math.sqrt(corner*corner+4.*max(0.,ahead[index]-20.-self._car.speed_mps*.2))
+                    limits.append(('upcoming_curve',cap))
+            if self.speed_mode=='automatic':
+                advisory={'busan':90.,'gwangju':150.,'suncheon':100.,'gangwon':70.}.get(self._course_id,7.2)
+                limits.append(('regional_advisory',advisory/3.6))
+            for reason,limit in limits:
+                if limit<target_speed:
+                    target_speed=limit
+                    reasons.append(reason)
+            if self._extended_course:
+                # Preview whether the current steering arc can remain on the
+                # route for a complete stop. This slows before a distant bend,
+                # rather than waiting for the short lookahead to reach it.
+                horizon=max(8.,stopping_distance(max(self._car.speed_mps,target_speed))+2.)
+                samples=np.linspace(0.,horizon,max(81,math.ceil(horizon/.4)+1))
+                preview=_arc_points(curvature,samples)
+                px,py=self._to_world(preview[:,0],preview[:,1])
+                corridor=self._road_union_margin(px,py,horizon+20.)
+                bad=np.flatnonzero(corridor<self.BODY_RADIUS_M+.65)
+                if len(bad):
+                    route_cap=speed_for_distance(max(0.,samples[bad[0]]-5.))
+                    if route_cap<target_speed:
+                        target_speed=route_cap
+                        reasons.append('upcoming_curve')
+        if self._traffic is not None and target_speed>6.:
+            target_speed=6.
+            reasons.append('traffic_speed_limit')
+        self._effective_target_mps=max(0.,target_speed)
+        self._speed_reasons=list(dict.fromkeys(reasons))
+        self._path_length_m=(max(8.,stopping_distance(max(self._car.speed_mps,target_speed))+2.) if adaptive else 8.)
+        distance=np.linspace(0.,self._path_length_m,max(81,math.ceil(self._path_length_m/.1)+1))
+        points=_arc_points(curvature,distance)
+        if self._extended_course:
+            # Re-evaluate steering along the future route, starting at the
+            # actual pose and wheel angle. A single fixed-curvature arc over
+            # the entire stop distance can leave a lane at changing bends.
+            world_points,headings=pure_pursuit_rollout(self._road,
+                self._car.x_m,self._car.y_m,self._car.yaw_rad,self._car.steering_rad,
+                distance,max(self._car.speed_mps,target_speed))
+            lx,ly=self._to_local(world_points[:,0],world_points[:,1])
+            points=np.column_stack((lx,ly))
         else:
-            points = np.column_stack((np.sin(curvature*distance)/curvature,
-                                       (1-np.cos(curvature*distance))/curvature))
-        wx,wy = self._to_world(points[:,0],points[:,1])
-        self._plan_world = np.column_stack((wx,wy)).tolist()
-        return Plan(points,2.0,True,"synthetic_route_proposal",curvature)
+            wx,wy = self._to_world(points[:,0],points[:,1])
+            world_points=np.column_stack((wx,wy))
+            headings=self._car.yaw_rad+curvature*distance
+        self._plan_y_bounds=(float(points[:,1].min()),float(points[:,1].max()))
+        _,nearest=self._lane._nearest(np.array([self._car.x_m,self._car.y_m]))
+        tangent=self._lane._vectors[int(nearest)]
+        self._lane_direction_allowed=float(tangent@np.array([math.cos(self._car.yaw_rad),math.sin(self._car.yaw_rad)]))>0.
+        self._lane_guard_allowed=self._lane.allows_path(world_points,headings) and self._lane_direction_allowed
+        self._lane_guard_checked=True
+        stride=max(1,math.ceil(len(world_points)/256))
+        self._plan_world=world_points[::stride].tolist()
+        if self._plan_world[-1]!=world_points[-1].tolist():
+            self._plan_world.append(world_points[-1].tolist())
+        return Plan(points,max(.1,target_speed),True,"synthetic_route_proposal",curvature)
 
     def _visible_region_points(self,points,obstacles,exclude_id=None):
         """Idealized 360-degree metric rays, bounded by range and opaque objects.
@@ -480,7 +672,7 @@ class Engine:
         simulator, but hidden cells cannot become evidence of free space.
         """
         origin=np.array([self._car.x_m,self._car.y_m])
-        limit=14. if self._condition()=='night' else 25.
+        limit=self._sensor_range_m()
         vectors=points-origin
         distance=np.linalg.norm(vectors,axis=-1)
         visible=distance<=limit
@@ -504,27 +696,36 @@ class Engine:
                            capture if n=="semantic" else self._time,
                            sequence if n=="semantic" else self._step,p.clock_id,
                            p.calibration_sha256,p.artifacts[n]) for n in sorted(REQUIRED_MODULES))
-        xs = -4.0+(np.arange(67)+.5)*.3
-        ys = -9.0+(np.arange(60)+.5)*.3
+        forward=max(16.1,self._path_length_m+6.)
+        xs = -4.0+(np.arange(math.ceil((forward+4.)/.3))+.5)*.3
+        y_min,y_max=-9.,9.
+        if self._extended_course:
+            low,high=self._plan_y_bounds
+            y_min,y_max=min(y_min,low-4.5),max(y_max,high+4.5)
+            if math.ceil((y_max-y_min)/.3)*len(xs)>self._policy.max_grid_cells:
+                # An over-budget arc cannot acquire observation evidence by
+                # truncating the path. Keep the small grid and let review veto.
+                y_min,y_max=-9.,9.
+        ys = y_min+(np.arange(math.ceil((y_max-y_min)/.3))+.5)*.3
         gx,gy = np.meshgrid(xs,ys)
         wx,wy = self._to_world(gx,gy)
         occupied = np.zeros(gx.shape,dtype=bool)
         tracks = []
         obstacles=self._obstacles()
-        observed=np.ones(gx.shape,dtype=bool)
+        observed=np.hypot(gx,gy)<=self._sensor_range_m()
         visible_actor_ids=None
         if self._region is not None:
             points=np.stack((wx,wy),axis=-1)
             observed=self._visible_region_points(points,obstacles)
             origin=np.array([self._car.x_m,self._car.y_m])
-            for building in self._near_buildings(origin,25.):
+            for building in self._near_buildings(origin,self._sensor_range_m()):
                 occupied |= _inside_polygon(wx,wy,building[1])
             visible_actor_ids=set()
             for obstacle in obstacles:
                 point=np.array([obstacle['x_m'],obstacle['y_m']])
-                if np.linalg.norm(point-origin)<=25 and bool(self._visible_region_points(point,obstacles,obstacle['id'])):
+                if np.linalg.norm(point-origin)<=self._sensor_range_m() and bool(self._visible_region_points(point,obstacles,obstacle['id'])):
                     visible_actor_ids.add(obstacle['id'])
-            self._regional_visibility={'idealized_range_m':14. if self._condition()=='night' else 25.,
+            self._regional_visibility={'idealized_range_m':self._sensor_range_m(),
                                        'visible_actor_ids':sorted(visible_actor_ids),
                                        'hidden_or_out_of_range_actors':len(obstacles)-len(visible_actor_ids),
                                        'unobserved_grid_cells':int(np.count_nonzero(~observed)),
@@ -536,24 +737,36 @@ class Engine:
             x,y = self._to_local(obstacle['x_m'],obstacle['y_m'])
             c,s = math.cos(self._car.yaw_rad),math.sin(self._car.yaw_rad)
             vx,vy=obstacle['vx_mps'],obstacle['vy_mps']
+            acceleration_bound=obstacle.get("acceleration_bound_mps2",.05)
+            if self._extended_course:
+                # These synthetic tracks are generated by known stationary or
+                # sinusoidal world trajectories, not a learned motion estimate.
+                actor=next(a for a in self._region_actors if a['id']==obstacle['id'])
+                acceleration_bound=actor['speed']**2/actor['amplitude'] if actor['amplitude'] else 0.
             tracks.append(Track(obstacle['id'],self._time,float(x),float(y),c*vx+s*vy,-s*vx+c*vy,
-                                obstacle['radius_m'],.02,.02,.05))
+                                obstacle['radius_m'],.02,.02,acceleration_bound))
+        if self._object_view['sampled_at_sim_time_s']==self._time:
+            self._object_view['safety_track_ids']=[track.track_id for track in tracks]
         u,v,valid = rendering.project_ground(gx,gy)
         road = np.zeros(gx.shape,dtype=np.float32)
         ui=np.clip(np.rint(u).astype(int),0,rendering.WIDTH-1)
         vi=np.clip(np.rint(v).astype(int),0,rendering.HEIGHT-1)
         road[valid]=self._probability[vi[valid],ui[valid]]
+        if self._extended_course and self.perception_callback is None:
+            # Long-range world semantics belong only to the privileged demo.
+            # A learned callback is never replaced by this synthetic evidence.
+            road=(self._road_union_margin(wx,wy,self._sensor_range_m()+10.)>=0).astype(np.float32)
         if self._region is not None:
             # Semantic painting of footpaths does not grant vehicle passage.
-            road[self._road_union_margin(wx,wy)<0]=0.
+            road[self._road_union_margin(wx,wy,max(35.,self._path_length_m+15.))<0]=0.
             occupied &= observed
         if self.scenario=='fog':
             observed &= gx < 7.5
-        grid=Grid(-4.0,-9.0,.3,observed,occupied,np.zeros_like(occupied),road,self._time,
+        grid=Grid(-4.0,y_min,.3,observed,occupied,np.zeros_like(occupied),road,self._time,
                   p.clock_id,p.calibration_sha256)
         return SceneEvidence(modules,grid,tuple(tracks),'synthetic_'+self._condition(),True,True,
               not(self.scenario=='braking_degraded' and self._time>=4.0),
-              .01,0.0,.01,p.clock_id,self._time,5.0,self._time,p.calibration_sha256,p.clock_id)
+              .01,0.0,.01,p.clock_id,self._time,max(5.,.3+(max(self._car.speed_mps,self._effective_target_mps)+.12)/3.),self._time,p.calibration_sha256,p.clock_id)
 
     @staticmethod
     def _controls(controls):
@@ -576,22 +789,41 @@ class Engine:
         controls=self._controls(controls)
         if self._finished:
             return self.snapshot()
+        before_distance=self._distance
+        before_events=(self._interventions,self._collisions,self._offroad_events)
         capture,sequence,status=self._observe()
         plan=self._plan()
+        lane_reason='wrong_way_veto' if not self._lane_direction_allowed else 'lane_boundary_veto'
+        reviewed_plan=plan if self._lane_guard_allowed else replace(plan,valid=False,reason=lane_reason)
         state=VehicleState(self._time,self._car.speed_mps,
                   self._car.speed_mps*math.tan(self._car.steering_rad)/self.WHEELBASE_M,armed=True,estop=False)
-        decision=self._supervisor.review(plan,state,self._evidence(capture,sequence,status),self._time,
+        decision=self._supervisor.review(reviewed_plan,state,self._evidence(capture,sequence,status),self._time,
                                          reset_requested=controls['reset_safety'])
+        if not self._lane_guard_allowed:
+            decision=replace(decision,reasons=(lane_reason,*decision.reasons))
         self._safety={'mode':decision.mode,'reasons':list(decision.reasons),
                       'proposal_eligible':decision.proposal_eligible,'actuation_enabled':False}
         if self.mode=='manual':
+            cap=self.target_speed_kmh/3.6
+            speed_brake=1.0 if cap<=0 or self._car.speed_mps>cap else 0.0
+            self._effective_target_mps=cap
             self._command=Command(steering_rad=controls['steering']*self.MAX_STEERING_RAD,
-                 throttle=controls['throttle'] if controls['brake']<=0 else 0.0,
-                 brake=controls['brake'],enabled=True,reason='manual_simulation_override')
+                 throttle=controls['throttle'] if controls['brake']<=0 and speed_brake<=0 and self._car.speed_mps<cap else 0.0,
+                 brake=max(controls['brake'],speed_brake),enabled=True,reason='manual_simulation_override')
+        elif self._traffic is not None and self._traffic.signal()['vehicles']=='red' and self._car.x_m<35.9 and 27.-self._car.x_m<=stopping_distance(self._car.speed_mps)+1.:
+            self._command=self._controller.stop('traffic_signal_stop')
+        elif self.target_speed_kmh==0 or self._effective_target_mps<.02:
+            self._command=self._controller.stop('requested_speed_stop')
         elif self._at_braking_goal():
             self._command=self._controller.stop('goal_braking')
         elif decision.proposal_eligible:
             self._command=self._controller.update(plan,state,self._time)
+            if (self._extended_course or self._speed_explicit) and self._command.reason=='tracking' and self._command.brake==0:
+                # Synthetic drag/grade feed-forward lets a flat straight course
+                # attain its requested ceiling without a permanent PI offset.
+                _,grade=self._terrain_state()
+                compensation=(.04*self._car.speed_mps+9.81*grade)/5.
+                self._command=replace(self._command,throttle=float(np.clip(self._command.throttle+compensation,0.,1.)))
         else:
             self._command=self._controller.stop(decision.reasons[0])
         veto=not decision.proposal_eligible and decision.mode!='WARMUP_STOP'
@@ -600,6 +832,9 @@ class Engine:
             self._event('safety_stop',decision.reasons[0])
         self._previous_stop=veto
         self._integrate(self._command)
+        if self.mode=='autonomous':
+            self._lane_samples+=1
+            self._lane_duration+=self.DT_S
         self._step+=1
         self._time=round(self._step*self.DT_S,10)
         if self._region is not None:
@@ -617,9 +852,17 @@ class Engine:
                 and not self._offroad_events and not self._offroad):
             self._goal_reached,self._finished=True,True
             self._event('goal','Stopped in the goal region')
-        if self._step>=self.MAX_STEPS:
+        if self._step>=self._step_budget:
             self._finished=True
             self._event('timeout','Simulation step budget reached')
+        self._performance.sample(time_s=self._time,dt_s=self.DT_S,mode=self.mode,
+            position=(self._car.x_m,self._car.y_m),yaw_rad=self._car.yaw_rad,
+            speed_mps=self._car.speed_mps,
+            applied_target_mps=self._command.target_speed_mps if self.mode=='autonomous' and self._command.reason=='tracking' else 0.,
+            steering_rad=self._car.steering_rad,distance_delta_m=self._distance-before_distance,
+            safety_mode=decision.mode,safety_eligible=decision.proposal_eligible,
+            intervention_delta=self._interventions-before_events[0],
+            collision_delta=self._collisions-before_events[1],offroad_delta=self._offroad_events-before_events[2])
         snapshot=self.snapshot()
         if self._session_dir is not None:
             logged_snapshot=snapshot
@@ -640,15 +883,18 @@ class Engine:
     def _integrate(self, command):
         # Bound both time and translation. Collision tests run at every substep,
         # independently from masks, supervisor decisions or command reasons.
-        count=max(10,math.ceil((self._car.speed_mps+3*self.DT_S)*self.DT_S/.04))
+        extended=self._extended_course or self._speed_explicit
+        _elevation,grade=self._terrain_state()
+        count=max(10,math.ceil((self._car.speed_mps+8*self.DT_S)*self.DT_S/.04))
         delta=self.DT_S/count
         for index in range(count):
             before=(self._car.x_m,self._car.y_m)
             target=command.steering_rad
             self._car.steering_rad += float(np.clip(target-self._car.steering_rad,-.8*delta,.8*delta))
             t=self._time+(index+1)*delta
-            braking=.7 if self.scenario=='braking_degraded' and t>=4.0 else 3.5
-            acceleration=3.0*command.throttle-braking*command.brake-.08*self._car.speed_mps
+            braking=.7 if self.scenario=='braking_degraded' and t>=4.0 else (6.0 if extended else 3.5)
+            acceleration=((5.0 if extended else 3.0)*command.throttle-braking*command.brake
+                          -(.04 if extended else .08)*self._car.speed_mps-9.81*grade)
             self._car.speed_mps=float(np.clip(self._car.speed_mps+acceleration*delta,0,self.MAX_SPEED_MPS))
             yaw_rate=self._car.speed_mps*math.tan(self._car.steering_rad)/self.WHEELBASE_M
             mid=self._car.yaw_rad+yaw_rate*delta/2
@@ -657,11 +903,23 @@ class Engine:
             self._car.yaw_rad=math.atan2(math.sin(self._car.yaw_rad+yaw_rate*delta),
                                        math.cos(self._car.yaw_rad+yaw_rate*delta))
             self._distance+=math.hypot(self._car.x_m-before[0],self._car.y_m-before[1])
+            if self._traffic is not None:
+                self._traffic.advance(delta,self._car)
             self._check_geometry(t)
+            lane_outside=self._lane.measure(self._car.x_m,self._car.y_m,self._car.yaw_rad)['outside']
+            if lane_outside and not self._lane_outside:
+                self._event('lane_departure','Assumed vehicle perimeter crossed the synthetic lane boundary')
+                if self.mode=='autonomous':
+                    self._lane_departures+=1
+            if lane_outside and self.mode=='autonomous':
+                self._lane_outside_time+=delta
+            self._lane_outside=lane_outside
 
     def _check_geometry(self, at_time):
         for obstacle in self._obstacles(at_time):
             clearance=math.hypot(self._car.x_m-obstacle['x_m'],self._car.y_m-obstacle['y_m'])-self.BODY_RADIUS_M-obstacle['radius_m']
+            if self._traffic is not None:
+                clearance=vehicle_clearance(self._car,obstacle)
             self._min_clearance=clearance if self._min_clearance is None else min(self._min_clearance,clearance)
             if clearance<=0 and obstacle['id'] not in self._contacts:
                 self._contacts.add(obstacle['id']);self._collisions+=1
@@ -687,6 +945,7 @@ class Engine:
         self._offroad=offroad
 
     def snapshot(self):
+        elevation,grade=self._terrain_state()
         result={'scope':SCOPE,'scenario':{k:_SCENARIOS[self.scenario][k] for k in ('id','title')},
                 'seed':self.seed,'mode':self.mode,'step':self._step,'sim_time_s':self._time,'finished':self._finished,
                 'vehicle':asdict(self._car),'command':{k:asdict(self._command)[k] for k in ('steering_rad','throttle','brake','reason')},
@@ -702,6 +961,31 @@ class Engine:
                      'synthetic_route_map':True,'model_identity':self._model_identity,
                      'model_error':self._model_error,'captured_at_sim_time_s':self._capture_time},
                 'events':list(self._events)}
+        result['world']['road_lanes']=self._road_lanes
+        if self._traffic is not None:
+            result['world']['traffic']=self._traffic.snapshot()
+        result['object_perception']={**self._object_view,
+            'age_s':max(0.,self._time-self._object_view['sampled_at_sim_time_s']),
+            'frame_frozen':self._object_frame_frozen}
+        result['performance']=self._performance.snapshot((self._car.x_m,self._car.y_m),self._car.yaw_rad)
+        result['lane']={'source':'synthetic_assumed_lane_not_measured','width_m':self._lane.width_m,
+                'current':self._lane.measure(self._car.x_m,self._car.y_m,self._car.yaw_rad),
+                'autonomous':{'samples':self._lane_samples,'duration_s':self._lane_duration,
+                    'inside_pct':None if self._lane_duration==0 else float(np.clip(
+                        100.*(1.-self._lane_outside_time/self._lane_duration),0.,100.)),
+                    'departure_events':self._lane_departures,'outside_time_s':self._lane_outside_time},
+                'training':{'status':'not_trained','model_loaded':False,'label_space':'ego_lane_v1'},
+                'guard':{'allowed':self._lane_guard_allowed,'checked':self._lane_guard_checked,'direction_allowed':self._lane_direction_allowed,
+                    'reason':None if self._lane_guard_allowed else 'wrong_way_veto' if not self._lane_direction_allowed else 'lane_boundary_veto',
+                    'scope':'synthetic_path_guard'}}
+        boundaries=self._lane.boundaries
+        result['world']['lane']={'source':'synthetic_assumed_lane_not_measured','width_m':self._lane.width_m,
+                'left_boundary':boundaries['left'],'right_boundary':boundaries['right']}
+        result['vehicle'].update(elevation_m=elevation,grade_percent=grade*100.)
+        result['speed_control']={'mode':self.speed_mode,'target_speed_kmh':self.target_speed_kmh,
+                'effective_target_kmh':self.target_speed_kmh if self.mode=='manual' else self._effective_target_mps*3.6,'max_speed_kmh':MAX_SPEED_KMH,
+                'limiting_reasons':[] if self.mode=='manual' else self._speed_reasons,'synthetic_only':True,
+                'user_setting_is_ceiling':True}
         if self._region is not None:
             progress,_=_polyline_projection(np.array([self._car.x_m,self._car.y_m]),self._road)
             result['world'].update(region=self._region,coordinates='east_north_m',
@@ -711,21 +995,32 @@ class Engine:
                     label=('Learned image semantics' if self.perception_callback else 'Synthetic oracle image semantics')+
                           ' + bounded, occlusion-filtered oracle metric rays/tracks',
                     omniscient_metric_visibility=False,map_derived_synthetic=True)
+            if self._extended_course:
+                result['perception'].update(map_derived_synthetic=False,
+                    long_range_world_semantics=self.perception_callback is None,
+                    synthetic_sensor_range_m=self._sensor_range_m())
             result['metrics']['route_progress_m']=progress
         return json.loads(json.dumps(result,ensure_ascii=False,allow_nan=False))
 
     def frame(self, kind='camera'):
         if kind=='camera':return Image.fromarray(self._rgb.copy())
         if kind=='segmentation':return rendering.segmentation_overlay(self._rgb,self._probability)
-        raise ValueError('kind must be camera or segmentation')
+        if kind=='objects':return object_display.overlay(self._rgb,self._object_view)
+        raise ValueError('kind must be camera, segmentation or objects')
 
     def _configuration(self):
         result={'scope':SCOPE,'scenario':self.scenario,'seed':self.seed,'mode':self.mode,
                 'fixed_dt_s':self.DT_S,'wheelbase_m':self.WHEELBASE_M,'body_disk_radius_m':self.BODY_RADIUS_M,
-                'road_half_width_m':self.ROAD_HALF_WIDTH_M,'autonomous_target_speed_mps':2.0,
-                'normal_braking_deceleration_mps2':3.5,'degraded_braking_deceleration_mps2':.7,
+                'step_budget':self._step_budget,
+                'road_half_width_m':self.ROAD_HALF_WIDTH_M,'autonomous_target_speed_mps':self._effective_target_mps,
+                'speed_control':self.snapshot()['speed_control'],
+                'normal_braking_deceleration_mps2':6.0 if self._extended_course or self._speed_explicit else 3.5,'degraded_braking_deceleration_mps2':.7,
                 'camera':'synthetic chase perspective, 6m behind rear axle and 3m high; not onboard calibration',
-                'physics':'2D kinematic bicycle; conservative circular body; no tyre/suspension/contact solver',
+                'physics':'2D kinematic bicycle; synthetic route grade adds longitudinal gravity; conservative circular body; no tyre/suspension/contact solver',
+                'road_lane_assignment':self._road_lanes,
+                'traffic_model':'rule-based substep car following, signal stops and pedestrian clearance' if self._traffic else 'legacy fixture actors',
+                'object_display':{'source':object_display.SOURCE,'learned_detector_loaded':False,
+                    'display_only':True,'confidence_measured':False,'projection_boxes_are_assumed_extents':True},
                 'oracle_metric_range_and_tracks':True,'real_vehicle_actuation_enabled':False,
                 'model_identity':self._model_identity,
                 'collision_metric':'distinct world-geometry obstacle contacts; no rigid-body response',
@@ -733,7 +1028,26 @@ class Engine:
                                'max_centerline_distance_m':1.0,'whole_body_inside_road':True,
                                'no_prior_collision_or_offroad_event':True},
                 'synthetic_collision_detection_independent_of_supervisor':True,
+                'lane_keeping':{'source':'synthetic_assumed_lane_not_measured','width_m':self._lane.width_m,
+                    'vehicle_rectangle_m':{'front':self._lane.front_m,'rear':self._lane.rear_m,
+                                          'width':self._lane.vehicle_width_m},
+                    'reference':'world reference polyline with 20m tangent endpoint extensions',
+                    'guard_margin_m':self._lane.margin_m,'perimeter_sample_spacing_m':self._lane.SAMPLE_SPACING_M,
+                    'extended_course_path':'pure pursuit bicycle rollout from actual pose and steering; speed=max(current,proposal)',
+                    'rollout_desired_lateral_acceleration_mps2':1.4,
+                    'sampling':'actual pose every physics substep; autonomous duration and events only',
+                    'model_trained':False,'discrete_checks_not_continuous_containment_proof':True},
+                'performance_metrics':{'schema_version':1,'scope':'synthetic_session_only',
+                    'autonomous_samples_only':True,'sampling':'post-step, weighted by fixed simulation dt',
+                    'speed_reference':'controller command after acceleration ramp; zero for stops',
+                    'cross_track_reference':'distance to finite world reference polyline, including endpoints',
+                    'history':'at most240 points;0.5sim-second spacing plus mode transitions;most recent120sim seconds'},
                 'wallclock_inference_changes_playback_speed_only':True}
+        if self._traffic is not None:
+            result.update(traffic_fixture=self._traffic.snapshot(),
+                collision_metric='assumed rectangle SAT separation bound for traffic cars; rectangle-circle contact for pedestrians',
+                contact_body_rectangle_m={'front':2.4,'rear':1.,'width':1.8},
+                existing_circular_shadow_review_retained=True)
         if self._region is not None:
             result.update(map_region=self._region,map_derived_synthetic_not_digital_twin=True,
                           road_half_width_m=self._region['route']['half_width_m'],
@@ -747,6 +1061,12 @@ class Engine:
                           goal_region={'center_xy_m':self._road[-1].tolist(),'radius_m':1.5,'min_route_progress_m':self._route_length-1.,
                                        'max_heading_error_rad':.4,'whole_body_inside_road_union':True,
                                        'no_prior_collision_or_offroad_event':True})
+            if self._extended_course:
+                result.update(map_derived_synthetic_not_digital_twin=False,
+                    synthetic_regional_terrain_not_geographic_reconstruction=True,
+                    sensor_visibility=f'Idealized synthetic metric rays up to {self._sensor_range_m():g}m with occlusion. Extended world semantics only without a learned callback.',
+                    actor_dynamics='Seeded synthetic circles on procedural course polylines; no traffic-law or interaction model.',
+                    road_union_containment='Conservative body-disk cover against procedural road capsules.')
         return result
 
     def report(self):

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "local_date": "2026-10-23",
+  "scope": "synthetic_regional_course_and_speed_software_checks_only",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "torch_used": false
+  },
+  "tests": {
+    "simulator_python": {
+      "passed": 165,
+      "failed": 0
+    },
+    "shadow_safety_and_control_python": {
+      "passed": 109,
+      "failed": 0
+    },
+    "ui_node": {
+      "passed": 3,
+      "failed": 0
+    },
+    "initial_sandbox_http_attempt": "11 loopback tests denied by sandbox networking; rerun outside network sandbox passed",
+    "full_repository_suite_run": false
+  },
+  "acceleration_check": {
+    "scenario": "gwangju_day",
+    "seed": 42,
+    "speed_mode": "automatic",
+    "requested_ceiling_kmh": 150,
+    "start_speed_mps": 0,
+    "steps": 500,
+    "simulation_time_s": 50.0,
+    "maximum_actual_kmh": 150.0,
+    "distance_m": 1214.3330072889541,
+    "collisions": 0,
+    "offroad_events": 0,
+    "goal_reached": false,
+    "full_course_completed": false,
+    "oracle_semantics": true,
+    "idealized_sensor_range_m": 400,
+    "real_time_speed_benchmark": false
+  },
+  "browser_checks": [
+    "IAB responsive layout",
+    "Chrome desktop layout",
+    "Gangwon selected and reset; automatic request150 limited to70km/h",
+    "user80km/h applied without changing steering mode",
+    "live target0km/h braked to0m/s before pause"
+  ],
+  "source_sha256": {
+    "src/camera_rc/simulator/engine.py": "777f1593b01ac1ded7abe4bac05a469a87acf20558d9e7209251a06927ec1df6",
+    "src/camera_rc/simulator/speed.py": "87c9de9d132abe376ea38c44cb10473d26e3104514250af762b939522172802a",
+    "src/camera_rc/simulator/terrain.py": "1998521a8ed3b0b2c979e67b3a15bf034bd4a0ec8e7b8b8f4c869ad5e9075e9c",
+    "src/camera_rc/simulator/rendering.py": "9f0d9c46ac69af50b717be6a0fe6e9cfdc88dfe441e84bd6fc7fefe2cad8626c",
+    "src/camera_rc/simulator/server.py": "fc7ce079fb0607c71fa78f3060b1afb3e1f2b446aa2696773fe96f09959f6188",
+    "src/camera_rc/simulator/cli.py": "33882fc021fa02ad1655915467d7a1329dcca6fbdde8c96bd6c1495a4044049b",
+    "src/camera_rc/simulator/assets/index.html": "487646f7604367a72fad36f51711f2b70fceb109b6b6727532be3e0f797a4f26",
+    "src/camera_rc/simulator/assets/app.js": "5d8319806930298b498b9ba86ae83292e002084cb0d0533d592a0c39c46ac222",
+    "src/camera_rc/simulator/assets/style.css": "2c612b913c6a9857b5ec03b90118efb91309553acb6c5ec3b87de991e9510574"
+  },
+  "unchanged_research_status": {
+    "aihub_and_corrected_models_adopted": false,
+    "training_resumed": false,
+    "automation_created": false,
+    "canceled_speed_comparison_resumed": false,
+    "hardware_opened": false
+  },
+  "limitations": [
+    "All four new regional roads, buildings and elevations are invented, not OSM or DEM data.",
+    "2D kinematics with assumed route-grade longitudinal gravity, no 3D road surface or tyre model.",
+    "Learned perception keeps its own image probabilities and25m synthetic regional range; no long-range oracle fallback.",
+    "New full regional course completion and real vehicle80/150km/h driving are not validated.",
+    "Existing model accuracy tables are unchanged."
+  ]
+}

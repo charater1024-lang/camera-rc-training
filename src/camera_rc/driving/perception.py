@@ -19,6 +19,7 @@ from torch.nn import functional as F
 
 from ..models import build_model
 from .types import Detection, Perception
+from .label_contract import validate_label_contract
 
 
 def _local_file(value, name):
@@ -62,6 +63,7 @@ class CameraPerception:
             stored = checkpoint.get("config", {})
             if stored.get("task") != "segmentation":
                 raise ValueError("Runtime requires a segmentation checkpoint")
+            self.label_contract = validate_label_contract(config, stored)
             train_options = stored.get("training", {})
             self.diagnostic = bool(checkpoint.get("diagnostic") or checkpoint.get("diagnostic_only")
                                    or stored.get("diagnostic") or stored.get("diagnostic_only")
@@ -172,6 +174,7 @@ class CameraPerception:
             raise FloatingPointError("Nonfinite drivable probability")
         if self.device.type == "cuda":
             torch.cuda.synchronize(self.device)
-        return Perception(mask, detections, (time.perf_counter() - started) * 1000)
+        return Perception(mask, detections, (time.perf_counter() - started) * 1000,
+                          "ok" if self.detector is not None else "not_configured")
 
     __call__ = infer

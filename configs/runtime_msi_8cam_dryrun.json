@@ -1,32 +1,139 @@
 {
   "device": "cuda",
-  "hardware": {"profile": "msi_prestige15_a10sc_8cam_research_only", "memory_architecture": "discrete"},
+  "hardware": {
+    "profile": "msi_prestige15_a10sc_8cam_research_only",
+    "memory_architecture": "discrete"
+  },
   "models_validated_for_control": false,
   "source": {
-    "kind": "multicamera", "max_skew_s": 0.04, "capture_timing_validated": false,
+    "kind": "multicamera",
+    "max_skew_s": 0.04,
+    "capture_timing_validated": false,
     "cameras": [
-      {"name": "front_main", "device": "/dev/v4l/by-id/REPLACE_FRONT_MAIN", "width": 640, "height": 360, "fps": 30, "fourcc": "MJPG", "calibration": "calibration_front_main.json"},
-      {"name": "front_wide", "device": "/dev/v4l/by-id/REPLACE_FRONT_WIDE", "width": 640, "height": 360, "fps": 30, "fourcc": "MJPG", "calibration": "calibration_front_wide.json"},
-      {"name": "front_near", "device": "/dev/v4l/by-id/REPLACE_FRONT_NEAR", "width": 640, "height": 360, "fps": 30, "fourcc": "MJPG", "calibration": "calibration_front_near.json"},
-      {"name": "left_forward", "device": "/dev/v4l/by-id/REPLACE_LEFT_FORWARD", "width": 640, "height": 360, "fps": 30, "fourcc": "MJPG", "calibration": "calibration_left_forward.json"},
-      {"name": "right_forward", "device": "/dev/v4l/by-id/REPLACE_RIGHT_FORWARD", "width": 640, "height": 360, "fps": 30, "fourcc": "MJPG", "calibration": "calibration_right_forward.json"},
-      {"name": "left_rearward", "device": "/dev/v4l/by-id/REPLACE_LEFT_REARWARD", "width": 640, "height": 360, "fps": 30, "fourcc": "MJPG", "calibration": "calibration_left_rearward.json"},
-      {"name": "right_rearward", "device": "/dev/v4l/by-id/REPLACE_RIGHT_REARWARD", "width": 640, "height": 360, "fps": 30, "fourcc": "MJPG", "calibration": "calibration_right_rearward.json"},
-      {"name": "rear", "device": "/dev/v4l/by-id/REPLACE_REAR", "width": 640, "height": 360, "fps": 30, "fourcc": "MJPG", "calibration": "calibration_rear.json"}
+      {
+        "name": "front_main",
+        "device": "/dev/v4l/by-id/REPLACE_FRONT_MAIN",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "calibration": "calibration_front_main.json"
+      },
+      {
+        "name": "front_wide",
+        "device": "/dev/v4l/by-id/REPLACE_FRONT_WIDE",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "calibration": "calibration_front_wide.json"
+      },
+      {
+        "name": "front_near",
+        "device": "/dev/v4l/by-id/REPLACE_FRONT_NEAR",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "calibration": "calibration_front_near.json"
+      },
+      {
+        "name": "left_forward",
+        "device": "/dev/v4l/by-id/REPLACE_LEFT_FORWARD",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "calibration": "calibration_left_forward.json"
+      },
+      {
+        "name": "right_forward",
+        "device": "/dev/v4l/by-id/REPLACE_RIGHT_FORWARD",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "calibration": "calibration_right_forward.json"
+      },
+      {
+        "name": "left_rearward",
+        "device": "/dev/v4l/by-id/REPLACE_LEFT_REARWARD",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "calibration": "calibration_left_rearward.json"
+      },
+      {
+        "name": "right_rearward",
+        "device": "/dev/v4l/by-id/REPLACE_RIGHT_REARWARD",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "calibration": "calibration_right_rearward.json"
+      },
+      {
+        "name": "rear",
+        "device": "/dev/v4l/by-id/REPLACE_REAR",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "calibration": "calibration_rear.json"
+      }
     ]
   },
   "perception": {
     "segmentation_checkpoint": "../runs/deployment/road_surface.pt",
-    "drivable_class_ids": [0], "min_probability": 0.65, "half": false,
-    "allow_diagnostic": false, "detection_image_size": 320, "detection_confidence": 0.35,
-    "obstacle_labels": ["pedestrian", "person", "rider", "car", "truck", "bus", "train", "motorcycle", "bicycle"]
+    "drivable_class_ids": [
+      0
+    ],
+    "min_probability": 0.65,
+    "half": false,
+    "allow_diagnostic": false,
+    "detection_image_size": 320,
+    "detection_confidence": 0.35,
+    "obstacle_labels": [
+      "pedestrian",
+      "person",
+      "rider",
+      "car",
+      "truck",
+      "bus",
+      "train",
+      "motorcycle",
+      "bicycle"
+    ],
+    "expected_label_space_id": "road_surface_v1"
   },
-  "transport": {"kind": "dry_run", "port": "/dev/serial/by-id/REPLACE_WITH_MCU", "baudrate": 230400, "calibration_confirmed": false},
+  "transport": {
+    "kind": "dry_run",
+    "port": "/dev/serial/by-id/REPLACE_WITH_MCU",
+    "baudrate": 230400,
+    "calibration_confirmed": false
+  },
   "route_hint": "straight",
   "runtime": {
-    "perception_hz": 10, "control_hz": 50, "gpu_budget_gib": 4, "torch_allocator_cap_gib": 3,
-    "ram_budget_gib": 16, "process_ram_limit_gib": 12, "system_available_min_gib": 2
+    "perception_hz": 10,
+    "control_hz": 50,
+    "gpu_budget_gib": 4,
+    "torch_allocator_cap_gib": 3,
+    "ram_budget_gib": 16,
+    "process_ram_limit_gib": 12,
+    "system_available_min_gib": 2
   },
-  "planner": {"max_speed_mps": 0.4, "wheelbase_m": 0.26, "vehicle_width_m": 0.22, "vehicle_length_m": 0.35},
-  "controller": {"max_speed_mps": 0.4, "wheelbase_m": 0.26}
+  "planner": {
+    "max_speed_mps": 0.4,
+    "wheelbase_m": 0.26,
+    "vehicle_width_m": 0.22,
+    "vehicle_length_m": 0.35
+  },
+  "controller": {
+    "max_speed_mps": 0.4,
+    "wheelbase_m": 0.26
+  },
+  "safety": {
+    "mode": "required"
+  }
 }

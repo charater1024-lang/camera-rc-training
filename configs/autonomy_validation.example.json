@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "odd": {
+    "area": "NOT_MEASURED",
+    "road_type": "closed_flat_course",
+    "conditions": [
+      "day_dry"
+    ],
+    "max_speed_mps": 0.4
+  },
+  "artifacts": {},
+  "checks": {},
+  "platform": "rc_car"
+}

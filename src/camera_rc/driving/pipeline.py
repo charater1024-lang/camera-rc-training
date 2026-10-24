@@ -52,8 +52,9 @@ class DrivingPipeline:
             result.drivable[~rectifier.valid_pixels] = 0.0
             perceptions[name] = result
             details[name] = {"sequence": item.sequence, "received_at": item.received_at,
-                             "inference_ms": result.inference_ms,
-                             "detections": len(result.detections)}
+                             "exposure_at_s": item.exposure_at_s, "timing_source": item.timing_source,
+                             "clock_id": item.clock_id, "inference_ms": result.inference_ms,
+                             "detections": len(result.detections), "detector_status": result.detector_status}
         plan_input = perceptions if self.multiview else perceptions["front"]
         plan = self.planner.plan(plan_input, speed_mps, self.cfg["route_hint"])
         return PipelineResult(plan, sum(item.inference_ms for item in perceptions.values()), details)

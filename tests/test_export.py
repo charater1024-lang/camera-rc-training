@@ -18,8 +18,8 @@ def limit_threads():
 
 
 def training_checkpoint(tmp_path, task="segmentation", **changes):
-    config = {"task": task, "model": {"width": 4, "num_classes": 3, "horizon": 2},
-              "data": {"image_size": [16, 24], "train_manifest": "private/train.jsonl", "val_manifest": "private/val.jsonl"},
+    config = {"task": task, "model": {"width": 4, "num_classes": 2 if task == "segmentation" else 3, "horizon": 2},
+              "data": {"image_size": [16, 24], "label_space_id": "road_surface_v1", "train_manifest": "private/train.jsonl", "val_manifest": "private/val.jsonl"},
               "training": {"output_dir": "private/runs", "epochs": 3}}
     if task == "trajectory":
         config["data"]["future_offsets_s"] = [0.5, 1.0]
@@ -51,8 +51,9 @@ def test_compact_export_preserves_predictions_and_evaluation_contract(tmp_path, 
     assert summary["output_bytes"] < summary["source_bytes"]
     assert stored["source_sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
     if task == "segmentation":
-        runtime = CameraPerception({"segmentation_checkpoint": str(output), "drivable_class_ids": [0]}, "cpu")
+        runtime = CameraPerception({"segmentation_checkpoint": str(output), "expected_label_space_id": "road_surface_v1", "drivable_class_ids": [0]}, "cpu")
         assert runtime.height == 16 and runtime.width == 24
+        assert stored["config"]["data"]["label_space_id"] == "road_surface_v1"
 
 
 @pytest.mark.parametrize("provenance", ["flag", "config", "max_train_steps", "max_val_steps", "partial_epoch"])
@@ -71,7 +72,7 @@ def test_export_never_removes_diagnostic_provenance(tmp_path, provenance):
     output = tmp_path / "export.pt"
     assert export_runtime_checkpoint(source, output)["diagnostic"] is True
     with pytest.raises(ValueError, match="Diagnostic"):
-        CameraPerception({"segmentation_checkpoint": str(output), "drivable_class_ids": [0]}, "cpu")
+        CameraPerception({"segmentation_checkpoint": str(output), "expected_label_space_id": "road_surface_v1", "drivable_class_ids": [0]}, "cpu")
 
 
 def test_export_refuses_overwrite_and_invalid_weights(tmp_path):

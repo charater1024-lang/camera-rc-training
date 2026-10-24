@@ -17,7 +17,7 @@
   <main>
     <section class="page-heading" aria-labelledby="page-title">
       <div><p class="eyebrow">PERCEPTION → PLANNING → SAFETY</p><h1 id="page-title">주행 시뮬레이션 <span id="run-state" class="badge neutral">준비 중</span></h1><p class="subtitle">카메라 관측, 경로 제안, 안전 판단을 같은 장면에서 확인합니다.</p></div>
-      <a id="export-report" class="button secondary export-button" href="/api/report" download="simulator-report.json" aria-label="현재 시뮬레이션 결과 JSON 저장"><span aria-hidden="true">↓</span> 결과 내보내기</a>
+      <div class="heading-actions"><a class="button secondary" href="#improvement-panel">개선 진행 현황</a><a class="button secondary performance-jump" href="#performance-panel">성능 지표 보기</a><a id="export-report" class="button secondary export-button" href="/api/report" download="simulator-report.json" aria-label="현재 시뮬레이션 결과 JSON 저장"><span aria-hidden="true">↓</span> 결과 내보내기</a></div>
     </section>
     <div id="error-banner" class="error-banner" role="alert" hidden></div>
     <div class="workspace">
@@ -31,7 +31,7 @@
         <p class="field-help">시나리오와 시드는 초기화할 때 적용됩니다.</p>
         <button id="reset" class="button secondary full" disabled><span aria-hidden="true">↺</span> 선택한 설정으로 초기화</button>
         <div class="divider"></div>
-        <span class="field-label" id="mode-label">운전 모드</span>
+        <span class="field-label" id="mode-label">조향·주행 모드</span>
         <div class="mode-switch" role="group" aria-labelledby="mode-label">
           <button id="mode-auto" class="mode-card selected" aria-pressed="true" disabled><span class="mode-symbol" aria-hidden="true">◎</span><span><strong>자율 주행</strong><small>엔진의 경로·안전 판단</small></span><i aria-hidden="true"></i></button>
           <button id="mode-manual" class="mode-card" aria-pressed="false" disabled><span class="mode-symbol" aria-hidden="true">⌘</span><span><strong>수동 조작</strong><small>키보드 또는 방향 버튼</small></span><i aria-hidden="true"></i></button>
@@ -46,27 +46,94 @@
           </div>
           <p class="field-help"><kbd>WASD</kbd> / <kbd>방향키</kbd> · <kbd>Space</kbd> 제동<br>키를 놓거나 창을 벗어나면 제동합니다.</p>
         </section>
+        <section class="speed-settings" aria-labelledby="speed-settings-title">
+          <div class="divider"></div>
+          <h3 id="speed-settings-title" class="field-label">속도 조절 <span class="optional">최대 150 km/h</span></h3>
+          <label class="sr-only" for="speed-mode">속도 조절 방식</label>
+          <select id="speed-mode" disabled><option value="automatic">자동 속도 조절</option><option value="user">사용자 지정 속도</option></select>
+          <p id="speed-mode-help" class="field-help">도로·곡률·가시거리에 따라 설정한 상한 이내에서 자동 조절합니다.</p>
+          <label id="speed-target-label" class="field-label" for="speed-target">속도 상한</label>
+          <div class="speed-target-row"><input id="speed-target" type="number" min="0" max="150" step="0.1" value="0" inputmode="decimal" aria-describedby="speed-input-help speed-input-error" disabled><span>km/h</span></div>
+          <input id="speed-range" class="speed-range" type="range" min="0" max="150" step="0.1" value="0" aria-label="설정 속도, 시속 0부터 150킬로미터" disabled>
+          <div class="speed-range-labels" aria-hidden="true"><span>0</span><span>75</span><span>150 km/h</span></div>
+          <p id="speed-input-help" class="field-help">0은 정지입니다. 수동 조작의 가속도 이 상한을 따릅니다.</p>
+          <p id="speed-input-error" class="inline-error speed-input-error" role="alert" hidden></p>
+          <button id="apply-speed" class="button secondary full" disabled>속도 설정 적용</button>
+          <p id="speed-draft-status" class="speed-draft-status" role="status" aria-live="polite">엔진 설정 대기</p>
+          <div class="speed-status"><span>적용 설정</span><strong id="applied-speed">—</strong><span>현재 목표</span><strong id="effective-speed">—</strong></div>
+          <p id="speed-limits" class="field-help speed-limits">속도 제한 근거를 기다립니다.</p>
+        </section>
         <div class="source-note"><span class="small-dot"></span><div><strong>센서의 출처를 구분하세요</strong><p>기본 영상과 관측은 합성입니다. 정답 기반 거리 관측은 실제 센서 추정 성능을 뜻하지 않습니다.</p></div></div>
       </aside>
       <section class="world-column" aria-label="주행 세계와 안전 상태">
         <div class="world-panel panel">
           <div class="panel-toolbar"><div class="section-heading"><span class="section-number">02</span><h2>주행 세계</h2><span class="tiny-label">TOP VIEW</span></div><div class="map-controls" role="group" aria-label="지도 보기"><button id="view-fit" class="text-button">전체 보기</button><button id="view-toggle" class="text-button" aria-pressed="false">차량 추적</button><span class="zoom-controls"><button id="zoom-out" aria-label="지도 축소">−</button><button id="zoom-in" aria-label="지도 확대">+</button></span></div></div>
-          <div id="region-summary" class="region-summary" hidden><div class="region-title"><span class="region-pin" aria-hidden="true">⌖</span><strong id="region-name">서울 지역</strong><span class="region-tag">OSM 실제 지도</span></div><p id="region-counts"></p><p id="actor-counts"></p></div>
+          <div id="region-summary" class="region-summary" hidden><div class="region-title"><span class="region-pin" aria-hidden="true">⌖</span><strong id="region-name">지역</strong><span id="region-source" class="region-tag">지도 출처 대기</span></div><p id="region-counts"></p><p id="actor-counts"></p></div>
           <div class="world-stage"><canvas id="world-canvas" aria-label="차량, 도로, 장애물, 제안 경로의 위에서 본 합성 세계" role="img"></canvas><div id="canvas-loading" class="canvas-loading"><span class="loading-ring"></span><strong>시뮬레이터 연결 중</strong><small>시작 버튼을 누르기 전까지 정지 상태를 유지합니다.</small></div><div class="world-corner"><span id="world-scenario">—</span><span id="world-coordinate">미터 좌표 · 전방 +x / 좌측 +y</span></div><div id="world-scale" class="world-scale" aria-hidden="true"><span></span><small>—</small></div></div>
-          <div class="world-legend"><span><i class="legend-road"></i>도로</span><span><i class="legend-car"></i>내 차량</span><span><i class="legend-route"></i>경로</span><span><i class="legend-traffic"></i>차량</span><span><i class="legend-pedestrian"></i>보행자</span><span><i class="legend-obstacle"></i>콘·장애물</span></div>
+          <div class="world-legend"><span><i class="legend-road"></i>도로</span><span><i class="legend-car"></i>내 차량</span><span><i class="legend-route"></i>경로</span><span id="lane-map-legend" hidden><i class="legend-lane"></i><span id="lane-map-label">가정 차선</span></span><span><i class="legend-traffic"></i>차량</span><span><i class="legend-pedestrian"></i>보행자</span><span><i class="legend-obstacle"></i>콘·장애물</span></div>
+          <p id="object-map-note" class="lane-map-note" hidden>진한 테두리: 표시 시점의 관측 객체 · 흐린 기호: 세계 정답만 표시 · 주황: 기준 경로 주변. 객체 위치는 관측 시점 기준입니다.</p>
+          <p id="lane-map-note" class="lane-map-note" hidden>도로 전체와 자차 차로를 구분합니다. 노랑은 중앙분리, 흰색은 차로 바깥, 초록 띠는 자차 차로입니다. 차로 배치는 합성 가정이며 현장 차로·방향을 확인한 결과가 아닙니다.</p>
           <div id="map-attribution" class="map-attribution" hidden><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a><span>ODbL · 로컬 벡터 지도</span></div>
           <div id="region-assumptions" class="region-assumptions" hidden>실제 지도 윤곽 · 폭·높이는 가정 포함 · 교통은 합성 · 신호 운영 미구현. 거리·추적은 가림과 관측 범위를 적용한 합성 정답 기반이며 현장 측정이 아닙니다.</div>
+          <div id="terrain-panel" class="terrain-panel" hidden><div class="terrain-heading"><strong>코스 고도 단면</strong><span id="terrain-current">—</span></div><svg id="terrain-profile" viewBox="0 0 600 85" role="img" aria-label="출발점부터 경로 거리에 따른 합성 고도 단면"><path id="terrain-area"></path><path id="terrain-line"></path><circle id="terrain-position" r="4" hidden></circle></svg><div class="terrain-caption"><span id="terrain-elevation-range">—</span><span id="terrain-distance">—</span></div></div>
           <div class="playback"><div class="playback-buttons"><button id="start-pause" class="button primary" disabled><span id="play-icon" aria-hidden="true">▶</span><span id="play-label">시작</span></button><button id="step" class="button secondary" disabled><span aria-hidden="true">▸│</span> 한 단계</button></div><div class="clock"><span>시뮬레이션 시간</span><strong id="sim-time">—</strong><small id="step-count">STEP —</small></div></div>
         </div>
         <div class="safety-panel panel"><div class="safety-top"><div class="section-heading"><span class="safety-shield" aria-hidden="true">◇</span><h2>안전 판단</h2></div><span id="safety-mode" class="badge neutral">증거 대기</span></div><p id="safety-reason" class="safety-reason">엔진의 판단 근거가 여기에 표시됩니다.</p><p id="safety-manual-note" class="manual-warning" hidden>수동 모드는 합성 실패 재현용입니다. 안전 판단을 표시하지만 운전자 입력으로 거부를 우회할 수 있습니다.</p><div class="safety-bottom"><span class="hard-stop-label"><span aria-hidden="true">⊘</span> 실제 장치 출력 없음</span><button id="reset-safety" class="text-button" disabled>정지 잠금 해제 요청</button></div></div>
+        <section class="panel traffic-panel" aria-labelledby="traffic-title"><div class="panel-toolbar"><h2 id="traffic-title">교통 상호작용 · 차로 구분</h2><span id="traffic-kind" class="badge neutral">정보 대기</span></div><p id="lane-assignment-status"></p><p id="traffic-signal-status"></p><p id="traffic-pedestrian-status"></p><p id="traffic-scope-note">합성 규칙 테스트이며 실제 사회 행동을 검증한 모델은 아닙니다.</p></section>
+        <section id="object-panel" class="panel object-panel" aria-labelledby="object-title">
+          <div class="panel-toolbar"><div class="section-heading"><h2 id="object-title">주변 객체 인지</h2></div><span id="object-source" class="badge neutral">관측 대기</span></div>
+          <p id="object-status" class="object-status">객체 관측 정보를 기다립니다.</p>
+          <div class="object-summary"><div><span>관측 객체</span><strong id="object-count">—</strong></div><div><span>화면 투영</span><strong id="object-camera-count">—</strong></div><div><span>이동 중</span><strong id="object-moving-count">—</strong></div><div><span>기준 경로 주변</span><strong id="object-route-count">—</strong></div></div>
+          <div class="object-table-wrap"><table class="object-table"><caption class="sr-only">관측 거리 순 객체 정보, 최대 8개</caption><thead><tr><th scope="col">종류 / ID</th><th scope="col">거리 / 위치</th><th scope="col">이동 속도</th><th scope="col">경로 관계</th><th scope="col">관측 시점 추적</th></tr></thead><tbody id="object-rows"></tbody></table></div>
+          <p id="object-empty" class="object-empty">아직 객체 관측이 없습니다.</p>
+          <p id="object-details" class="object-details"></p>
+          <p class="object-disclaimer">객체 종류·거리·속도·ID는 합성 정답입니다. 학습 객체 탐지기는 미연결이며 탐지 신뢰도는 제공하지 않습니다. 경로 주변 표시는 충돌 예측이나 안전 판정을 뜻하지 않습니다.</p>
+        </section>
       </section>
       <aside class="perception-column" aria-label="카메라 영상 및 인식 결과">
-        <div class="panel perception-panel"><div class="panel-toolbar"><div class="section-heading"><span class="section-number">03</span><h2>카메라 관측</h2></div><span class="tiny-label">SYNTHETIC</span></div><div class="frame-box"><img id="camera-image" alt="차량 뒤에서 바라보는 엔진의 합성 추적 카메라 영상" hidden><div id="camera-placeholder" class="frame-placeholder"><span aria-hidden="true">▧</span><small>카메라 프레임 대기</small></div></div><div class="frame-caption"><span class="frame-dot"></span>합성 추적 카메라<span id="camera-step">엔진 생성</span></div></div>
+        <div class="panel perception-panel"><div class="panel-toolbar"><div class="section-heading"><span class="section-number">03</span><h2>카메라 관측</h2></div><button id="object-overlay-toggle" class="text-button" aria-pressed="true" disabled>객체 표시 켜짐</button></div><div class="frame-box"><img id="camera-image" alt="차량 뒤에서 바라보는 엔진의 합성 추적 카메라 영상" hidden><div id="camera-placeholder" class="frame-placeholder"><span aria-hidden="true">▧</span><small>카메라 프레임 대기</small></div></div><div class="frame-caption"><span class="frame-dot"></span><span id="camera-display-label">합성 추적 카메라</span><span id="camera-step">엔진 생성</span></div></div>
         <div class="panel perception-panel"><div class="panel-toolbar"><div class="section-heading"><h2>도로 인식</h2></div><span id="perception-kind" class="badge neutral compact">—</span></div><div class="frame-box"><img id="segmentation-image" alt="엔진이 생성한 도로 인식 결과 영상" hidden><div id="segmentation-placeholder" class="frame-placeholder"><span aria-hidden="true">▦</span><small>인식 프레임 대기</small></div></div><div class="perception-info"><strong id="perception-label">모델 정보 대기</strong><p id="range-source">거리 관측의 출처를 확인하는 중입니다.</p><p id="model-error" class="inline-error" hidden></p></div></div>
-        <div class="panel telemetry-panel"><div class="section-heading"><h2>차량 상태</h2><span class="tiny-label">ENGINE STATE</span></div><div class="speed-reading"><strong id="speed">—</strong><span>m/s<small id="speed-kmh">— km/h</small></span></div><div class="telemetry-line"><span>조향각</span><strong id="steering">—</strong></div><div class="signal-line"><label for="throttle-meter">가속</label><meter id="throttle-meter" min="0" max="1" value="0" aria-label="실제 엔진 가속 명령"></meter><span id="throttle-value">—</span></div><div class="signal-line"><label for="brake-meter">제동</label><meter id="brake-meter" min="0" max="1" value="0" aria-label="실제 엔진 제동 명령"></meter><span id="brake-value">—</span></div><p id="command-reason" class="command-reason">명령 근거 대기</p></div>
+        <div class="panel telemetry-panel"><div class="section-heading"><h2>차량 상태</h2><span class="tiny-label">ENGINE STATE</span></div><div class="speed-reading"><strong id="speed">—</strong><span>km/h<small id="speed-mps">— m/s</small></span></div><div class="telemetry-line"><span>조향각</span><strong id="steering">—</strong></div><div id="terrain-telemetry" class="telemetry-line" hidden><span>고도 / 경사</span><strong id="vehicle-terrain">—</strong></div><div class="signal-line"><label for="throttle-meter">가속</label><meter id="throttle-meter" min="0" max="1" value="0" aria-label="실제 엔진 가속 명령"></meter><span id="throttle-value">—</span></div><div class="signal-line"><label for="brake-meter">제동</label><meter id="brake-meter" min="0" max="1" value="0" aria-label="실제 엔진 제동 명령"></meter><span id="brake-value">—</span></div><p id="command-reason" class="command-reason">명령 근거 대기</p></div>
       </aside>
     </div>
+    <section id="performance-panel" class="performance-panel panel" aria-labelledby="performance-title" tabindex="-1">
+      <div class="metrics-header"><h2 id="performance-title">자율주행 성능</h2><span id="performance-status" class="badge neutral">미수집</span></div>
+      <p id="performance-scope" class="performance-scope">이번 합성 세션의 제어·경로 추종 지표입니다. 실차 성능이나 인지 정확도 평가가 아닙니다.</p>
+      <p id="performance-mode-note" class="performance-mode-note">자율 주행 표본을 기다리고 있습니다.</p>
+      <div class="route-progress"><div class="route-progress-heading"><span>경로 진행 <small>전체 운전 모드</small></span><strong id="performance-progress-value">—</strong></div><progress id="performance-progress" value="0" max="100" aria-label="현재 경로 진행률"></progress><div class="route-progress-detail"><span id="performance-progress-distance">—</span><span id="performance-progress-remaining">—</span></div><p>진행률 100%는 목표 도달 판정과 별개입니다. 목표 도달 여부는 이번 실행 기록에서 확인하세요.</p></div>
+      <div class="performance-grid">
+        <div class="performance-metric"><span>경로 추종 RMSE</span><strong id="performance-path-rmse">—</strong><small>m · 작을수록 경로에 가까움</small><p id="performance-path-max">최대 — m</p></div>
+        <div class="performance-metric"><span>속도 추종 RMSE</span><strong id="performance-speed-rmse">—</strong><small>km/h · 제어 목표 대비</small><p id="performance-speed-mae">평균 절대 오차 — km/h</p></div>
+        <div class="performance-metric"><span>방향 오차 MAE</span><strong id="performance-heading-mae">—</strong><small>° · 기준 경로 접선 대비</small><p id="performance-current-errors">현재 경로 — m / 방향 —°</p></div>
+        <div class="performance-metric"><span>자율 주행 시간</span><strong id="performance-duration">—</strong><small>s · 일시정지·수동 제외</small><p id="performance-distance">주행 거리 — m</p></div>
+        <div class="performance-metric"><span>안전 제안 통과 비율</span><strong id="performance-safety-eligible">—</strong><small>% · 자율 주행 시간 기준</small><p id="performance-safety-stop">거부 시간 — s</p></div>
+        <div class="performance-metric"><span>자율 주행 평균 속도</span><strong id="performance-mean-speed">—</strong><small>km/h · 정지 표본 포함</small><p id="performance-peak-speed">최고 — km/h</p></div>
+      </div>
+      <div class="lane-performance" aria-labelledby="lane-performance-title">
+        <div class="lane-performance-heading"><h3 id="lane-performance-title">차선 유지</h3><span id="lane-source">차선 정보 미제공</span></div>
+        <div class="lane-performance-grid">
+          <div class="lane-metric"><span>자율 차선 유지 비율</span><div class="lane-reading"><strong id="lane-inside-pct">—</strong><small>%</small></div><p id="lane-autonomous-events">차선 이탈 —회 · 이탈 시간 — s</p><small id="lane-autonomous-samples">자율 표본 없음</small></div>
+          <div class="lane-metric"><div class="lane-current-heading"><span>현재 차체의 차선 여유</span><span id="lane-current-state" class="badge neutral">미제공</span></div><div class="lane-reading"><strong id="lane-clearance">—</strong><small>m</small></div><p id="lane-current-offset">중심 편차 — m · 차체 최대 편차 — m</p><small>현재 모드 기준 · 음수 여유는 경계 침범</small></div>
+        </div>
+        <div class="lane-guard"><span>합성 경로 경계 검사</span><span id="lane-guard-state" class="badge neutral">미제공</span><p id="lane-guard-description">엔진에서 합성 경로 경계 검사 결과를 제공하지 않습니다.</p></div>
+        <p id="lane-training-status" class="lane-training-status">차선 학습 상태 미제공</p><p class="lane-metric-note">차선 이탈은 가정한 자차 차로 경계의 침범입니다. 도로 이탈은 전체 주행 가능 도로 밖으로 나간 사건으로 별도 계산합니다.</p>
+      </div>
+      <div class="performance-detail-row"><span id="performance-events">자율 구간 · 충돌 — · 도로 이탈 — · 개입 —</span><span id="performance-stopped">정지 시간 — s</span><span id="performance-current-motion">현재 제어 목표 — km/h · 가속도 — m/s² · 조향 변화율 —°/s</span></div>
+      <div class="performance-charts">
+        <div class="performance-chart"><div class="performance-chart-heading"><h3>속도 추종</h3><div class="chart-legend"><span><i class="actual-line"></i>실제 속도</span><span><i class="target-line"></i>제어 목표</span></div></div><div class="performance-plot"><svg id="performance-speed-chart" viewBox="0 0 600 170" role="img" aria-label="최근 자율 주행 구간의 실제 속도와 제어 목표 속도"><path class="chart-grid" d="M42,15 H588 M42,75 H588 M42,135 H588"></path><text id="performance-speed-top" x="34" y="19" text-anchor="end">—</text><text x="34" y="139" text-anchor="end">0</text><text x="43" y="159">km/h</text><path id="performance-target-line" class="performance-target-line"></path><path id="performance-speed-line" class="performance-speed-line"></path><circle id="performance-target-dot" class="performance-target-dot" r="3" hidden></circle><circle id="performance-speed-dot" class="performance-speed-dot" r="3" hidden></circle></svg><p id="performance-speed-empty" class="chart-empty">자율 주행 시계열이 아직 없습니다.</p></div><div class="chart-time-labels"><span id="performance-speed-start">—</span><span id="performance-speed-end">—</span></div></div>
+        <div class="performance-chart"><div class="performance-chart-heading"><h3>경로 추종 오차</h3><span>기준 경로까지의 거리 · m</span></div><div class="performance-plot"><svg id="performance-path-chart" viewBox="0 0 600 170" role="img" aria-label="최근 자율 주행 구간의 경로 추종 오차"><path class="chart-grid" d="M42,15 H588 M42,75 H588 M42,135 H588"></path><text id="performance-path-top" x="34" y="19" text-anchor="end">—</text><text id="performance-path-middle" x="34" y="79" text-anchor="end">—</text><text id="performance-path-bottom" x="34" y="139" text-anchor="end">0</text><text x="43" y="159">m</text><path id="performance-path-line" class="performance-path-line"></path><circle id="performance-path-dot" class="performance-path-dot" r="3" hidden></circle></svg><p id="performance-path-empty" class="chart-empty">자율 주행 시계열이 아직 없습니다.</p></div><div class="chart-time-labels"><span id="performance-path-start">—</span><span id="performance-path-end">—</span></div></div>
+      </div>
+      <p class="performance-chart-note">최근 120초·최대 240개 기록의 자율 구간을 표시합니다. 기본 0.5초 간격이며 모드 전환 시 기록을 추가합니다. 수동 구간에서는 선이 끊깁니다. 제어 목표는 가감속 램프·안전 거부·목표 정지가 반영되어 요청 상한·계획 목표와 다를 수 있습니다.</p>
+      <details class="performance-definitions"><summary>지표 계산과 범위</summary><div><p>자율 누적 지표는 초기화 이후 자율 주행으로 실행한 단계만 계산합니다. 정지 표본은 포함하고 수동 조작·일시정지는 제외합니다. 표본이 없거나 값이 제공되지 않으면 —로 표시합니다.</p><p>경로 RMSE는 기준 폴리라인의 최근접점까지 거리(끝점 포함)의 제곱 평균에 제곱근을 취한 값입니다. 속도 RMSE·평균 절대 오차는 실제 속도와 가감속 램프를 거쳐 제어에 적용한 목표 속도의 차이를 사용합니다. 준비 대기·안전 거부·목표 정지 시 제어 목표는 0입니다. 방향 MAE는 기준 경로 접선과 차량 방향의 최소 각도 차이의 절대 평균입니다. 오차 지표는 자율 시뮬레이션 시간으로 가중 평균하며 평균 속도는 자율 이동 거리 ÷ 자율 시간 × 3.6입니다.</p><p>안전 제안 통과 비율은 통과 자율 시간 ÷ 전체 자율 시간 × 100이며 준비 대기 시간도 분모에 포함합니다. 거부 시간은 준비 대기를 제외하고 제안이 허용되지 않은 자율 단계의 시뮬레이션 시간입니다. 정지 시간은 자율 단계 종료 속도가 0.02 m/s 이하인 시간입니다. 충돌·이탈·개입은 자율 구간에서 새로 발생한 이벤트 수입니다. 이 값들은 안전 점수나 실제 사고 확률을 뜻하지 않습니다.</p><p>차선 유지는 기준 경로 중심의 폭 3.6 m 가정 차로에 대해 폭 1.8 m·기준점 앞 2.4 m·뒤 1.0 m의 가정 차체를 횡방향으로 검사합니다. 실제 OSM 차선 주석이나 실차 치수가 아닙니다. 유지 비율은 차체가 차로 안에 있던 자율 시간 ÷ 전체 자율 시간 × 100이며 수동 구간은 제외합니다. 도로 분할 마스크만으로 자차 차로 내부 정답을 만들 수 없으며 별도의 ego 차로 주석이 필요합니다. 현재는 합성 기하 감독용 데이터 준비 범위이며 차선 모델 미학습·학습 실행 중지·모델 자동 교체 없음 상태입니다.</p><p>진행률·현재 오차·가속도·조향 변화율은 현재 운전 모드의 상태입니다. 진행률은 경로 위 차량 투영 위치를 경로 길이로 나눈 값이며 목표 도달의 정지·차체·무사고 조건과 별개입니다.</p></div></details>
+    </section>
     <section class="metrics-panel panel" aria-labelledby="metrics-title"><div class="metrics-header"><h2 id="metrics-title">이번 실행 기록</h2><span>엔진이 계산한 합성 시뮬레이션 지표</span></div><div class="metrics-grid"><div class="metric"><span>이동 거리</span><strong id="metric-distance">—</strong><small>m</small></div><div class="metric"><span>충돌</span><strong id="metric-collisions">—</strong><small>events</small></div><div class="metric"><span>도로 이탈</span><strong id="metric-offroad">—</strong><small>events</small></div><div class="metric"><span>최소 여유 거리</span><strong id="metric-clearance">—</strong><small>m · 관측 없으면 —</small></div><div class="metric"><span>개입</span><strong id="metric-interventions">—</strong><small>engine count</small></div><div class="metric"><span>목표 도달</span><strong id="metric-goal" class="word-value">—</strong><small>이번 장면 기준</small></div></div></section>
+    <section id="improvement-panel" class="panel improvement-panel" aria-labelledby="improvement-title" tabindex="-1">
+      <div class="metrics-header"><h2 id="improvement-title">자율주행 구조 개선 현황</h2><span id="improvement-count">현황 대기</span></div>
+      <p id="improvement-verification" class="improvement-note">검증 결과 대기</p>
+      <p id="improvement-platforms" class="improvement-note"></p>
+      <div class="improvement-table-wrap"><table class="improvement-table"><thead><tr><th scope="col">항목</th><th scope="col">진행 상태</th><th scope="col">반영 내용</th><th scope="col">남은 검증·기능</th></tr></thead><tbody id="improvement-rows"></tbody></table></div>
+      <p class="improvement-note">코드 개선 현황입니다. 실제 주행 성능·안전 인증의 달성률이 아닙니다. 실차 검증은 별도로 수행해야 합니다.</p>
+    </section>
     <section class="events-panel panel" aria-labelledby="events-title"><div class="metrics-header"><h2 id="events-title">이벤트 로그</h2><span id="session-label">SESSION —</span></div><ol id="events" class="events"><li class="empty-event">기록된 이벤트가 없습니다.</li></ol></section>
     <footer><span>DRIVE LAB <span aria-hidden="true">/</span> 재현 가능한 오프라인 연구</span><span>합성 장면에서의 결과를 실차 안전성이나 실제 카메라 정확도로 해석하지 마세요.</span></footer>
   </main>

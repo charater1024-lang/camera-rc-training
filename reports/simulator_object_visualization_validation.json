@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "local_date": "2026-10-24",
+  "scope": "synthetic_object_observation_visualization_not_detector_validation",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.14",
+    "torch_used": false
+  },
+  "software_validation": {
+    "full_simulator_suite": {
+      "passed": 245,
+      "failed": 0,
+      "elapsed_s": 178.27,
+      "selection": "all tests/test_simulator*.py",
+      "command": "PYTHONPATH=src;runs/simulator-dev-tools python -m pytest <selection> -q -p no:cacheprovider --basetemp=runs/object-display-regression-20261024-02"
+    },
+    "final_overlay_and_http_focus": {
+      "passed": 40,
+      "failed": 1,
+      "note": "Object cases10 all passed. One invalid JSON size HTTP case failed on the first focused run; the31 HTTP cases all passed in isolated retry without an application source change."
+    },
+    "http_final_isolated_retry": {
+      "passed": 31,
+      "failed": 0,
+      "elapsed_s": 0.5,
+      "command": "PYTHONPATH=src;runs/simulator-dev-tools python -m pytest tests/test_simulator_server.py -q --tb=short -p no:cacheprovider --basetemp=runs/object-display-http-retry-20261024-04"
+    },
+    "ui_node": {
+      "passed": 16,
+      "failed": 0,
+      "command": "node --test tests/simulator_ui.test.cjs"
+    },
+    "unique_python_tests": 245,
+    "full_repository_suite_run": false
+  },
+  "browser_validation": {
+    "engine": "in-app browser via CUA",
+    "scenario": "seoul_hazard",
+    "seed": 42,
+    "sim_time_s": 14.6,
+    "running": false,
+    "observed_objects": 6,
+    "camera_boxes": 5,
+    "hidden_or_out_of_range": 39,
+    "sampled_at_sim_time_s": 14.5,
+    "screenshot": "assets/object-perception-ui.png",
+    "checks": [
+      "original and annotated camera toggle updates PNG path without driving actions",
+      "vehicle/person/cone IDs, distances, absolute speeds and supplied safety track IDs displayed",
+      "world objects distinct from sampled observation rings",
+      "camera and segmentation image load successful",
+      "label overlap improved and visually inspected",
+      "no console warnings or errors"
+    ]
+  },
+  "example_observation": {
+    "source": "synthetic_geometry_not_learned_detection",
+    "learned_detector_loaded": false,
+    "status": "available",
+    "sampled_at_sim_time_s": 14.5,
+    "sensor_range_m": 25.0,
+    "objects": [
+      {
+        "id": "kerb_1",
+        "x_m": 149.4562582518631,
+        "y_m": -18.732805122962137,
+        "radius_m": 0.3,
+        "kind": "pedestrian",
+        "vx_mps": 0.0,
+        "vy_mps": 0.0,
+        "distance_m": 4.899894247751371,
+        "relative_forward_m": 2.0410762697648535,
+        "relative_left_m": 4.454545016065026,
+        "speed_kmh": 0.0,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": false,
+        "camera_box_xyxy": [
+          106.78460481032525,
+          59.55029104001042,
+          113.50012375186853,
+          78.57759470771636
+        ]
+      },
+      {
+        "id": "kerb_0",
+        "x_m": 159.74379852222472,
+        "y_m": -26.285133527694292,
+        "radius_m": 2.2,
+        "kind": "vehicle",
+        "vx_mps": 0.0,
+        "vy_mps": 0.0,
+        "distance_m": 7.864900432898425,
+        "relative_forward_m": -3.5753557049894953,
+        "relative_left_m": -7.0052473476819435,
+        "speed_kmh": 0.0,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": false,
+        "camera_box_xyxy": null
+      },
+      {
+        "id": "kerb_2",
+        "x_m": 159.27493462280822,
+        "y_m": -14.99472920938211,
+        "radius_m": 0.22,
+        "kind": "cone",
+        "vx_mps": 0.0,
+        "vy_mps": 0.0,
+        "distance_m": 8.733285145212141,
+        "relative_forward_m": 7.454703766854989,
+        "relative_left_m": -4.549468230026569,
+        "speed_kmh": 0.0,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": false,
+        "camera_box_xyxy": [
+          188.9602913192545,
+          60.050498584654754,
+          191.90349993136476,
+          65.06733144620634
+        ]
+      },
+      {
+        "id": "route_blocking_vehicle",
+        "x_m": 156.01262925059297,
+        "y_m": -9.381630213439077,
+        "radius_m": 2.2,
+        "kind": "vehicle",
+        "vx_mps": 0.0,
+        "vy_mps": 0.0,
+        "distance_m": 12.40815738480445,
+        "relative_forward_m": 12.403304841670684,
+        "relative_left_m": -0.3469851447335306,
+        "speed_kmh": 0.0,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": true,
+        "camera_box_xyxy": [
+          150.93796802211517,
+          53.069202856638604,
+          172.45584230648478,
+          59.67127792116109
+        ]
+      },
+      {
+        "id": "kerb_3",
+        "x_m": 149.40010335895346,
+        "y_m": -6.9130309711903415,
+        "radius_m": 2.2,
+        "kind": "vehicle",
+        "vx_mps": 0.0,
+        "vy_mps": 0.0,
+        "distance_m": 15.174415885810781,
+        "relative_forward_m": 13.665081037816037,
+        "relative_left_m": 6.59760999949733,
+        "speed_kmh": 0.0,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": false,
+        "camera_box_xyxy": [
+          119.73650459755777,
+          52.55145629526946,
+          139.873721384943,
+          58.72992053685356
+        ]
+      },
+      {
+        "id": "kerb_4",
+        "x_m": 161.82817519207305,
+        "y_m": -4.012310430004972,
+        "radius_m": 0.3,
+        "kind": "pedestrian",
+        "vx_mps": 0.0,
+        "vy_mps": 0.0,
+        "distance_m": 19.403844792807412,
+        "relative_forward_m": 18.715431643285278,
+        "relative_left_m": -5.1226761706041355,
+        "speed_kmh": 0.0,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": false,
+        "camera_box_xyxy": [
+          177.56153247164886,
+          49.733884549889574,
+          179.7464022639056,
+          55.92434896128363
+        ]
+      }
+    ],
+    "world_actor_count": 45,
+    "hidden_or_out_of_range_count": 39,
+    "camera_box_count": 5,
+    "safety_track_ids": [
+      "kerb_0",
+      "kerb_1",
+      "kerb_2",
+      "kerb_3",
+      "kerb_4",
+      "route_blocking_vehicle"
+    ],
+    "box_definition": "projected assumed actor extent; not detected pixels or ground-truth instance masks",
+    "route_proximity_definition": "actor center near reference polyline; not a collision prediction or safety decision",
+    "age_s": 0.09999999999999964,
+    "frame_frozen": false
+  },
+  "limits": [
+    "No learned object detector or learned tracker is loaded; no detector confidence or accuracy evaluation",
+    "World actor IDs are synthetic identities, not learned data association",
+    "Actor centers use assumed sensor range and regional geometric occlusion; not pixel-level camera visibility",
+    "Camera boxes are projected assumed extents, not detector boxes or instance masks",
+    "Near-reference-route tags are display hints, not collision risk estimates or safety decisions",
+    "Existing privileged basic-course safety tracks can include objects omitted from bounded display",
+    "World symbols and sampled observations can represent different simulation times"
+  ],
+  "control_logic_changed_by_feature": false,
+  "training_executed": false,
+  "automatic_model_replacement": false,
+  "physical_output": false,
+  "source_sha256": {
+    "src/camera_rc/simulator/objects.py": "61dce95bd40fe0b25d6391e2039e75b3a3b108f2ab4d6b7f3de35010ae5ef778",
+    "src/camera_rc/simulator/engine.py": "73a6e5ddacbb16949c8b024dbfd6368e525e37ae217e3cfc9447f4de892c31b7",
+    "src/camera_rc/simulator/server.py": "ae9620406dada99e931fdba1d14471bd66af0d5e8b344dabdac6b5566604f548",
+    "src/camera_rc/simulator/assets/app.js": "01c4295d46f11f9cf6b04eb60891a26df0e47d5efa697307860ffe8ffbd9b1a9",
+    "src/camera_rc/simulator/assets/index.html": "7b14cd32665d32c51ea8887fe67d2f869004b1e57873c82b5679f2ba1f083644",
+    "src/camera_rc/simulator/assets/style.css": "57e37b1a976b690ea87b30840d1c28f4d750f971f39638dfaf269cf13f45c979",
+    "tests/test_simulator_objects.py": "db85e3b30ff3092d24c5e46e1b86783ec3e5b5dfa68849fc65907dab0cd46abb",
+    "tests/test_simulator_server.py": "c233ff4626f7df97a33532c4d1c0890de597c3523b724b01c31a3a3f2f3a5927",
+    "tests/simulator_ui.test.cjs": "2199c2f1badcbfc8d568c82b1307f2864dca573c8ac70a58a26401a7c7f41fbe",
+    "docs/OBJECT_VISUALIZATION.md": "f7511eaa6098d6ea02df5e8bec2c1fedab16260bfe4f65b87ed7448e1e4446e0",
+    "README.md": "01367c0d5c217c0dea7702ac3486a00a6bc2bc02bfaeff63b645ac1332651c80",
+    "docs/SIMULATOR.md": "a49afead5ec927d5b3ef034770e903553b2474e67943b393e289ac982d754141",
+    "assets/object-perception-ui.png": "e42adb3882b9a3004f382eb12c32df6011956eafce23906f0ebc2f8c25d75ffa"
+  }
+}

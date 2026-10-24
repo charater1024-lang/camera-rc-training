@@ -10,6 +10,7 @@ import threading
 import time
 from urllib.parse import urlsplit
 import uuid
+from .progress import improvement_progress
 
 
 class SimulatorApp:
@@ -39,13 +40,15 @@ class SimulatorApp:
             state = dict(self.engine.snapshot())
             state.update(running=self.running, server_error=self.error,
                          session_id=self.session_id, scenarios=self.scenarios,
-                         physical_output=False, manual_deadman_s=0.75)
+                         physical_output=False, manual_deadman_s=0.75,
+                         improvement_progress=improvement_progress())
             return state
 
     def report(self):
         with self.lock:
             report = dict(self.engine.report())
-            report.update(server_error=self.error, session_id=self.session_id, physical_output=False)
+            report.update(server_error=self.error, session_id=self.session_id, physical_output=False,
+                          improvement_progress=improvement_progress())
             return report
 
     def frame(self, kind):
@@ -87,6 +90,7 @@ class SimulatorApp:
             "reset": {"action", "scenario", "seed", "mode"}, "mode": {"action", "mode"},
             "controls": {"action", "steering", "throttle", "brake"},
             "reset_safety": {"action"},
+            "speed": {"action", "speed_mode", "target_speed_kmh"},
         }
         if action not in allowed or set(message) - allowed[action]:
             raise ValueError("Unsupported action or field")
@@ -115,6 +119,10 @@ class SimulatorApp:
                 self.running = False
                 self._stop_controls()
                 self.engine.set_mode(message["mode"])
+            elif action == "speed":
+                from .speed import validate_speed
+                mode,target=validate_speed(message.get("speed_mode"),message.get("target_speed_kmh"))
+                self.engine.set_speed(mode,target)
             elif action == "controls":
                 values = {k: message.get(k, default) for k, default in
                           (("steering", 0.), ("throttle", 0.), ("brake", 1.))}
@@ -211,16 +219,30 @@ class SimulatorHandler(BaseHTTPRequestHandler):
                 self._respond(200, files("camera_rc.simulator").joinpath("assets", name).read_bytes(), mime)
             elif path == "/api/state":
                 self._json(200, self.server.app.snapshot())
+            elif path == "/api/improvements":
+                self._json(200, improvement_progress())
             elif path == "/api/scenarios":
                 self._json(200, self.server.app.scenarios)
             elif path == "/api/report":
                 self._json(200, self.server.app.report(), download=True)
-            elif path in {"/frames/camera.png", "/frames/segmentation.png"}:
+            elif path in {"/frames/camera.png", "/frames/segmentation.png", "/frames/objects.png"}:
                 self._respond(200, self.server.app.frame(path.split("/")[-1].split(".")[0]), "image/png")
             else:
                 self._json(404, {"error": "Not found"})
         except Exception:
             self._json(500, {"error": "Cannot read simulation state"})
+
+    def _reject_post(self, status, message):
+        # Drain only a bounded small body. Closing a Windows socket with unread
+        # request bytes can reset it before the rejection response is delivered.
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if 0 < length <= 8192 and not self.headers.get("Transfer-Encoding"):
+                self.connection.settimeout(.25)
+                self.rfile.read(length)
+        except (ValueError, OSError):
+            pass
+        self._json(status, {"error": message})
 
     def do_POST(self):
         port = self.server.server_port
@@ -229,13 +251,13 @@ class SimulatorHandler(BaseHTTPRequestHandler):
         if (not self._valid_host() or self.headers.get("X-Simulator-Client") != "1"
                 or (origin is not None and origin not in allowed_origins)
                 or self.headers.get("Sec-Fetch-Site") == "cross-site"):
-            self._json(403, {"error": "Same-origin simulator client required"})
+            self._reject_post(403, "Same-origin simulator client required")
             return
         if urlsplit(self.path).path != "/api/action":
             self._json(404, {"error": "Not found"})
             return
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
-            self._json(415, {"error": "JSON body required"})
+            self._reject_post(415, "JSON body required")
             return
         try:
             length = int(self.headers.get("Content-Length", "-1"))

@@ -14,6 +14,9 @@ class Frame:
     sequence: int
     speed_mps: float = 0.0
     yaw_rate_rps: float = 0.0
+    exposure_at_s: float | None = None
+    clock_id: str = "host_monotonic"
+    timing_source: str = "host_receive_unverified"
 
 
 class CameraSource:

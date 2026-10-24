@@ -4,6 +4,7 @@ The 50 Hz control loop expires plans independently of camera/model work. Serial
 MCU watchdog enforcement remains necessary if the host or Python process hangs.
 """
 from collections import Counter, deque
+import copy
 from dataclasses import asdict
 import json
 import math
@@ -15,6 +16,7 @@ from .config import load_runtime_config, check_actuation
 from .control import Controller
 from .transport import DryRunTransport, SerialTransport
 from .types import VehicleState
+from .safety_boundary import SafetyBoundary
 from .sources import open_source
 from .resources import configure_device, ResourceMonitor, latency_report
 
@@ -37,6 +39,8 @@ class ControlLoop:
         self.cfg, self.transport, self.output = cfg, transport, Path(output)
         self.controller = Controller(cfg["controller"])
         self.lock, self.done = threading.Lock(), threading.Event()
+        self.safety_boundary = SafetyBoundary(cfg.get("safety", {}), cfg["transport"]["kind"] == "serial")
+        self.observation = None
         self.plan = None
         self.plan_time = None
         self.state = None
@@ -60,13 +64,14 @@ class ControlLoop:
         except OverflowError:
             return False
 
-    def publish(self, plan, captured_at):
+    def publish(self, plan, captured_at, observation=None):
         with self.lock:
             if not self._valid_capture_time(captured_at):
                 self.latched_fault = self.latched_fault or "plan_capture_time_invalid_restart_required"
                 self.plan, self.plan_time = None, None
                 return
-            self.plan, self.plan_time = plan, captured_at
+            self.plan, self.plan_time = copy.deepcopy(plan), captured_at
+            self.observation = copy.deepcopy(observation)
 
     def fail(self, reason):
         with self.lock:
@@ -82,7 +87,7 @@ class ControlLoop:
         self.last_tick = now
         state = self.transport.read_state(now)
         with self.lock:
-            plan, stamp = self.plan, self.plan_time
+            plan, stamp, observation = self.plan, self.plan_time, self.observation
             valid_stamp = self._valid_capture_time(stamp)
             # Check again at the command boundary: a plan without capture time
             # must not silently bypass expiry, even if published by another API.
@@ -101,7 +106,8 @@ class ControlLoop:
         elif plan is None:
             command = self.controller.stop("waiting_for_first_plan")
         else:
-            command = self.controller.update(plan, state, now)
+            veto = self.safety_boundary.review(plan, state, observation, now)
+            command = self.controller.stop(veto) if veto else self.controller.update(plan, state, now)
         actual = self.transport.send(command, now)
         with self.lock:
             self.command = actual
@@ -109,7 +115,9 @@ class ControlLoop:
         self.ticks += 1
         return {"monotonic_s": now, "state": asdict(state) if state is not None else None,
                 "command": asdict(actual), "plan_age_ms": (now - stamp) * 1000 if valid_stamp else None,
-                "physical_output": self.cfg["transport"]["kind"] == "serial"}
+                "physical_output": self.cfg["transport"]["kind"] == "serial",
+                "safety": ({"mode": "LATCHED_STOP", "reasons": [fault], "proposal_eligible": False}
+                           if fault else self.safety_boundary.last_decision)}
 
     def _run(self):
         period = 1 / self.cfg["runtime"]["control_hz"]
@@ -222,7 +230,8 @@ def run_drive(config_path, output, *, actuate=False, max_frames=None, duration_s
                 stream.write(json.dumps({"frame": frame.sequence, "pipeline_ms": elapsed * 1000,
                                         "frame_age_ms": age * 1000, "inference_ms": result.inference_ms,
                                         "views": result.views, "camera_receive_skew_ms": getattr(frame, "skew_s", 0) * 1000,
-                                        "plan_valid": plan.valid, "plan_reason": plan.reason,
+                                        "safety_mode": cfg.get("safety", {}).get("mode", "required"),
+                                        "proposal_valid": plan.valid, "plan_valid": plan.valid, "plan_reason": plan.reason,
                                         "target_speed_mps": plan.target_speed_mps, "points": plan.points.tolist()}, allow_nan=False) + "\n")
                 stream.flush()
                 delay = 1 / cfg["runtime"]["perception_hz"] - (time.monotonic() - begin)

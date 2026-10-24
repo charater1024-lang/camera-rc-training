@@ -246,7 +246,7 @@ def test_runtime_config_resolves_portable_report_and_weight_paths(tmp_path):
 
 def test_native_backend_does_not_import_ultralytics(tmp_path, monkeypatch):
     from camera_rc.models import build_model
-    stored = {"task": "segmentation", "model": {"width": 4, "num_classes": 2}, "data": {"image_size": [16, 24]}}
+    stored = {"task": "segmentation", "model": {"width": 4, "num_classes": 2}, "data": {"image_size": [16, 24], "label_space_id": "road_surface_v1"}}
     path = tmp_path / "native.pt"
     torch.save({"format_version": 1, "config": stored, "model": build_model(stored).state_dict()}, path)
     original = builtins.__import__
@@ -255,6 +255,6 @@ def test_native_backend_does_not_import_ultralytics(tmp_path, monkeypatch):
             pytest.fail("Native backend imported the optional dependency")
         return original(name, *args, **kwargs)
     monkeypatch.setattr(builtins, "__import__", guarded)
-    runtime = CameraPerception({"segmentation_checkpoint": str(path), "drivable_class_ids": [0]}, "cpu")
+    runtime = CameraPerception({"segmentation_checkpoint": str(path), "expected_label_space_id": "road_surface_v1", "drivable_class_ids": [0]}, "cpu")
     assert runtime.backend == "native"
     assert runtime.infer(np.zeros((25, 39, 3), dtype=np.uint8)).drivable.shape == (25, 39)

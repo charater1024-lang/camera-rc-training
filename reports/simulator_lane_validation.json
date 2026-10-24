@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "local_date": "2026-10-23",
+  "scope": "synthetic_lane_geometry_and_control_integration_only",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.14",
+    "torch_used": false
+  },
+  "base_commit": "e0c5f80bb71977096ce79fe94c20330eeb7dd6c3",
+  "working_tree_changes_included": true,
+  "software_validation": {
+    "simulator_and_lane_preparation_without_http": {
+      "passed": 224,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_s": 110.52,
+      "selection": "all tests/test_simulator*.py except tests/test_simulator_server.py, plus tests/test_lane_training_preparation.py",
+      "command": "PYTHONPATH=src;runs/simulator-dev-tools python -m pytest -q --tb=short --basetemp runs/pytest-lane-final-review-20261023 <selection>"
+    },
+    "http_server_final_isolated": {
+      "passed": 31,
+      "failed": 0,
+      "elapsed_s": 0.47,
+      "command": "PYTHONPATH=src;runs/simulator-dev-tools python -m pytest tests/test_simulator_server.py -q -p no:cacheprovider --basetemp runs/lane-final-http-20261023-06",
+      "loopback_sandbox_permission": true
+    },
+    "ui_node": {
+      "passed": 13,
+      "failed": 0,
+      "command": "node --test tests/simulator_ui.test.cjs"
+    },
+    "unique_python_tests_passed": 255,
+    "full_repository_suite_run": false,
+    "earlier_environment_retries": "Earlier sandbox Temp and loopback restrictions, and one Windows HTTP connection abort, were resolved with workspace basetemp and isolated loopback tests. Final runs above all passed."
+  },
+  "functional_validation": {
+    "basic_courses": {
+      "source": "test_basic_autonomous_goal_regression_retains_lane_and_road_separation",
+      "scenarios": [
+        "clear",
+        "curved"
+      ],
+      "goal_reached": true,
+      "lane_inside_pct": 100.0,
+      "lane_departure_events": 0,
+      "road_departure_events": 0,
+      "collisions": 0
+    },
+    "regional_smoke": {
+      "scenarios": [
+        "seoul_day",
+        "busan_day",
+        "gwangju_day",
+        "suncheon_day",
+        "gangwon_day"
+      ],
+      "steps_each": 5
+    },
+    "busan_partial_episode": {
+      "scenario": "busan_day",
+      "seed": 42,
+      "steps": 900,
+      "sim_time_s": 90.0,
+      "full_course_completed": false,
+      "speed_mode": "automatic",
+      "requested_ceiling_kmh": 150.0,
+      "final_vehicle": {
+        "x_m": 1931.337400358942,
+        "y_m": 78.51308969993582,
+        "yaw_rad": -0.03345641936760539,
+        "speed_mps": 24.9921218300286,
+        "steering_rad": -0.0030986743375688132,
+        "elevation_m": 42.285028884317114,
+        "grade_percent": -3.3689213938759135
+      },
+      "metrics": {
+        "distance_m": 1937.4220232354714,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 1.450032482891755,
+        "interventions": 0,
+        "goal_reached": false,
+        "route_progress_m": 1937.4311435332802
+      },
+      "lane": {
+        "source": "synthetic_assumed_lane_not_measured",
+        "width_m": 3.6,
+        "current": {
+          "outside": false,
+          "center_offset_m": 0.005614271876277615,
+          "max_body_offset_m": 0.919412420143682,
+          "clearance_m": 0.8805875798563181
+        },
+        "autonomous": {
+          "samples": 900,
+          "duration_s": 89.99999999999916,
+          "inside_pct": 100.0,
+          "departure_events": 0,
+          "outside_time_s": 0.0
+        },
+        "training": {
+          "status": "not_trained",
+          "model_loaded": false,
+          "label_space": "ego_lane_v1"
+        },
+        "guard": {
+          "allowed": true,
+          "checked": true,
+          "reason": null,
+          "scope": "synthetic_path_guard"
+        }
+      },
+      "final_safety": {
+        "mode": "PROPOSAL_ELIGIBLE",
+        "reasons": [
+          "supplied_offline_evidence_passed"
+        ],
+        "proposal_eligible": true,
+        "actuation_enabled": false
+      },
+      "source": "unmodified Engine.step, no callbacks or geometry overrides"
+    },
+    "negative_controls": [
+      "front corner outside while vehicle center and whole road collision disk remain inside",
+      "guard margin veto before actual lane departure",
+      "manual override excluded from autonomous statistics",
+      "substep outside duration smaller than one outer step",
+      "positive learned road mask cannot bypass lane veto",
+      "lane acceptance cannot bypass semantic rejection",
+      "stopping path beyond bounded goal runoff is rejected"
+    ],
+    "trajectory_regression": "Variable-curvature regional pure-pursuit rollout retains actual pose and initial steering, respects steering slew and desired lateral budget, then undergoes unchanged lane and shadow safety checks."
+  },
+  "browser_validation": {
+    "engine": "Chrome via CUA",
+    "url": "http://127.0.0.1:8766/#performance-panel",
+    "screenshot": "assets/lane-keeping-ui.jpg",
+    "final_scenario": "curved",
+    "final_mode": "autonomous",
+    "final_running": false,
+    "sim_time_s": 13.1,
+    "autonomous_samples": 131,
+    "lane_inside_pct": 100.0,
+    "lane_departure_events": 0,
+    "checks": [
+      "uncollected statistics and initial pending guard",
+      "one step accumulates exactly one autonomous sample",
+      "manual step preserves autonomous counters and marks guard unapplied",
+      "user speed apply and automatic restore",
+      "both assumed boundaries and legend drawn",
+      "no console warnings/errors or visible overlap"
+    ]
+  },
+  "limitations": [
+    "3.6m lane and rectangle dimensions are assumed; no measured markings or lane widths",
+    "Perimeter and path containment are discrete sampled checks, not continuous containment proofs",
+    "Trajectory rollout is a geometric prediction, not proof that actual control follows the identical curve",
+    "Regional long-run validation is partial, not completion of every regional course",
+    "No learned lane model is loaded or trained; no accuracy assessment, real sensor or real vehicle validation",
+    "Existing rejected model adoption and stopped training states remain unchanged"
+  ],
+  "training_executed": false,
+  "automatic_model_replacement": false,
+  "hardware_modules_opened": false,
+  "actuation_enabled": false,
+  "source_sha256": {
+    "assets/lane-keeping-ui.jpg": "5004a7c7e9dee00fd57c4b6a1e4e072e9f432deb90d86a70e2327d1ced761956",
+    "configs/lane_segmentation.json": "89d092db8651466f8eb81a5e7c2e4e7ba7b9f01c936e91fb7d7bc49b6504d918",
+    "docs/LANE_KEEPING.md": "fbf62e3b1bd7a12a303e486f4a52c15e1073107eeefb24f1bd1137a42e2cc8c5",
+    "docs/LANE_TRAINING_PREPARATION.md": "a3ccd3500935259b334f0d775e09f8b06b6e43af5d1aeb395fb6588cb01e9946",
+    "docs/PERFORMANCE_METRICS.md": "6ce35f7beb937c2cde279e3b8ccda2f8e9846a234401394d95f9f3d0e1ad94b2",
+    "docs/REGIONAL_TERRAINS.md": "7a38f55d3277cd813f95e193f631dc8f64fd006606a16ab6eb99410a2a5dadda",
+    "docs/SIMULATOR.md": "f23edf8d100b88c365dbec094e3ed9496685916b216f734addd4cdbb1b534c57",
+    "README.md": "2803c71b191ff1a9621dd43e190c1ba0c839ad6b2cea8742dcd60aaaeb1e160c",
+    "scripts/prepare_lane_training.py": "0e052e5e90936ad5b47f1b866f86bab1a876f73b829c889d273880f813df3313",
+    "src/camera_rc/driving/control.py": "af1d500525e4a2cc39051f40d46345019a1568666b232358d76492c1ccdc1de3",
+    "src/camera_rc/driving/shadow_safety.py": "7bd4ea04cc6b2e9fbe7274a361ccc1935e763afd6871a09161d1ed2dc1433e05",
+    "src/camera_rc/lane_training.py": "e9706f64053bdeb1347275d49fe1151d30adef32e2b1b20c48755c7bacd0009a",
+    "src/camera_rc/simulator/__init__.py": "57ab9ce4a0692cdc7a0722fbcea8908d6a4ecab0ad9d81fce1e93fb534666f2b",
+    "src/camera_rc/simulator/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/camera_rc/simulator/assets/app.js": "3d78f90dc9ccd27c0a281824ab3394adf5f789e73ca4b084eda30a9a77b4b218",
+    "src/camera_rc/simulator/assets/index.html": "5d461aa79104aceae2ffeacd64b014a69588440eecd387c9d7dd337bc47beb33",
+    "src/camera_rc/simulator/assets/style.css": "f4e1feb4329a20627790f75a90f90097f94f516ee157daa5fb3f72d2616a28a2",
+    "src/camera_rc/simulator/cli.py": "33882fc021fa02ad1655915467d7a1329dcca6fbdde8c96bd6c1495a4044049b",
+    "src/camera_rc/simulator/engine.py": "a20edc14dbc66d5f2714441ccdd62b327c9a96ce843f794a4b417fbe548e4566",
+    "src/camera_rc/simulator/lane.py": "aac05e8ae28dad15aa68294f568e8b66c78063d14afbdc2ddb9cbaee75f5b985",
+    "src/camera_rc/simulator/performance.py": "4e46b5bd0b73e74e0cb57f9c4f4637decfc2f8833e821562074df21977e83659",
+    "src/camera_rc/simulator/region.py": "9be5decc9c5c509e995889e1de098d4a83c78e42f710531351b8af8029fea80a",
+    "src/camera_rc/simulator/rendering.py": "9f0d9c46ac69af50b717be6a0fe6e9cfdc88dfe441e84bd6fc7fefe2cad8626c",
+    "src/camera_rc/simulator/server.py": "fc7ce079fb0607c71fa78f3060b1afb3e1f2b446aa2696773fe96f09959f6188",
+    "src/camera_rc/simulator/speed.py": "87c9de9d132abe376ea38c44cb10473d26e3104514250af762b939522172802a",
+    "src/camera_rc/simulator/terrain.py": "1998521a8ed3b0b2c979e67b3a15bf034bd4a0ec8e7b8b8f4c869ad5e9075e9c",
+    "src/camera_rc/simulator/trajectory.py": "ae2d513aec1e5bcb1a3a1042ce1ecd4877d6fddeb3ba354431173afbdd1160bd",
+    "tests/simulator_ui.test.cjs": "dcc3ef2614abbd9efa07b276e578329d8deeb659a6ddab798e73b17613797663",
+    "tests/test_lane_training_preparation.py": "afaf1e0c77b8e43b2915cb4b00330d30099d0e8643446d8e69d665867ad9f10d",
+    "tests/test_simulator_engine.py": "8432db7fe3fc88d7a373210ae507ec9f8c13e760fcae16a901592d1e991a4fd4",
+    "tests/test_simulator_lane_engine.py": "f9bcba60c55d783fe65cc9d4d88be400a32df47249cfdc5819c49c129f106c56",
+    "tests/test_simulator_lane_geometry.py": "0d6e184ef2e5f46458dc98cd32e73562857a0d3d0362f8cb062bbbfcc01f6bd4",
+    "tests/test_simulator_performance.py": "578a04f9d852aa3c626c4e15eb7210568a409fe1ef462d2e1a4593aa98639485",
+    "tests/test_simulator_performance_tracker.py": "6ed4a5910eeaa8b57fd30fc28f16e1b108d89219db6b5c818df8fcf07f1e0a5c",
+    "tests/test_simulator_region.py": "8ebd12919447c1ec70bbbcad4d53cc8bde4cbc464dbdd21101f677736931d4c3",
+    "tests/test_simulator_seoul_engine.py": "d93726dc8ba3ac85eb26344f49a29507ea798d50a911423dc574b86819d389be",
+    "tests/test_simulator_seoul_rendering.py": "89400a434c40d9f5509ebdbc51c83fcad8e9ebbe7483c52f57e46261f9da22bb",
+    "tests/test_simulator_server.py": "b5b5c0994db4d443083674d5fd94dc9ac68d5470c09d142c9c50a5b090d75ca8",
+    "tests/test_simulator_speed.py": "69964c18c3d005e2afd1bcefdda1163626d7de3ae4a06b7cb5791d368ac1944c",
+    "tests/test_simulator_terrain.py": "188b6be1d3e08c3f0f351a669bce6ca04ee73842141e26f79640411c73419db8",
+    "tests/test_simulator_trajectory.py": "2d79cb24f5ca47e53327db1afaba44639a5230ed644e939963329cdd781ae33f"
+  }
+}

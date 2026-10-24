@@ -45,7 +45,7 @@ def export_runtime_checkpoint(checkpoint, output) -> dict:
         "model": {key: value for key, value in config.get("model", {}).items()
                   if key in {"width", "num_classes", "horizon"}},
         "data": {key: value for key, value in config.get("data", {}).items()
-                 if key in {"image_size", "depth_scale", "max_depth_m", "future_offsets_s"}},
+                 if key in {"image_size", "depth_scale", "max_depth_m", "future_offsets_s", "label_space_id", "labels"}},
     }
     # A standard JSON round-trip guarantees portable basic config types and
     # rejects NaN/Infinity instead of putting them in a deployment artifact.

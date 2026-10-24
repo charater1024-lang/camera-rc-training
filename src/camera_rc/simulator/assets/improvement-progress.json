@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-24",
+  "scope": "engineering_progress_not_driving_performance",
+  "items": [
+    {
+      "id": "labels",
+      "title": "모델 라벨·검출 상태 계약",
+      "status": "implemented",
+      "detail": "라벨 공간·주행 클래스 불일치 거부, 검출기 미구동 구분",
+      "remaining": "합성 체크포인트 CPU 추론 확인 완료; 실제 차량 영상의 정확도 검증은 별도"
+    },
+    {
+      "id": "safety",
+      "title": "공통 안전 검사와 제어 경계",
+      "status": "partial",
+      "detail": "시뮬레이터와 동일한 감독기 재사용, 관측 누락 시 정지, 제어 주기마다 재검사",
+      "remaining": "실제 거리·위치 생산자 연결 및 영상 replay 통합 필요"
+    },
+    {
+      "id": "tracking",
+      "title": "거리·추적·위치 추정",
+      "status": "partial",
+      "detail": "미터 단위 관측과 세계 좌표 입력을 요구하는 진단용 추적기, 소실·모호성 상태 추가",
+      "remaining": "실제 거리 센서·위치 추정 생산자와 정확도 측정 필요"
+    },
+    {
+      "id": "geometry",
+      "title": "산지·고속·차량 제약",
+      "status": "partial",
+      "detail": "평면 가정 위반·촬영 시각 미확인 거부, 속도·가속도·곡률 검사",
+      "remaining": "3D 인지 및 타이어·제동·경사 실측 필요"
+    },
+    {
+      "id": "behavior",
+      "title": "차로·신호·주행 행동",
+      "status": "partial",
+      "detail": "방향·폐쇄 차로를 지키는 차로 그래프 경로 탐색, 차체 경계·신호·우선권 거부",
+      "remaining": "실제 차로 지도·영상 인식 연결 및 교차로 행동·예측 계획 필요"
+    },
+    {
+      "id": "policy",
+      "title": "시계열 정책 평가",
+      "status": "partial",
+      "detail": "차량 한계가 주어지면 평가에 물리 제약 위반 비율 추가",
+      "remaining": "정책 실행 어댑터 및 폐루프 평가 필요; 학습·모델 채택 미실행"
+    },
+    {
+      "id": "hardware",
+      "title": "실측 지연·MCU·제어",
+      "status": "partial",
+      "detail": "실제 노출 시각 확인을 요구하며 검증 미완료 실제 출력 차단",
+      "remaining": "독립 MCU 펌웨어, 실제 조향·제동·노출 동기 측정 필요"
+    },
+    {
+      "id": "validation",
+      "title": "운행 조건·검증 증거",
+      "status": "partial",
+      "detail": "모델·보정·차량 설정·코드 및 ODD에 결합된 보고서 해시 감사",
+      "remaining": "독립 실측 데이터·폐루프·하드웨어 보고서 필요"
+    }
+  ],
+  "automated_verification": {
+    "status": "passed",
+    "python_passed": 481,
+    "ui_passed": 18,
+    "report": "reports/autonomy_improvement_validation.json",
+    "scope": "CPU synthetic checkpoints, contracts and synthetic simulator; no real vehicle validation"
+  },
+  "measured_validation_complete": 0,
+  "physical_output": false,
+  "training_started": false,
+  "platforms": [
+    {
+      "id": "simulator",
+      "title": "시뮬레이터",
+      "status": "합성 회귀 검사 통과"
+    },
+    {
+      "id": "rc_car",
+      "title": "RC카",
+      "status": "차량·센서 실측 대기"
+    },
+    {
+      "id": "road_vehicle",
+      "title": "실제 차량",
+      "status": "차량·센서 실측 대기"
+    }
+  ]
+}

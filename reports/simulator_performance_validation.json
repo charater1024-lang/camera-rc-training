@@ -1,0 +1,1024 @@
+{
+  "schema_version": 1,
+  "local_date": "2026-10-23",
+  "scope": "synthetic_session_performance_instrumentation_only",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.14",
+    "torch_used": false
+  },
+  "software_validation": {
+    "simulator_suite_initial": {
+      "passed": 189,
+      "failed": 2,
+      "unique_tests": 191,
+      "failures": "Windows localhost connection abort (WinError10053) while reading early HTTP415/403 rejections; server source unchanged for this feature"
+    },
+    "server_suite_isolated_rerun": {
+      "passed": 31,
+      "failed": 0
+    },
+    "new_tracker_unit": {
+      "passed": 10,
+      "failed": 0
+    },
+    "new_engine_integration": {
+      "passed": 16,
+      "failed": 0
+    },
+    "ui_node": {
+      "passed": 6,
+      "failed": 0
+    },
+    "full_repository_suite_run": false,
+    "note": "The26 focused tests are included in191 simulator cases, not additional cases. The31 HTTP cases passed in isolated rerun."
+  },
+  "browser_validation": {
+    "engine": "IAB",
+    "checks": [
+      "unsampled autonomous metrics display em dash and0 counters",
+      "header anchor reaches performance panel",
+      "curved scenario runs to goal with live201 autonomous samples",
+      "speed and path SVG series rendered from engine history",
+      "completed episode reload preserves metric counts",
+      "console error log empty"
+    ],
+    "screenshot": "assets/performance-dashboard-ui.png"
+  },
+  "synthetic_examples": [
+    {
+      "scenario": "clear",
+      "seed": 42,
+      "sim_time_s": 19.8,
+      "finished": true,
+      "metrics": {
+        "distance_m": 36.68320314245981,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": null,
+        "interventions": 0,
+        "goal_reached": true
+      },
+      "performance": {
+        "scope": "synthetic_session_only",
+        "reference": "world_reference_centerline_not_lane_ground_truth",
+        "session": {
+          "total_samples": 198,
+          "manual_samples": 0,
+          "mixed_mode_session": false,
+          "modes_seen": [
+            "autonomous"
+          ]
+        },
+        "route": {
+          "progress_pct": 100.0,
+          "progress_m": 36.0,
+          "length_m": 36.0,
+          "remaining_m": 0.0,
+          "current_cross_track_error_m": 0.68320314245981,
+          "current_heading_error_deg": 0.0
+        },
+        "autonomous": {
+          "samples": 198,
+          "duration_s": 19.80000000000001,
+          "distance_m": 36.68320314245981,
+          "cross_track_rmse_m": 0.10040855698591408,
+          "cross_track_max_m": 0.68320314245981,
+          "heading_mae_deg": 0.0,
+          "speed_rmse_kmh": 0.669316814217176,
+          "speed_mae_kmh": 0.24763584934459745,
+          "mean_speed_kmh": 6.669673298629053,
+          "peak_speed_kmh": 7.511202478135163,
+          "safety_eligible_pct": 99.49494949494948,
+          "safety_stop_s": 0.0,
+          "safety_interventions": 0,
+          "collision_events": 0,
+          "offroad_events": 0,
+          "stopped_time_s": 0.2
+        },
+        "current": {
+          "applied_target_kmh": 0.0,
+          "acceleration_mps2": -2.068105905272368,
+          "steering_rate_deg_s": 0.0
+        },
+        "history": [
+          {
+            "time_s": 0.1,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 0.6,
+            "mode": "autonomous",
+            "speed_kmh": 0.9827179541170069,
+            "target_kmh": 1.8,
+            "cross_track_error_m": 6.938893903907228e-18
+          },
+          {
+            "time_s": 1.1,
+            "mode": "autonomous",
+            "speed_kmh": 2.648104958290058,
+            "target_kmh": 3.6,
+            "cross_track_error_m": 5.551115123125783e-17
+          },
+          {
+            "time_s": 1.6,
+            "mode": "autonomous",
+            "speed_kmh": 4.490820304115205,
+            "target_kmh": 5.4,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 2.1,
+            "mode": "autonomous",
+            "speed_kmh": 6.372568374610025,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 2.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.273643469769978,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 3.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.48496160119106,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 3.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.510295507915694,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 4.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.488344784214615,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 4.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.4569416371065875,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 8.881784197001252e-16
+          },
+          {
+            "time_s": 5.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.426093562017428,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 5.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.398171278194871,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 6.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.373483533357181,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 6.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.351812317047955,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 1.7763568394002505e-15
+          },
+          {
+            "time_s": 7.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.332831917116542,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 7.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.31622004133702,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 8.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.301684389759293,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 8.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.288966368852821,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 1.7763568394002505e-15
+          },
+          {
+            "time_s": 9.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.277838939838603,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 9.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.268103242710879,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 10.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.259585229581525,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 10.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.252132604935911,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 3.552713678800501e-15
+          },
+          {
+            "time_s": 11.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.245612117018008,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 11.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.239907179267065,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 3.552713678800501e-15
+          },
+          {
+            "time_s": 12.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.234915786839767,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 3.552713678800501e-15
+          },
+          {
+            "time_s": 12.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.230548693056248,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 13.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.226727813742652,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 13.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.223384831099613,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 14.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.2204599721778955,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 3.552713678800501e-15
+          },
+          {
+            "time_s": 14.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.2179009401323295,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 15.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.2156619791480985,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 3.552713678800501e-15
+          },
+          {
+            "time_s": 15.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.213703056321174,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 16.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.21198914586501,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 16.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.2104896028450485,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 17.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.209177615243472,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 17.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.208029724556913,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 18.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.207025406355502,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 18.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.206146703303479,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 19.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.205377904079723,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 19.6,
+            "mode": "autonomous",
+            "speed_kmh": 2.016062349053932,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.6415797662137734
+          }
+        ],
+        "definitions": {
+          "scope": "현재 합성 시뮬레이터 세션의 관측값이며 실차 성능·안전 평가나 종합 점수가 아닙니다.",
+          "reference": "월드 기준 경로의 중심선이며 실제 차선 정답이 아닙니다. 가장 가까운 선분에 투영합니다.",
+          "cross_track_error_m": "기준 폴리라인의 가장 가까운 점까지 거리입니다. 시작·끝 바깥에서는 끝점까지의 거리도 포함합니다.",
+          "heading_error_deg": "가장 가까운 경로 선분과 차량 진행각의 차이를 -180~180도로 감싼 값입니다. MAE에는 절댓값을 사용합니다.",
+          "autonomous": "자율 모드에서 완료한 단계만 누적합니다. 수동 모드의 시간·거리·사건은 자율 통계에서 제외합니다.",
+          "session": "전체·수동 단계 수와 실행된 모드를 세션 전체에 누적합니다. 자율·수동 표본이 모두 있으면 혼합 세션이며 기록 그래프가 만료돼도 유지됩니다.",
+          "time_weighting": "RMSE·MAE와 안전 통과율은 시뮬레이션 단계의 dt로 시간 가중합니다. 표본이 없으면 null입니다.",
+          "mean_speed_kmh": "자율 모드에서 적분한 실제 이동 거리 / 자율 시뮬레이션 시간 × 3.6입니다.",
+          "speed_error_kmh": "단계 종료 속도와 가감속 램프를 적용한 실제 제어 목표의 차이입니다. 정지·거부 때의 목표는 0입니다.",
+          "manual_target": "수동 조작에는 폐루프 속도 제어 목표가 없습니다. 전달받은 수동 목표 0은 속도 추종 평가에 사용하지 않습니다.",
+          "safety_eligible_pct": "전체 자율 시간 중 독립 안전 계층이 제안을 허용한 시간 비율입니다. 초기 준비 시간도 분모에 포함합니다.",
+          "safety_stop_s": "제안이 거부된 자율 시간입니다. WARMUP_STOP 초기 준비 시간은 제외합니다.",
+          "stopped_time_s": "자율 모드의 단계 종료 속도가 0.02 m/s 이하인 시뮬레이션 시간입니다.",
+          "current": "가속도와 조향각 변화율은 이전 단계 종료 값에서 현재 값으로의 차분 / dt입니다. 초기 속도와 조향각은 0입니다.",
+          "history": "전체 모드의 최근 120 시뮬레이션 초, 최대 240점입니다. 기본 0.5초 간격과 운전 모드가 바뀌는 즉시 단계 종료 값을 보관합니다."
+        }
+      }
+    },
+    {
+      "scenario": "curved",
+      "seed": 42,
+      "sim_time_s": 20.1,
+      "finished": true,
+      "metrics": {
+        "distance_m": 37.28356163944886,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": null,
+        "interventions": 0,
+        "goal_reached": true
+      },
+      "performance": {
+        "scope": "synthetic_session_only",
+        "reference": "world_reference_centerline_not_lane_ground_truth",
+        "session": {
+          "total_samples": 201,
+          "manual_samples": 0,
+          "mixed_mode_session": false,
+          "modes_seen": [
+            "autonomous"
+          ]
+        },
+        "route": {
+          "progress_pct": 100.0,
+          "progress_m": 36.65335276917401,
+          "length_m": 36.65335276917401,
+          "remaining_m": 0.0,
+          "current_cross_track_error_m": 0.6346498888623445,
+          "current_heading_error_deg": -1.1983817747291856
+        },
+        "autonomous": {
+          "samples": 201,
+          "duration_s": 20.100000000000016,
+          "distance_m": 37.28356163944886,
+          "cross_track_rmse_m": 0.10299479963646571,
+          "cross_track_max_m": 0.6346498888623445,
+          "heading_mae_deg": 0.3557440013185428,
+          "speed_rmse_kmh": 0.664254320293123,
+          "speed_mae_kmh": 0.24400409567971482,
+          "mean_speed_kmh": 6.6776528309460605,
+          "peak_speed_kmh": 7.511202478135163,
+          "safety_eligible_pct": 99.50248756218905,
+          "safety_stop_s": 0.0,
+          "safety_interventions": 0,
+          "collision_events": 0,
+          "offroad_events": 0,
+          "stopped_time_s": 0.2
+        },
+        "current": {
+          "applied_target_kmh": 0.0,
+          "acceleration_mps2": -2.067029323476548,
+          "steering_rate_deg_s": 0.0
+        },
+        "history": [
+          {
+            "time_s": 0.1,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 0.6,
+            "mode": "autonomous",
+            "speed_kmh": 0.9827179541170069,
+            "target_kmh": 1.8,
+            "cross_track_error_m": 0.0009773718691128178
+          },
+          {
+            "time_s": 1.1,
+            "mode": "autonomous",
+            "speed_kmh": 2.648104958290058,
+            "target_kmh": 3.6,
+            "cross_track_error_m": 0.0046564055130350075
+          },
+          {
+            "time_s": 1.6,
+            "mode": "autonomous",
+            "speed_kmh": 4.490820304115205,
+            "target_kmh": 5.4,
+            "cross_track_error_m": 0.008714772824102001
+          },
+          {
+            "time_s": 2.1,
+            "mode": "autonomous",
+            "speed_kmh": 6.372568374610025,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.00667594484389376
+          },
+          {
+            "time_s": 2.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.273643469769978,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.00834031270696535
+          },
+          {
+            "time_s": 3.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.48496160119106,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.009300993490953697
+          },
+          {
+            "time_s": 3.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.510295507915694,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.012466883582766096
+          },
+          {
+            "time_s": 4.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.488344784214615,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.013344523388559754
+          },
+          {
+            "time_s": 4.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.4569416371065875,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.018503372921175813
+          },
+          {
+            "time_s": 5.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.426093562017428,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.019340423640930995
+          },
+          {
+            "time_s": 5.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.398171278194871,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.025662481284788836
+          },
+          {
+            "time_s": 6.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.373483533357181,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.026677916142373373
+          },
+          {
+            "time_s": 6.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.351812317047955,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.03330183419047331
+          },
+          {
+            "time_s": 7.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.332831917116542,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.03460243488873781
+          },
+          {
+            "time_s": 7.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.31622004133702,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.040816350724259196
+          },
+          {
+            "time_s": 8.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.301684389759293,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.04241062781515599
+          },
+          {
+            "time_s": 8.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.288966368852821,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.047712308968700566
+          },
+          {
+            "time_s": 9.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.277838939838603,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.049533860124452836
+          },
+          {
+            "time_s": 9.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.268103242710879,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.05364681385481206
+          },
+          {
+            "time_s": 10.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.259585229581525,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.05557206673287209
+          },
+          {
+            "time_s": 10.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.252132604935911,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.05843066369618896
+          },
+          {
+            "time_s": 11.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.245612117018008,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06029361210071605
+          },
+          {
+            "time_s": 11.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.239907179267065,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06200583695245941
+          },
+          {
+            "time_s": 12.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.234915786839767,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06361199401616814
+          },
+          {
+            "time_s": 12.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.230548693056248,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06440809918030542
+          },
+          {
+            "time_s": 13.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.226727813742652,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06554881748415761
+          },
+          {
+            "time_s": 13.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.223384831099613,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06572369368699481
+          },
+          {
+            "time_s": 14.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.2204599721778955,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0661912162210617
+          },
+          {
+            "time_s": 14.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.2179009401323295,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06604758025974247
+          },
+          {
+            "time_s": 15.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.2156619791480985,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06565057452921953
+          },
+          {
+            "time_s": 15.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.213703056321174,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06544924965997058
+          },
+          {
+            "time_s": 16.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.21198914586501,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06402803819188327
+          },
+          {
+            "time_s": 16.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.2104896028450485,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06395067541571148
+          },
+          {
+            "time_s": 17.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.209177615243472,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.06139090111480571
+          },
+          {
+            "time_s": 17.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.208029724556913,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0615193031910094
+          },
+          {
+            "time_s": 18.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.207025406355502,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.05776244075753424
+          },
+          {
+            "time_s": 18.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.206146703303479,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.058076950786847825
+          },
+          {
+            "time_s": 19.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.205377904079723,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.05312604330297427
+          },
+          {
+            "time_s": 19.6,
+            "mode": "autonomous",
+            "speed_kmh": 5.8919274306885425,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.27301401097912337
+          },
+          {
+            "time_s": 20.1,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.6346498888623445
+          }
+        ],
+        "definitions": {
+          "scope": "현재 합성 시뮬레이터 세션의 관측값이며 실차 성능·안전 평가나 종합 점수가 아닙니다.",
+          "reference": "월드 기준 경로의 중심선이며 실제 차선 정답이 아닙니다. 가장 가까운 선분에 투영합니다.",
+          "cross_track_error_m": "기준 폴리라인의 가장 가까운 점까지 거리입니다. 시작·끝 바깥에서는 끝점까지의 거리도 포함합니다.",
+          "heading_error_deg": "가장 가까운 경로 선분과 차량 진행각의 차이를 -180~180도로 감싼 값입니다. MAE에는 절댓값을 사용합니다.",
+          "autonomous": "자율 모드에서 완료한 단계만 누적합니다. 수동 모드의 시간·거리·사건은 자율 통계에서 제외합니다.",
+          "session": "전체·수동 단계 수와 실행된 모드를 세션 전체에 누적합니다. 자율·수동 표본이 모두 있으면 혼합 세션이며 기록 그래프가 만료돼도 유지됩니다.",
+          "time_weighting": "RMSE·MAE와 안전 통과율은 시뮬레이션 단계의 dt로 시간 가중합니다. 표본이 없으면 null입니다.",
+          "mean_speed_kmh": "자율 모드에서 적분한 실제 이동 거리 / 자율 시뮬레이션 시간 × 3.6입니다.",
+          "speed_error_kmh": "단계 종료 속도와 가감속 램프를 적용한 실제 제어 목표의 차이입니다. 정지·거부 때의 목표는 0입니다.",
+          "manual_target": "수동 조작에는 폐루프 속도 제어 목표가 없습니다. 전달받은 수동 목표 0은 속도 추종 평가에 사용하지 않습니다.",
+          "safety_eligible_pct": "전체 자율 시간 중 독립 안전 계층이 제안을 허용한 시간 비율입니다. 초기 준비 시간도 분모에 포함합니다.",
+          "safety_stop_s": "제안이 거부된 자율 시간입니다. WARMUP_STOP 초기 준비 시간은 제외합니다.",
+          "stopped_time_s": "자율 모드의 단계 종료 속도가 0.02 m/s 이하인 시뮬레이션 시간입니다.",
+          "current": "가속도와 조향각 변화율은 이전 단계 종료 값에서 현재 값으로의 차분 / dt입니다. 초기 속도와 조향각은 0입니다.",
+          "history": "전체 모드의 최근 120 시뮬레이션 초, 최대 240점입니다. 기본 0.5초 간격과 운전 모드가 바뀌는 즉시 단계 종료 값을 보관합니다."
+        }
+      }
+    },
+    {
+      "scenario": "static_obstacle",
+      "seed": 42,
+      "sim_time_s": 11.0,
+      "finished": false,
+      "metrics": {
+        "distance_m": 13.18203848919771,
+        "collisions": 0,
+        "offroad_events": 0,
+        "min_clearance_m": 7.537126349647058,
+        "interventions": 1,
+        "goal_reached": false
+      },
+      "performance": {
+        "scope": "synthetic_session_only",
+        "reference": "world_reference_centerline_not_lane_ground_truth",
+        "session": {
+          "total_samples": 110,
+          "manual_samples": 0,
+          "mixed_mode_session": false,
+          "modes_seen": [
+            "autonomous"
+          ]
+        },
+        "route": {
+          "progress_pct": 36.61677358110475,
+          "progress_m": 13.18203848919771,
+          "length_m": 36.0,
+          "remaining_m": 22.81796151080229,
+          "current_cross_track_error_m": 0.0,
+          "current_heading_error_deg": 0.0
+        },
+        "autonomous": {
+          "samples": 110,
+          "duration_s": 10.999999999999977,
+          "distance_m": 13.18203848919771,
+          "cross_track_rmse_m": 4.2668530964444175e-16,
+          "cross_track_max_m": 1.7763568394002505e-15,
+          "heading_mae_deg": 0.0,
+          "speed_rmse_kmh": 0.9155887769510511,
+          "speed_mae_kmh": 0.41249988964868284,
+          "mean_speed_kmh": 4.314121687373805,
+          "peak_speed_kmh": 7.511202478135163,
+          "safety_eligible_pct": 67.27272727272732,
+          "safety_stop_s": 3.5000000000000018,
+          "safety_interventions": 1,
+          "collision_events": 0,
+          "offroad_events": 0,
+          "stopped_time_s": 3.1000000000000014
+        },
+        "current": {
+          "applied_target_kmh": 0.0,
+          "acceleration_mps2": 0.0,
+          "steering_rate_deg_s": 0.0
+        },
+        "history": [
+          {
+            "time_s": 0.1,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 0.6,
+            "mode": "autonomous",
+            "speed_kmh": 0.9827179541170069,
+            "target_kmh": 1.8,
+            "cross_track_error_m": 6.938893903907228e-18
+          },
+          {
+            "time_s": 1.1,
+            "mode": "autonomous",
+            "speed_kmh": 2.648104958290058,
+            "target_kmh": 3.6,
+            "cross_track_error_m": 5.551115123125783e-17
+          },
+          {
+            "time_s": 1.6,
+            "mode": "autonomous",
+            "speed_kmh": 4.490820304115205,
+            "target_kmh": 5.4,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 2.1,
+            "mode": "autonomous",
+            "speed_kmh": 6.372568374610025,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 2.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.273643469769978,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 3.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.48496160119106,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 3.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.510295507915694,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 4.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.488344784214615,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 4.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.4569416371065875,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 8.881784197001252e-16
+          },
+          {
+            "time_s": 5.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.426093562017428,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 5.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.398171278194871,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 6.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.373483533357181,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 6.6,
+            "mode": "autonomous",
+            "speed_kmh": 7.351812317047955,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 1.7763568394002505e-15
+          },
+          {
+            "time_s": 7.1,
+            "mode": "autonomous",
+            "speed_kmh": 7.332831917116542,
+            "target_kmh": 7.2,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 7.6,
+            "mode": "autonomous",
+            "speed_kmh": 6.0055492005495354,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 8.1,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 8.6,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 9.1,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 9.6,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 10.1,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          },
+          {
+            "time_s": 10.6,
+            "mode": "autonomous",
+            "speed_kmh": 0.0,
+            "target_kmh": 0.0,
+            "cross_track_error_m": 0.0
+          }
+        ],
+        "definitions": {
+          "scope": "현재 합성 시뮬레이터 세션의 관측값이며 실차 성능·안전 평가나 종합 점수가 아닙니다.",
+          "reference": "월드 기준 경로의 중심선이며 실제 차선 정답이 아닙니다. 가장 가까운 선분에 투영합니다.",
+          "cross_track_error_m": "기준 폴리라인의 가장 가까운 점까지 거리입니다. 시작·끝 바깥에서는 끝점까지의 거리도 포함합니다.",
+          "heading_error_deg": "가장 가까운 경로 선분과 차량 진행각의 차이를 -180~180도로 감싼 값입니다. MAE에는 절댓값을 사용합니다.",
+          "autonomous": "자율 모드에서 완료한 단계만 누적합니다. 수동 모드의 시간·거리·사건은 자율 통계에서 제외합니다.",
+          "session": "전체·수동 단계 수와 실행된 모드를 세션 전체에 누적합니다. 자율·수동 표본이 모두 있으면 혼합 세션이며 기록 그래프가 만료돼도 유지됩니다.",
+          "time_weighting": "RMSE·MAE와 안전 통과율은 시뮬레이션 단계의 dt로 시간 가중합니다. 표본이 없으면 null입니다.",
+          "mean_speed_kmh": "자율 모드에서 적분한 실제 이동 거리 / 자율 시뮬레이션 시간 × 3.6입니다.",
+          "speed_error_kmh": "단계 종료 속도와 가감속 램프를 적용한 실제 제어 목표의 차이입니다. 정지·거부 때의 목표는 0입니다.",
+          "manual_target": "수동 조작에는 폐루프 속도 제어 목표가 없습니다. 전달받은 수동 목표 0은 속도 추종 평가에 사용하지 않습니다.",
+          "safety_eligible_pct": "전체 자율 시간 중 독립 안전 계층이 제안을 허용한 시간 비율입니다. 초기 준비 시간도 분모에 포함합니다.",
+          "safety_stop_s": "제안이 거부된 자율 시간입니다. WARMUP_STOP 초기 준비 시간은 제외합니다.",
+          "stopped_time_s": "자율 모드의 단계 종료 속도가 0.02 m/s 이하인 시뮬레이션 시간입니다.",
+          "current": "가속도와 조향각 변화율은 이전 단계 종료 값에서 현재 값으로의 차분 / dt입니다. 초기 속도와 조향각은 0입니다.",
+          "history": "전체 모드의 최근 120 시뮬레이션 초, 최대 240점입니다. 기본 0.5초 간격과 운전 모드가 바뀌는 즉시 단계 종료 값을 보관합니다."
+        }
+      }
+    }
+  ],
+  "source_sha256": {
+    "src/camera_rc/simulator/engine.py": "d259c3ba19766a2382d16747f3a763aeddc857d39405c7045f4313c5888ceab4",
+    "src/camera_rc/simulator/performance.py": "4e46b5bd0b73e74e0cb57f9c4f4637decfc2f8833e821562074df21977e83659",
+    "src/camera_rc/simulator/assets/index.html": "b235ed4f7aadda5951b5daf199d6f058016c3d9b3b0d22ab229500d7c91bf617",
+    "src/camera_rc/simulator/assets/app.js": "3905242df9a09c33f1f1d93e59e662315c4b3bf87050a15f1d20c3c204b28aa9",
+    "src/camera_rc/simulator/assets/style.css": "c28f7eef1ed5dc0e803a54a964a0e760736219944503bb21fa63ebcb07b6502f",
+    "tests/test_simulator_performance.py": "578a04f9d852aa3c626c4e15eb7210568a409fe1ef462d2e1a4593aa98639485",
+    "tests/test_simulator_performance_tracker.py": "6ed4a5910eeaa8b57fd30fc28f16e1b108d89219db6b5c818df8fcf07f1e0a5c",
+    "tests/simulator_ui.test.cjs": "640af8679f3078d8d9b75e08a6926c4905ef97b1c2762d9c7fdd8be7cb9e91df"
+  },
+  "research_status": {
+    "model_accuracy_remeasured": false,
+    "model_adoption_changed": false,
+    "real_training_resumed": false,
+    "automation_created": false,
+    "canceled_inference_speed_comparison_resumed": false,
+    "hardware_modules_opened": false,
+    "real_vehicle_validation": false
+  },
+  "limitations": [
+    "Reference distance includes finite endpoints, so stopping beyond the reference end contributes error even inside the allowed goal region.",
+    "Control speed errors use the ramp-limited command target, not the requested ceiling.",
+    "Autonomous statistics exclude manual steps; current route progress includes all modes.",
+    "Safety eligibility is an offline gate proportion, not a safety guarantee or an accident probability."
+  ]
+}

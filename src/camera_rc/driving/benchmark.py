@@ -68,7 +68,8 @@ def benchmark_runtime(config_path, output, frames=50, warmup=5):
                "camera_names": list(pipeline.calibrations), "shared_model_instances": 1,
                "group_rate_target_hz": cfg["runtime"]["perception_hz"],
                "pipeline_latency": latency_report(latencies), "inference_latency": latency_report(inference),
-               "valid_plan_frames": valid, "resources": resources, "target_budgets": cfg["runtime"],
+               "valid_plan_frames": valid, "valid_proposal_frames": valid,
+               "safety_evidence_checked": False, "resources": resources, "target_budgets": cfg["runtime"],
                "ram_process_within_limit": resources["process_rss_peak_gib_sampled"] <= cfg["runtime"]["process_ram_limit_gib"],
                "system_available_floor_met_sampled": resources["system_available_min_gib_sampled"] >= cfg["runtime"]["system_available_min_gib"],
                "sampled_process_gpu_within_budget": gpu_assessment,
@@ -92,7 +93,7 @@ def make_runtime_fixture(output, *, device="auto", detection_checkpoint=None):
     root = Path(output).resolve()
     root.mkdir(parents=True, exist_ok=False)
     cfg = {"task": "segmentation", "diagnostic_only": True,
-           "model": {"width": 16, "num_classes": 3}, "data": {"image_size": [192, 320]}, "training": {}}
+           "model": {"width": 16, "num_classes": 2}, "data": {"image_size": [192, 320], "label_space_id": "road_surface_v1"}, "training": {}}
     model = build_model(cfg)
     with torch.no_grad():
         for value in model.parameters():
@@ -111,8 +112,9 @@ def make_runtime_fixture(output, *, device="auto", detection_checkpoint=None):
     records = [{"image": "frame.png", "speed_mps": 0.0, "yaw_rate_rps": 0.0} for _ in range(300)]
     (root / "replay.jsonl").write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
     runtime = {"device": device, "calibration": "calibration.json",
+               "safety": {"mode": "diagnostic_local_only"},
                "source": {"kind": "replay", "path": "replay.jsonl"},
-               "perception": {"segmentation_checkpoint": str(checkpoint), "allow_diagnostic": True}}
+               "perception": {"segmentation_checkpoint": str(checkpoint), "expected_label_space_id": "road_surface_v1", "allow_diagnostic": True}}
     if detection_checkpoint:
         runtime["perception"]["detection_checkpoint"] = str(Path(detection_checkpoint).resolve())
     (root / "runtime.json").write_text(json.dumps(runtime, indent=2), encoding="utf-8")

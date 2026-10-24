@@ -16,6 +16,7 @@ from torch.utils.data import DataLoader
 
 from .data import JointSequenceDataset, validate_split_manifests
 from .model import build_joint_policy, init_encoder
+from ..driving.trajectory_checks import assess_trajectory
 
 
 INPUT_KEYS = ("images", "intrinsics", "camera_to_anchor", "time_offsets", "state")
@@ -115,7 +116,7 @@ def _metric_values(prediction, target):
 
 
 @torch.inference_mode()
-def evaluate_joint_policy(model, dataset, *, device="cpu", batch_size=1, num_workers=0):
+def evaluate_joint_policy(model, dataset, *, device="cpu", batch_size=1, num_workers=0, vehicle_limits=None):
     """Full supplied validation split; test split is never used here by training."""
     device = torch.device(device)
     model.eval()
@@ -139,6 +140,9 @@ def evaluate_joint_policy(model, dataset, *, device="cpu", batch_size=1, num_wor
             group = str(row.get("origin_id", "unknown")) + "/" + str(row.get("condition", row.get("variant", "unspecified")))
             groups.setdefault(group, [[], []])[0].append(a)
             groups[group][1].append(b)
+            if vehicle_limits is not None:
+                a["physical_constraint_violation"] = float(not assess_trajectory(
+                    prediction[index].numpy(), batch["future_dt_s"][index].numpy(), **vehicle_limits)["feasible"])
             all_model.append(a)
             all_cv.append(b)
         offset += len(target)
@@ -149,6 +153,8 @@ def evaluate_joint_policy(model, dataset, *, device="cpu", batch_size=1, num_wor
     return {"model": mean(all_model), "constant_velocity_baseline": mean(all_cv),
             "by_origin_condition": {key: {"model": mean(value[0]), "constant_velocity_baseline": mean(value[1])}
                                     for key, value in sorted(groups.items())},
+            "physical_constraints_checked": vehicle_limits is not None,
+            "vehicle_limits": vehicle_limits,
             "partial_validation": False, "open_loop_only": True, "collision_rate_measured": False,
             "timing_notice": "Speed/seconds inherit the manifest timing. VKITTI nominal 0.1s is an assumption, not measured exposure timing.",
             "limits": "ADE/FDE compare recorded paths; they do not measure collision avoidance, alternate safe paths, traffic-rule compliance or closed-loop stability."}
@@ -200,7 +206,8 @@ def train_joint_policy(config):
         torch.cuda.reset_peak_memory_stats(device)
     initial_parameters = {key: value.detach().cpu().clone() for key, value in model.named_parameters()}
     batch_size, workers = training.get("batch_size", 1), training.get("num_workers", 0)
-    before = evaluate_joint_policy(model, val_data, device=device, batch_size=batch_size, num_workers=workers)
+    before = evaluate_joint_policy(model, val_data, device=device, batch_size=batch_size, num_workers=workers,
+                                   vehicle_limits=config.get("evaluation", {}).get("vehicle_limits"))
     write_json(output / "validation_before.json", before)
     optimizer = torch.optim.AdamW(model.parameters(), lr=training.get("lr", .0001), weight_decay=.0001)
     amp = device.type == "cuda" and training.get("amp", True)
@@ -246,7 +253,8 @@ def train_joint_policy(config):
                     break
         if epoch_steps == 0:
             raise RuntimeError("No optimizer updates were applied")
-        validation = evaluate_joint_policy(model, val_data, device=device, batch_size=batch_size, num_workers=workers)
+        validation = evaluate_joint_policy(model, val_data, device=device, batch_size=batch_size, num_workers=workers,
+                                   vehicle_limits=config.get("evaluation", {}).get("vehicle_limits"))
         score = validation["model"]["ade_m"]
         payload = {"format_version": 1, "model_type": MODEL_TYPE, "config": config,
                    "model": {key: value.detach().cpu() for key, value in model.state_dict().items()},

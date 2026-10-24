@@ -33,6 +33,11 @@ jobs:
         run: |
           python -c "from pathlib import Path; Path('runs').mkdir(exist_ok=True)"
           python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=runs/ci-test-temp
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run simulator UI regressions
+        run: node --test tests/simulator_ui.test.cjs
       - name: Check CLI entry point
         run: |
           python -m camera_rc --help

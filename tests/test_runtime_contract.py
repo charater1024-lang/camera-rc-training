@@ -16,12 +16,18 @@ class RecordedFeedback(DryRunTransport):
         return VehicleState(now, 0.0, 0.0, True, False)
 
 
+def diagnostic_config():
+    cfg = copy.deepcopy(DEFAULTS)
+    cfg["safety"] = {"mode": "diagnostic_local_only"}
+    return cfg
+
+
 def path():
     return Plan(np.array([[0, 0], [0.5, 0], [1, 0]], dtype=float), 0.4, True, "clear_path")
 
 
 def test_expired_perception_plan_latches_stop_until_restart(tmp_path):
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop = ControlLoop(diagnostic_config(), RecordedFeedback(), tmp_path)
     loop.publish(path(), 1.0)
     assert loop.step(1.01)["command"]["enabled"]
     stopped = loop.step(1.25)["command"]
@@ -32,7 +38,7 @@ def test_expired_perception_plan_latches_stop_until_restart(tmp_path):
 
 
 def test_perception_worker_fault_blocks_new_plan(tmp_path):
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop = ControlLoop(diagnostic_config(), RecordedFeedback(), tmp_path)
     loop.publish(path(), 1.0)
     assert loop.step(1.01)["command"]["enabled"]
     loop.fail("perception_deadline_missed_restart_required")
@@ -43,7 +49,7 @@ def test_perception_worker_fault_blocks_new_plan(tmp_path):
 
 
 def test_live_camera_dry_run_does_not_invent_speed_or_arming(tmp_path):
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), DryRunTransport(), tmp_path)
+    loop = ControlLoop(diagnostic_config(), DryRunTransport(), tmp_path)
     loop.publish(path(), 1.0)
     item = loop.step(1.01)
     assert item["state"] is None and item["physical_output"] is False
@@ -54,7 +60,7 @@ def test_live_camera_dry_run_does_not_invent_speed_or_arming(tmp_path):
 @pytest.mark.parametrize("stamp", [None, float("nan"), float("inf"), -float("inf"),
                                   True, False, "1.02", -1.0, 10 ** 400])
 def test_invalid_capture_time_stops_existing_motion_and_cannot_be_replaced(tmp_path, stamp):
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop = ControlLoop(diagnostic_config(), RecordedFeedback(), tmp_path)
     loop.publish(path(), 1.0)
     assert loop.step(1.01)["command"]["enabled"]
     loop.publish(path(), stamp)
@@ -70,7 +76,7 @@ def test_invalid_capture_time_stops_existing_motion_and_cannot_be_replaced(tmp_p
 
 @pytest.mark.parametrize("stamp", [None, float("nan"), "missing"])
 def test_command_boundary_rechecks_capture_time_even_when_publication_is_bypassed(tmp_path, stamp):
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop = ControlLoop(diagnostic_config(), RecordedFeedback(), tmp_path)
     loop.plan, loop.plan_time = path(), stamp
     item = loop.step(1.0)
     assert item["command"]["reason"] == "plan_capture_time_invalid_restart_required"
@@ -79,7 +85,7 @@ def test_command_boundary_rechecks_capture_time_even_when_publication_is_bypasse
 
 
 def test_future_capture_time_latches_before_any_enabled_command(tmp_path):
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop = ControlLoop(diagnostic_config(), RecordedFeedback(), tmp_path)
     loop.publish(path(), 1.1)
     item = loop.step(1.0)
     assert item["command"]["reason"] == "plan_from_future_restart_required"
@@ -89,7 +95,7 @@ def test_future_capture_time_latches_before_any_enabled_command(tmp_path):
 
 
 def test_republishing_same_capture_does_not_refresh_plan_age(tmp_path):
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop = ControlLoop(diagnostic_config(), RecordedFeedback(), tmp_path)
     loop.publish(path(), 1.0)
     assert loop.step(1.01)["command"]["enabled"]
     loop.publish(path(), 1.0)
@@ -99,7 +105,7 @@ def test_republishing_same_capture_does_not_refresh_plan_age(tmp_path):
 
 
 def test_startup_without_a_plan_stays_stopped_without_latching_missing_timestamp(tmp_path):
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), RecordedFeedback(), tmp_path)
+    loop = ControlLoop(diagnostic_config(), RecordedFeedback(), tmp_path)
     item = loop.step(1.0)
     assert item["command"]["reason"] == "waiting_for_first_plan"
     assert loop.latched_fault is None

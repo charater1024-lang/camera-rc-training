@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "scope": "engineering_improvements_not_driving_safety_certification",
+  "python": {
+    "tests": 481,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 481,
+    "junit": "runs/autonomy-improvements-20261024-final.xml"
+  },
+  "ui": {
+    "passed": 18,
+    "failed": 0,
+    "command": "node --test tests/simulator_ui.test.cjs"
+  },
+  "code_sha256": {
+    "src/camera_rc/driving/behavior.py": "247b33f52458aa5d74ff1186f2b5e13e410ea90d1a967d6cbe0a32c932d79106",
+    "src/camera_rc/driving/benchmark.py": "e8d0cd2b1b4b1a3b2bb06c448a0b26345d502facadaf37fccd84c6afaca2e7be",
+    "src/camera_rc/driving/calibration.py": "0d52e2d1e2e6e860295f1251100b441efd73cc0b97c09356a3214ccde7a0f8f4",
+    "src/camera_rc/driving/config.py": "046bb589a4769e2b163cc45ba31ddc3f2301cbfc4e658d70f9870ada278713c2",
+    "src/camera_rc/driving/control.py": "af1d500525e4a2cc39051f40d46345019a1568666b232358d76492c1ccdc1de3",
+    "src/camera_rc/driving/export.py": "6838c42e9683e32f073741ff39999c7042354d0c48a6aec2d0fc55d5aaf0755b",
+    "src/camera_rc/driving/geometry.py": "cdf5b3df2a2756d34c9b0e35a151c3e09c9c3214d9f6fc8c7e8b47a9bfabe84b",
+    "src/camera_rc/driving/label_contract.py": "f3eec7b6b91324759a10700a0366ed5c67cd30c791ecdeba34d7953c72a399c9",
+    "src/camera_rc/driving/mcu_reference.py": "72f009f0be0f4435cf244412e3623d42d8b6164f842714594781fcdb8f539904",
+    "src/camera_rc/driving/metric_tracking.py": "bed8fbce948d51f06933cf6eedbe2349d4ee55ff91f765907635bb235d4a767d",
+    "src/camera_rc/driving/multisource.py": "ed6513a8a229848b6e0d6e59741a5c4c7a1730e2565a827eba4aab8effed52ba",
+    "src/camera_rc/driving/multiview.py": "928b09c6a288ec192c73593effb02d2dc883cb6f0c9f80d5c04e7ace69a80ebf",
+    "src/camera_rc/driving/perception.py": "d55d22e6363b6210915e56118aa0793099cc9f435d2dc6994cb60ddef29974fc",
+    "src/camera_rc/driving/pipeline.py": "1cf170f7aa6529c9bfe335c71f3153eeae65fb2dab0cc9fb2a60124cc0d74f57",
+    "src/camera_rc/driving/planner.py": "54752c8ca4ab4e003bebb471138c34598c07e6f2c8c5a49b7ea5f93bfe27d073",
+    "src/camera_rc/driving/readiness.py": "98e24609b284152f010423083d99f923ebf94913a548f7bb4c775495805226f1",
+    "src/camera_rc/driving/resources.py": "d59643d0be78f7de50db07525812c71eac0b971816c21fa7a6b647ff291825c1",
+    "src/camera_rc/driving/route_graph.py": "9bcc2d8fbf9e4c0f085a7fa25fe507a1b231c744283bf3ae84fdfc3dd0f0e2a4",
+    "src/camera_rc/driving/runtime.py": "f9a6c8bbebfd8868595cfdd7daae9968bc542a0c3ab02c1a4fdf0c7d63d3d022",
+    "src/camera_rc/driving/safety_boundary.py": "f06f6c2f4f91001be2f2aaaf74c1dca122894ff6fbd005088d7da96cad7c940d",
+    "src/camera_rc/driving/shadow_safety.py": "77ebb18ac80d28c57c1694516e68ff10756402dbd4e6bb6ea7506da15641db1b",
+    "src/camera_rc/driving/shadow_scenarios.py": "7741f2ca120423d98372e2b926fb20dc1ad5ce42a3c4e45dc529a77a8150181e",
+    "src/camera_rc/driving/simulation.py": "e66f60328234d626ff81fe8c4303c1510d058192208b9f09d6394744ee854402",
+    "src/camera_rc/driving/sources.py": "9085829d27f43e7698c0e9c10dbe973c8b307f40a4351418437bc6afc74fe210",
+    "src/camera_rc/driving/trajectory_checks.py": "b6e87db574ef20e9d6d75e576a1de713f2b4162442d6d56bc54c92ab6a24a0de",
+    "src/camera_rc/driving/transport.py": "1aaa10aff96e14a85c0c146bded9be673b87f385dc4d737dc3c2e2ca6b9fe28c",
+    "src/camera_rc/driving/types.py": "522a29078f70c3731ff6c4feaf76174acac0c41bfb41b10d6aefd70f525a7b94",
+    "src/camera_rc/driving/yolo_semantic.py": "7c7e39a794168059ac340165201afc6b09694361c69232977e750afdb906cc4b",
+    "src/camera_rc/driving/__init__.py": "39eb7b8a6669bd38b6bbbc85a418baebb25384c9f0911e682185010feecf17c8",
+    "src/camera_rc/joint_policy/training.py": "ae602462febebe46c22172c9a2b933ac5aed6efbe169e97f5023f0e236d6e22a",
+    "src/camera_rc/simulator/server.py": "462fadffaef28ef805afb7cc5eb641c755f066d0389a83271043ed9750c6c0f6",
+    "src/camera_rc/simulator/progress.py": "e3edaed515dc3f1698ee24b19339c710807482cc0fa4f3d2171cf0788f3333cc"
+  },
+  "workstreams": [
+    {
+      "id": "labels",
+      "title": "모델 라벨·검출 상태 계약",
+      "status": "implemented",
+      "detail": "라벨 공간·주행 클래스 불일치 거부, 검출기 미구동 구분",
+      "remaining": "합성 체크포인트 CPU 추론 확인 완료; 실제 차량 영상의 정확도 검증은 별도"
+    },
+    {
+      "id": "safety",
+      "title": "공통 안전 검사와 제어 경계",
+      "status": "partial",
+      "detail": "시뮬레이터와 동일한 감독기 재사용, 관측 누락 시 정지, 제어 주기마다 재검사",
+      "remaining": "실제 거리·위치 생산자 연결 및 영상 replay 통합 필요"
+    },
+    {
+      "id": "tracking",
+      "title": "거리·추적·위치 추정",
+      "status": "partial",
+      "detail": "미터 단위 관측과 세계 좌표 입력을 요구하는 진단용 추적기, 소실·모호성 상태 추가",
+      "remaining": "실제 거리 센서·위치 추정 생산자와 정확도 측정 필요"
+    },
+    {
+      "id": "geometry",
+      "title": "산지·고속·차량 제약",
+      "status": "partial",
+      "detail": "평면 가정 위반·촬영 시각 미확인 거부, 속도·가속도·곡률 검사",
+      "remaining": "3D 인지 및 타이어·제동·경사 실측 필요"
+    },
+    {
+      "id": "behavior",
+      "title": "차로·신호·주행 행동",
+      "status": "partial",
+      "detail": "방향·폐쇄 차로를 지키는 차로 그래프 경로 탐색, 차체 경계·신호·우선권 거부",
+      "remaining": "실제 차로 지도·영상 인식 연결 및 교차로 행동·예측 계획 필요"
+    },
+    {
+      "id": "policy",
+      "title": "시계열 정책 평가",
+      "status": "partial",
+      "detail": "차량 한계가 주어지면 평가에 물리 제약 위반 비율 추가",
+      "remaining": "정책 실행 어댑터 및 폐루프 평가 필요; 학습·모델 채택 미실행"
+    },
+    {
+      "id": "hardware",
+      "title": "실측 지연·MCU·제어",
+      "status": "partial",
+      "detail": "실제 노출 시각 확인을 요구하며 검증 미완료 실제 출력 차단",
+      "remaining": "독립 MCU 펌웨어, 실제 조향·제동·노출 동기 측정 필요"
+    },
+    {
+      "id": "validation",
+      "title": "운행 조건·검증 증거",
+      "status": "partial",
+      "detail": "모델·보정·차량 설정·코드 및 ODD에 결합된 보고서 해시 감사",
+      "remaining": "독립 실측 데이터·폐루프·하드웨어 보고서 필요"
+    }
+  ],
+  "platforms": [
+    {
+      "id": "simulator",
+      "title": "시뮬레이터",
+      "status": "합성 회귀 검사 통과"
+    },
+    {
+      "id": "rc_car",
+      "title": "RC카",
+      "status": "차량·센서 실측 대기"
+    },
+    {
+      "id": "road_vehicle",
+      "title": "실제 차량",
+      "status": "차량·센서 실측 대기"
+    }
+  ],
+  "physical_output": false,
+  "training_started": false,
+  "real_vehicle_validation_complete": false,
+  "limitations": [
+    "Metric tracker and lane graph are baseline components; not connected to verified live metric/localization/map producers.",
+    "Runtime command boundary consumes supplied typed evidence; run_drive does not manufacture missing observations.",
+    "Physical serial entry remains blocked regardless of validation booleans.",
+    "CPU model tests use temporary synthetic weights, not road accuracy or target hardware latency.",
+    "Policy evaluation remains open-loop; model runtime adapter and closed-loop policy validation are pending."
+  ],
+  "environment_note": "Isolated ignored runs/simulator-dev-tools dependencies; CPU tests are not the production GPU deployment environment.",
+  "browser_verification": {
+    "url": "http://127.0.0.1:8766/#improvement-panel",
+    "status": "verified",
+    "screenshot": "assets/autonomy-improvement-progress.png",
+    "previous_session_backup": "runs/autonomy-improvement-session-backup-20261024-01",
+    "narrow_panel_columns_verified": true
+  },
+  "readiness_example": {
+    "audit_passed": false,
+    "expected_exit_code": 2,
+    "report": "runs/autonomy-example-readiness-20261024-01.json"
+  }
+}

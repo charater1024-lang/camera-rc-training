@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "platform": "road_vehicle",
+  "physical_output": false,
+  "training_started": false,
+  "vehicle_measurements": {
+    "wheelbase_m": null,
+    "width_m": null,
+    "length_m": null,
+    "min_braking_deceleration_mps2": null,
+    "steering_delay_s": null
+  },
+  "sensor_inventory": [],
+  "status": "awaiting_vehicle_and_sensor_measurements",
+  "allowed_validation_scope": "offline_until_measured",
+  "max_speed_mps": null
+}

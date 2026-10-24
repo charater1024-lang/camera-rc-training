@@ -15,6 +15,7 @@ class Perception:
     drivable: np.ndarray
     detections: list[Detection] = field(default_factory=list)
     inference_ms: float = 0.0
+    detector_status: str = "unknown"
 
 
 @dataclass

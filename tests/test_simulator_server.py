@@ -162,6 +162,8 @@ def test_loopback_http_state_images_and_download(http_server):
     assert "frame-ancestors 'none'" in headers["Content-Security-Policy"]
     status, data, headers = request(server, "GET", "/frames/camera.png?step=2")
     assert status == 200 and data.startswith(b"\x89PNG")
+    status, data, headers = request(server, "GET", "/frames/objects.png?step=2")
+    assert status == 200 and data.startswith(b"\x89PNG")
     status, data, headers = request(server, "GET", "/api/report")
     assert status == 200 and "attachment" in headers["Content-Disposition"]
     status, data, headers = request(server, "POST", "/api/action", json.dumps({"action": "step"}),
@@ -217,3 +219,14 @@ def test_cli_rejects_unused_detector_before_loading_weights(tmp_path):
     config.write_text('{"perception":{"detection_checkpoint":"missing.pt"}}')
     with pytest.raises(ValueError, match="semantics only"):
         load_perception(config)
+
+
+
+def test_improvement_api_is_read_only_and_does_not_claim_vehicle_validation(http_server):
+    server,engine=http_server
+    status,body,_=request(server,"GET","/api/improvements")
+    progress=json.loads(body)
+    assert status==200 and progress["total_items"]==8 and engine.steps==0
+    assert progress["measured_validation_complete"]==0 and not progress["physical_output"]
+    status,body,_=request(server,"GET","/api/state")
+    assert "improvement_progress" in json.loads(body)

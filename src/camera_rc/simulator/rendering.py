@@ -413,6 +413,9 @@ def render_observation(
     *,
     roads: Sequence[Mapping[str, object]] | None = None,
     buildings: Sequence[Mapping[str, object]] | None = None,
+    terrain: Mapping[str, object] | None = None,
+    lane_layout: Mapping[str, object] | None = None,
+    traffic: Mapping[str, object] | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Render RGB pixels and exact visible-road probabilities on the CPU.
 
@@ -468,15 +471,38 @@ def render_observation(
         + 1.2 * np.sin(world_x * 8.3 - world_y * 4.7 + texture_phase[1])
     ).astype(np.float32)
     ground = np.empty((len(world_x), 3), dtype=np.float32)
-    ground[:] = (72, 113, 65)
+    scenery=(terrain or {}).get('scenery',{})
+    ground[:] = scenery.get('ground_color',(72,113,65))
     ground += (texture * 2.2)[:, None]
+    if scenery.get('kind') in {'coast','wetland'}:
+        side=1 if scenery.get('water_side','right')=='left' else -1
+        water=(world_y*side>55)&~painted_surface
+        ground[water]=np.asarray(scenery.get('water_color',(47,124,158)))+texture[water,None]
     ground[painted_surface] = np.array((91, 96, 100)) + texture[painted_surface, None]
     ground[painted_surface & ~road_surface] = (142, 141, 132)
 
     # Dashed paint follows world x, ensuring forward motion is visible even
     # on a straight, constant-width road.  It is never added outside asphalt.
+    if lane_layout:
+        route=np.asarray(lane_layout['lanes'][0]['centerline'],dtype=np.float32)
+        guide_zone=_road_distance_squared(world_x,world_y,route)<6.0**2
+        dashed[guide_zone]=False
+        if not mapped:
+            dashed[:]=False
     ground[dashed & road_surface] = (220, 199, 113)
     ground[edge] = (219, 222, 214)
+    if lane_layout:
+        for key,color in (('divider',(231,195,70)),('ego_outer_boundary',(242,245,240)),('opposing_outer_boundary',(242,245,240))):
+            boundary=np.asarray(lane_layout[key],dtype=np.float32)
+            paint=(_road_distance_squared(world_x,world_y,boundary)<.085**2)&road_surface
+            ground[paint]=color
+    if traffic:
+        crossing=traffic['crosswalk']
+        zebra=(world_x>=crossing['x_min_m'])&(world_x<=crossing['x_max_m'])&(world_y>=crossing['y_min_m'])&(world_y<=crossing['y_max_m'])
+        zebra &= (np.floor((world_x-crossing['x_min_m'])/.45).astype(int)%2)==0
+        ground[zebra&road_surface]=(238,241,231)
+        stop=(np.abs(world_x-29.5)<.12)&(world_y>=-1.8)&(world_y<=1.8)
+        ground[stop&road_surface]=(238,241,231)
 
     for polygon, _local, _height, _base in building_views:
         lower, upper = polygon.min(axis=0), polygon.max(axis=0)
@@ -526,6 +552,13 @@ def render_observation(
     rgb[_GROUND_VALID] = ground
     image = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8))
     drawing = ImageDraw.Draw(image)
+    if scenery.get('ridge_peaks'):
+        peaks=scenery['ridge_peaks']
+        vertices=[(0,int(HORIZON))]
+        for index,peak in enumerate(peaks):
+            vertices.append((round(index*WIDTH/max(1,len(peaks)-1)),round(HORIZON-float(peak)*30)))
+        vertices.append((WIDTH,int(HORIZON)))
+        drawing.polygon(vertices,fill=tuple(scenery.get('ridge_color',(71,112,87))))
     if condition == "day":
         drawing.ellipse((252, 9, 267, 24), fill=(249, 237, 190))
     elif condition == "night":

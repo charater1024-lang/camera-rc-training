@@ -1,0 +1,23 @@
+{
+  "task": "segmentation",
+  "diagnostic_only": true,
+  "model": {"num_classes": 2, "width": 16},
+  "data": {
+    "label_space_id": "ego_lane_v1",
+    "train_manifest": "../data/ego_lane_prepared/train.jsonl",
+    "val_manifest": "../data/ego_lane_prepared/val.jsonl",
+    "image_size": [180, 320]
+  },
+  "training": {
+    "epochs": 3,
+    "batch_size": 2,
+    "num_workers": 0,
+    "lr": 0.001,
+    "seed": 42,
+    "device": "cpu",
+    "amp": false,
+    "grad_accum_steps": 1,
+    "segmentation_class_weights": [1, 2],
+    "output_dir": "../runs/ego_lane_example_new_run"
+  }
+}

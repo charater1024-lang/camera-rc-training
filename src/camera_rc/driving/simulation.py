@@ -40,6 +40,7 @@ def run_simulation(output, steps=250):
     output = Path(output).resolve()
     output.mkdir(parents=True, exist_ok=False)
     cfg = copy.deepcopy(DEFAULTS)
+    cfg["safety"] = {"mode": "diagnostic_local_only"}
     calibration = {"calibrated": True, "rectified": True, "image_size": [192, 320],
                    "image_to_ground": [[0, -0.012, 2.0], [-0.00625, 0, 1.0], [0, 0, 1]],
                    "supported_range": {"min_forward_m": -0.2, "max_forward_m": 1.9, "max_abs_lateral_m": 0.9}}

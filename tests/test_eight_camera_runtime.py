@@ -225,7 +225,9 @@ def test_oldest_eight_camera_view_expires_control_without_physical_output(tmp_pa
             return VehicleState(now, 0, 0, True, False)
     frame = bundle(1.03)
     frame.views["rear"].received_at = 1.0
-    loop = ControlLoop(copy.deepcopy(DEFAULTS), Feedback(), tmp_path)
+    cfg = copy.deepcopy(DEFAULTS)
+    cfg["safety"] = {"mode": "diagnostic_local_only"}
+    loop = ControlLoop(cfg, Feedback(), tmp_path)
     loop.publish(Plan(np.array([[0, 0], [.5, 0], [1, 0]]), .4, True, "clear_path"), frame.received_at)
     assert loop.step(1.1)["command"]["enabled"]
     result = loop.step(1.21)

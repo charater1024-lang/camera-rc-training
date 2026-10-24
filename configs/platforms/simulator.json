@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "platform": "simulator",
+  "physical_output": false,
+  "training_started": false,
+  "vehicle_measurements": {
+    "wheelbase_m": null,
+    "width_m": null,
+    "length_m": null,
+    "min_braking_deceleration_mps2": null,
+    "steering_delay_s": null
+  },
+  "sensor_inventory": [],
+  "status": "synthetic_only",
+  "allowed_validation_scope": "synthetic_closed_loop",
+  "max_speed_mps": 41.666666666666664
+}

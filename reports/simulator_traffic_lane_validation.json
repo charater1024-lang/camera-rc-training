@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "local_date": "2026-10-24",
+  "scope": "synthetic_lane_assignment_and_small_rule_based_traffic_fixture",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.14",
+    "torch_used": false
+  },
+  "software_validation": {
+    "full_simulator_suite": {
+      "passed": 255,
+      "failed": 0,
+      "elapsed_s": 166.08,
+      "selection": "all test_simulator*.py at initial collection before three additional traffic cases",
+      "command": "PYTHONPATH=src;runs/simulator-dev-tools python -m pytest <selection> -q --tb=short -p no:cacheprovider --basetemp=runs/traffic-lanes-regression-20261024-02"
+    },
+    "final_traffic_focus": {
+      "passed": 13,
+      "failed": 0,
+      "elapsed_s": 1.75,
+      "command": "PYTHONPATH=src;runs/simulator-dev-tools python -m pytest tests/test_simulator_traffic.py -q -p no:cacheprovider --basetemp=runs/traffic-lanes-final-focus-20261024-04"
+    },
+    "unique_python_cases_passed": 258,
+    "collection_summary": "258 tests collected in 0.44s",
+    "ui_node": {
+      "passed": 17,
+      "failed": 0,
+      "command": "node --test tests/simulator_ui.test.cjs"
+    },
+    "full_repository_suite_run": false
+  },
+  "functional_episode": {
+    "scenario": "traffic_interaction",
+    "seed": 42,
+    "steps": 260,
+    "sim_time_s": 26.0,
+    "metrics": {
+      "distance_m": 13.384827511838356,
+      "collisions": 0,
+      "offroad_events": 0,
+      "min_clearance_m": 1.8000000000000003,
+      "interventions": 1,
+      "goal_reached": false
+    },
+    "lane": {
+      "source": "synthetic_assumed_lane_not_measured",
+      "width_m": 3.6,
+      "current": {
+        "outside": false,
+        "center_offset_m": 1.7763568394002505e-15,
+        "max_body_offset_m": 0.9,
+        "clearance_m": 0.9
+      },
+      "autonomous": {
+        "samples": 260,
+        "duration_s": 26.0000000000001,
+        "inside_pct": 100.0,
+        "departure_events": 0,
+        "outside_time_s": 0.0
+      },
+      "training": {
+        "status": "not_trained",
+        "model_loaded": false,
+        "label_space": "ego_lane_v1"
+      },
+      "guard": {
+        "allowed": true,
+        "checked": true,
+        "direction_allowed": true,
+        "reason": null,
+        "scope": "synthetic_path_guard"
+      }
+    },
+    "traffic": {
+      "source": "synthetic_rule_based_traffic_not_social_validation",
+      "time_s": 26.000000000001265,
+      "signal": {
+        "vehicles": "green",
+        "pedestrians": "wait",
+        "phase_s": 2.0000000000012648,
+        "cycle_s": 24.0
+      },
+      "actor_contact_events": 0,
+      "crosswalk": {
+        "x_m": 32.0,
+        "x_min_m": 30.5,
+        "x_max_m": 33.5,
+        "y_min_m": -1.8,
+        "y_max_m": 5.4
+      },
+      "ego_stop_line_x_m": 27.0,
+      "pedestrian_waiting_for_vehicle": false,
+      "pedestrian_state": "arrived",
+      "rules": [
+        "lane following",
+        "bounded acceleration and braking",
+        "same-lane following gap",
+        "red-signal stopping",
+        "pedestrian crossing clearance"
+      ],
+      "limitations": [
+        "One small straight intersection fixture; no calibrated human behavior, route planning, lane changes or urban traffic validation.",
+        "Existing conservative circular safety review can stop for adjacent-lane traffic. It is not relaxed by this fixture."
+      ]
+    },
+    "goal_completed": false,
+    "notes": [
+      "Ego stopped conservatively under existing shadow review; no avoidance or goal completion claim.",
+      "Pedestrian completes one crossing without respawn; cars follow assigned directions, signal and following-gap rules."
+    ]
+  },
+  "browser_validation": {
+    "engine": "in-app browser via CUA",
+    "sim_time_s": 12.1,
+    "running": false,
+    "signal": {
+      "vehicles": "red",
+      "pedestrians": "walk",
+      "phase_s": 12.099999999999786,
+      "cycle_s": 24.0
+    },
+    "pedestrian": "crossing",
+    "observed_objects": [
+      {
+        "id": "following_car",
+        "kind": "vehicle",
+        "x_m": 7.174921061420035,
+        "y_m": 0.0,
+        "lane_id": "ego_forward",
+        "radius_m": 2.2,
+        "vx_mps": 0.14087999594636477,
+        "vy_mps": 0.0,
+        "yaw_rad": 0.0,
+        "acceleration_bound_mps2": 3.0,
+        "distance_m": 6.2099064504183215,
+        "relative_forward_m": -6.2099064504183215,
+        "relative_left_m": 0.0,
+        "speed_kmh": 0.5071679854069132,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": false,
+        "camera_box_xyxy": null
+      },
+      {
+        "id": "oncoming_car",
+        "kind": "vehicle",
+        "x_m": 1.3333500000013894,
+        "y_m": 3.6,
+        "lane_id": "opposing_reverse",
+        "radius_m": 2.2,
+        "vx_mps": -7.0,
+        "vy_mps": 0.0,
+        "yaw_rad": 3.141592653589793,
+        "acceleration_bound_mps2": 3.0,
+        "distance_m": 12.57768302265215,
+        "relative_forward_m": -12.051477511836968,
+        "relative_left_m": 3.6,
+        "speed_kmh": 25.2,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": false,
+        "camera_box_xyxy": null
+      },
+      {
+        "id": "crossing_person",
+        "kind": "pedestrian",
+        "x_m": 32.0,
+        "y_m": 4.487600000001869,
+        "radius_m": 0.3,
+        "vx_mps": 0.0,
+        "vy_mps": -1.249999999999929,
+        "lane_id": "crosswalk",
+        "acceleration_bound_mps2": 5.0,
+        "distance_m": 19.14845164821498,
+        "relative_forward_m": 18.615172488161644,
+        "relative_left_m": 4.487600000001869,
+        "speed_kmh": 4.499999999999744,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": false,
+        "camera_box_xyxy": [
+          142.4951866493157,
+          49.75316596120827,
+          144.68895555448876,
+          55.96884452586522
+        ]
+      },
+      {
+        "id": "lead_car",
+        "kind": "vehicle",
+        "x_m": 87.6666500000019,
+        "y_m": 0.0,
+        "lane_id": "ego_forward",
+        "radius_m": 2.2,
+        "vx_mps": 6.0,
+        "vy_mps": 0.0,
+        "yaw_rad": 0.0,
+        "acceleration_bound_mps2": 3.0,
+        "distance_m": 74.28182248816354,
+        "relative_forward_m": 74.28182248816354,
+        "relative_left_m": 0.0,
+        "speed_kmh": 21.6,
+        "confidence": null,
+        "track_identity_source": "synthetic_actor_id",
+        "near_reference_route": true,
+        "camera_box_xyxy": [
+          157.5336882763319,
+          46.84973379275108,
+          162.4663117236681,
+          48.36315235045652
+        ]
+      }
+    ],
+    "screenshots": [
+      "assets/traffic-lanes-ui.png",
+      "assets/traffic-camera-ui.png"
+    ],
+    "checks": [
+      "lane divider differs from ego lane center in map and camera",
+      "opposite travel arrow and ego lane assignment displayed",
+      "cars move in opposite assigned directions",
+      "pedestrian remains stationary initially and is observed crossing at4.5km/h during walk phase",
+      "following car slows near stopped ego",
+      "vehicle red and pedestrian walk labels match engine state",
+      "no console warnings or errors"
+    ]
+  },
+  "changes": {
+    "existing_issue": "Camera road-centre paint disagreed with assumed ego lane guard; no explicit travel-direction veto; legacy background motion mostly stationary or oscillatory.",
+    "lane_assignment": "Ego3.6m forward lane; adjacent assumed reverse lane3.6m,3.0m on Seoul reference; not surveyed or verified legal lanes.",
+    "added_vetoes": [
+      "wrong_way_veto",
+      "traffic_signal_stop",
+      "traffic fixture6m/s proposal cap"
+    ],
+    "contact_geometry": "New traffic fixture only: assumed vehicle rectangle SAT bound and rectangle-circle pedestrian contact; existing circular shadow safety unchanged."
+  },
+  "limitations": [
+    "No learned lane perception; explicit world-based synthetic lane assignment only",
+    "The new interaction model is one straight crossing, not validated social/urban traffic behavior",
+    "Existing regional background dynamics remain legacy fixtures",
+    "Existing conservative circular safety review can stop for normal adjacent-lane traffic; not weakened to force completion",
+    "Manual mode retains existing negative-control safety override",
+    "No lane changes, turning, calibrated behavior or real-world driving assessment"
+  ],
+  "training_executed": false,
+  "automatic_model_replacement": false,
+  "hardware_modules_opened": false,
+  "actuation_enabled": false,
+  "source_sha256": {
+    "src/camera_rc/simulator/traffic.py": "e59fd9a10e04c36134f725fd6bd6f33511b287661c06e6cd19e606754ea6bda0",
+    "src/camera_rc/simulator/lane.py": "1231aa3570f25c349669cef62271e8bc38de68be1dd083d4926a105dcbeb04cb",
+    "src/camera_rc/simulator/engine.py": "8c8588d93ea5a3e1fd2d29cf6776900bfa7385bcd2474d7c6aadebf3165c6c2a",
+    "src/camera_rc/simulator/rendering.py": "7e46b5d2eeefdc5b972c96d57c04120992957c2d84d24768d29e7618a2ec08d8",
+    "src/camera_rc/simulator/assets/app.js": "a01b77024f978b04b77c6bf39a6e6dca836def34d51e001f1ef4e13d4d0db8d9",
+    "src/camera_rc/simulator/assets/index.html": "2a4f50aef1255ff294f095f17346a444c8af5ff5561adea546ba730db698557e",
+    "src/camera_rc/simulator/assets/style.css": "3f2c3b734f5b7c3e4dc202be60c96da8ea082e5e2a805d96efeb922026b31f55",
+    "tests/test_simulator_traffic.py": "36474065cd72f6775c72cf3455bd32899556e4a9cc3f221a2b939e1e79df3e39",
+    "tests/simulator_ui.test.cjs": "aa33b5096dff84c9bd7f79409fd182db5c8dea2aa90d957403cb97c3b0ab8715",
+    "docs/TRAFFIC_AND_LANES.md": "2c559da176af5146303a8953ab753bcfa5df10e21cea10db35840d6b5fd6b056",
+    "docs/LANE_KEEPING.md": "75323d8677a8a3caad62429355b4c7e5b4c2e6f8c4f466a1faa2d8e1748111b8",
+    "docs/SIMULATOR.md": "b700bc33fc8aed67380ec6342b9f775b62fb8dd0106572cf6a107a53fc4ef845",
+    "README.md": "8fe491123d8be885636b7b19137acea3f10106e1da38da4f505d85973d2fbeed",
+    "assets/traffic-lanes-ui.png": "cbaa8e7e04f778fbd92d2bc21ee86f153c8295ef8c481b214c337a03b6ba04d5",
+    "assets/traffic-camera-ui.png": "91f86ae97f64fa0ee67b23e1ebd031e953206f5ba1a59eaa002c115404ea5f42"
+  }
+}

@@ -196,4 +196,5 @@ def test_multiview_actuation_requires_timing_and_every_real_calibration(tmp_path
         check_actuation(cfg, True)
     for calibration in cfg["calibrations"].values():
         calibration["diagnostic_only"] = False
-    check_actuation(cfg, True)
+    with pytest.raises(ValueError, match="Physical evidence producers"):
+        check_actuation(cfg, True)

@@ -62,23 +62,31 @@ def main(argv=None):
         sub.add_argument("--perception-config", type=Path, help="Trusted local perception JSON; absent means synthetic demo")
         sub.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
         sub.add_argument("--allocator-gib", type=float, default=3.)
+        sub.add_argument("--speed-mode", choices=["automatic", "user"], default="automatic")
+        sub.add_argument("--target-speed-kmh", type=float, default=None, help="Requested synthetic speed ceiling, 0..150 km/h")
         if name == "serve":
             sub.add_argument("--port", type=int, default=8766)
         else:
             sub.add_argument("--steps", type=int, default=600)
     args = parser.parse_args(argv)
+    from .speed import validate_speed
+    try:
+        validate_speed(args.speed_mode,150. if args.target_speed_kmh is None else args.target_speed_kmh)
+    except ValueError as exc:
+        parser.error(str(exc))
     if not 0 <= args.seed <= 2**31-1:
         parser.error("seed must be in 0..2147483647")
     if not .5 <= args.allocator_gib <= 16:
         parser.error("allocator-gib must be in 0.5..16")
     if args.output.exists():
         parser.error("Output already exists; choose a fresh folder")
-    if args.command == "evaluate" and not 1 <= args.steps <= 2000:
-        parser.error("steps must be in 1..2000")
+    if args.command == "evaluate" and not 1 <= args.steps <= 6000:
+        parser.error("steps must be in 1..6000")
     model = load_perception(args.perception_config, args.device, args.allocator_gib)
     if args.command == "serve":
         from .server import serve
-        engine = Engine(scenario=args.scenario or "clear", seed=args.seed, perception=model, output_dir=args.output)
+        engine = Engine(scenario=args.scenario or "clear", seed=args.seed, perception=model, output_dir=args.output,
+                        speed_mode=args.speed_mode,target_speed_kmh=args.target_speed_kmh)
         try:
             serve(engine, SCENARIOS, args.port)
         finally:
@@ -88,7 +96,8 @@ def main(argv=None):
     names = [args.scenario] if args.scenario else [s["id"] for s in SCENARIOS]
     reports = []
     for name in names:
-        engine = Engine(scenario=name, seed=args.seed, perception=model, output_dir=args.output/name)
+        engine = Engine(scenario=name, seed=args.seed, perception=model, output_dir=args.output/name,
+                        speed_mode=args.speed_mode,target_speed_kmh=args.target_speed_kmh)
         try:
             for _ in range(args.steps):
                 if engine.step().get("finished"):

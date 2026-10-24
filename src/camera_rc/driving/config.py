@@ -10,7 +10,8 @@ DEFAULTS = {
     "device": "auto",
     "hardware": {"profile": "generic_discrete", "memory_architecture": "discrete"},
     "models_validated_for_control": False,
-    "perception": {"segmentation_backend": "native", "drivable_class_ids": [0], "half": True, "allow_diagnostic": False,
+    "safety": {"mode": "required"},
+    "perception": {"segmentation_backend": "native", "expected_label_space_id": "road_surface_v1", "drivable_class_ids": [0], "half": True, "allow_diagnostic": False,
                    "detection_image_size": 320, "detection_confidence": 0.35},
     "source": {"kind": "camera", "index": 0, "width": 640, "height": 360, "fps": 30},
     "runtime": {"control_hz": 50, "perception_hz": 20, "frame_timeout_s": 0.25,
@@ -192,3 +193,4 @@ def check_actuation(cfg, actuate):
         raise ValueError("Unobserved ground cannot be assumed clear for physical actuation")
     if cfg["transport"].get("calibration_confirmed") is not True:
         raise ValueError("Measure steering, propulsion, brakes and telemetry before confirming actuator calibration")
+    raise ValueError("Physical evidence producers and end-to-end vehicle validation are not implemented; physical output remains blocked")

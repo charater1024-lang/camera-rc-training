@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "scope": "full_repository_synthetic_mocked_cpu_software_regression_not_field_validation",
+  "base_commit": "e0c5f80bb71977096ce79fe94c20330eeb7dd6c3",
+  "python": {
+    "command": "python -m pytest tests integrations/bevformer/test_run.py -q -p no:cacheprovider --basetemp=runs/github-publication-check-20261024-final",
+    "junit": "runs/github-publication-check-20261024-final.xml",
+    "tests": 2030,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 2,
+    "passed": 2028,
+    "elapsed_s": 281.31,
+    "skipped_details": [
+      {
+        "test": "tests.test_a2d2::test_symlink_escape_is_rejected",
+        "reason": "Symlink creation unavailable on this host"
+      },
+      {
+        "test": "tests.test_prepare_yolo_semantic::test_img2label_paths_matches_installed_semantic_contract",
+        "reason": "Optional Ultralytics installation unavailable"
+      }
+    ]
+  },
+  "ui": {
+    "command": "node --test tests/simulator_ui.test.cjs",
+    "passed": 18,
+    "failed": 0
+  },
+  "cli_help_checks": {
+    "camera_rc": true,
+    "camera_rc_simulator": true
+  },
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.14",
+    "packages": {
+      "torch": "2.14.1",
+      "torchvision": "0.29.1",
+      "numpy": "2.3.5",
+      "Pillow": "12.3.0",
+      "pytest": "9.1.1",
+      "opencv-python-headless": "5.0.0.93",
+      "psutil": "7.2.2",
+      "requests": "2.34.2",
+      "PyYAML": "6.0.3"
+    },
+    "PYTHONUTF8": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "profile": "isolated ignored test dependencies; not a target GPU benchmark or pinned production environment"
+  },
+  "release_compatibility_fixes": [
+    "Preserve label_space_id and labels during checkpoint export.",
+    "Migrate diagnostic fixtures to explicit road_surface_v1 two-class semantics.",
+    "Explicit diagnostic_local_only mode for ideal-sensor fixtures; normal required safety mode and physical-output block retained."
+  ],
+  "earlier_attempts": [
+    {
+      "phase": "initial_collection",
+      "errors": 7,
+      "cause": "Missing Requests/PyYAML test dependencies; resolved in isolated environment."
+    },
+    {
+      "phase": "initial_full_suite",
+      "passed": 1966,
+      "failed": 62,
+      "skipped": 2,
+      "cause": "Windows encoding, missing package metadata and legacy semantic/diagnostic contracts."
+    },
+    {
+      "phase": "failure_recheck",
+      "passed": 62,
+      "failed": 0
+    }
+  ],
+  "code_sha256": {
+    ".github/workflows/cpu-tests.yml": "93abee7a269c7ccf11110a60e12156a0e0fa6e6a1c2f87fbb063c41e88e95843",
+    "scripts/audit_autonomy_readiness.py": "26d366f61aec8b7c9e2dbf5dfe52f5dbe0301d67dbca84caa240ecc7a27024a0",
+    "scripts/prepare_lane_training.py": "0e052e5e90936ad5b47f1b866f86bab1a876f73b829c889d273880f813df3313",
+    "src/camera_rc/driving/behavior.py": "247b33f52458aa5d74ff1186f2b5e13e410ea90d1a967d6cbe0a32c932d79106",
+    "src/camera_rc/driving/benchmark.py": "678f4dac2bf7f7ad5fea901442b6d7d394dcebc147d364fc9b10d61a6b50399f",
+    "src/camera_rc/driving/config.py": "046bb589a4769e2b163cc45ba31ddc3f2301cbfc4e658d70f9870ada278713c2",
+    "src/camera_rc/driving/export.py": "83fa43ed07239a027d05bceff45b45233749f27022172a1214a2a6f73a65734f",
+    "src/camera_rc/driving/label_contract.py": "f3eec7b6b91324759a10700a0366ed5c67cd30c791ecdeba34d7953c72a399c9",
+    "src/camera_rc/driving/metric_tracking.py": "bed8fbce948d51f06933cf6eedbe2349d4ee55ff91f765907635bb235d4a767d",
+    "src/camera_rc/driving/perception.py": "d55d22e6363b6210915e56118aa0793099cc9f435d2dc6994cb60ddef29974fc",
+    "src/camera_rc/driving/pipeline.py": "1cf170f7aa6529c9bfe335c71f3153eeae65fb2dab0cc9fb2a60124cc0d74f57",
+    "src/camera_rc/driving/readiness.py": "98e24609b284152f010423083d99f923ebf94913a548f7bb4c775495805226f1",
+    "src/camera_rc/driving/route_graph.py": "9bcc2d8fbf9e4c0f085a7fa25fe507a1b231c744283bf3ae84fdfc3dd0f0e2a4",
+    "src/camera_rc/driving/runtime.py": "f9a6c8bbebfd8868595cfdd7daae9968bc542a0c3ab02c1a4fdf0c7d63d3d022",
+    "src/camera_rc/driving/safety_boundary.py": "f06f6c2f4f91001be2f2aaaf74c1dca122894ff6fbd005088d7da96cad7c940d",
+    "src/camera_rc/driving/shadow_safety.py": "77ebb18ac80d28c57c1694516e68ff10756402dbd4e6bb6ea7506da15641db1b",
+    "src/camera_rc/driving/simulation.py": "e9e7c550b9d98d56800269b7ef5a20c4bd53a4f0e5217ab2168767a919070403",
+    "src/camera_rc/driving/sources.py": "9085829d27f43e7698c0e9c10dbe973c8b307f40a4351418437bc6afc74fe210",
+    "src/camera_rc/driving/trajectory_checks.py": "b6e87db574ef20e9d6d75e576a1de713f2b4162442d6d56bc54c92ab6a24a0de",
+    "src/camera_rc/driving/types.py": "522a29078f70c3731ff6c4feaf76174acac0c41bfb41b10d6aefd70f525a7b94",
+    "src/camera_rc/joint_policy/training.py": "ae602462febebe46c22172c9a2b933ac5aed6efbe169e97f5023f0e236d6e22a",
+    "src/camera_rc/lane_training.py": "e9706f64053bdeb1347275d49fe1151d30adef32e2b1b20c48755c7bacd0009a",
+    "src/camera_rc/simulator/assets/app.js": "e9409b4a93ea54e747a3daacbcf52577970e7f7cc4435b5dfc480c470d28f53c",
+    "src/camera_rc/simulator/cli.py": "33882fc021fa02ad1655915467d7a1329dcca6fbdde8c96bd6c1495a4044049b",
+    "src/camera_rc/simulator/engine.py": "8c8588d93ea5a3e1fd2d29cf6776900bfa7385bcd2474d7c6aadebf3165c6c2a",
+    "src/camera_rc/simulator/lane.py": "1231aa3570f25c349669cef62271e8bc38de68be1dd083d4926a105dcbeb04cb",
+    "src/camera_rc/simulator/objects.py": "61dce95bd40fe0b25d6391e2039e75b3a3b108f2ab4d6b7f3de35010ae5ef778",
+    "src/camera_rc/simulator/performance.py": "4e46b5bd0b73e74e0cb57f9c4f4637decfc2f8833e821562074df21977e83659",
+    "src/camera_rc/simulator/progress.py": "e3edaed515dc3f1698ee24b19339c710807482cc0fa4f3d2171cf0788f3333cc",
+    "src/camera_rc/simulator/rendering.py": "7e46b5d2eeefdc5b972c96d57c04120992957c2d84d24768d29e7618a2ec08d8",
+    "src/camera_rc/simulator/server.py": "462fadffaef28ef805afb7cc5eb641c755f066d0389a83271043ed9750c6c0f6",
+    "src/camera_rc/simulator/speed.py": "87c9de9d132abe376ea38c44cb10473d26e3104514250af762b939522172802a",
+    "src/camera_rc/simulator/terrain.py": "1998521a8ed3b0b2c979e67b3a15bf034bd4a0ec8e7b8b8f4c869ad5e9075e9c",
+    "src/camera_rc/simulator/traffic.py": "e59fd9a10e04c36134f725fd6bd6f33511b287661c06e6cd19e606754ea6bda0",
+    "src/camera_rc/simulator/trajectory.py": "ae2d513aec1e5bcb1a3a1042ce1ecd4877d6fddeb3ba354431173afbdd1160bd",
+    "tests/test_autonomy_improvements.py": "8cfb5a85e98fe5302355cc1fe0ee26323db2cd62e2a47a8399238de1940fbef1",
+    "tests/test_eight_camera_runtime.py": "fca826413de4f667d7717c7f2887c6eea1022b7d92f62e6bb7aa589301c368dd",
+    "tests/test_export.py": "eecc55455244e2bf25bb80636d47a07d3977328060cc8a3d1e7681db9209fcfc",
+    "tests/test_joint_policy_evaluation_contract.py": "81a5e0a6c8cff4c79325a771012a933752a1d2d9a3ab2ac1f929937f657712ea",
+    "tests/test_lane_training_preparation.py": "afaf1e0c77b8e43b2915cb4b00330d30099d0e8643446d8e69d665867ad9f10d",
+    "tests/test_multisource.py": "a3dd37c7d38c58c0373789defae22158975cbd341413fdc5f2fe9fa6f357b84c",
+    "tests/test_perception.py": "6bc0b806a6497452a3942de4f441e43e00c5cc50a28af9adfb7e585fdf065e23",
+    "tests/test_runtime_contract.py": "6026c08f1e3a20282f02fc235aec183a9db3e6d802197fcebcb2dc1c8acc5c87",
+    "tests/test_simulator_lane_engine.py": "f9bcba60c55d783fe65cc9d4d88be400a32df47249cfdc5819c49c129f106c56",
+    "tests/test_simulator_lane_geometry.py": "0d6e184ef2e5f46458dc98cd32e73562857a0d3d0362f8cb062bbbfcc01f6bd4",
+    "tests/test_simulator_objects.py": "db85e3b30ff3092d24c5e46e1b86783ec3e5b5dfa68849fc65907dab0cd46abb",
+    "tests/test_simulator_performance.py": "578a04f9d852aa3c626c4e15eb7210568a409fe1ef462d2e1a4593aa98639485",
+    "tests/test_simulator_performance_tracker.py": "6ed4a5910eeaa8b57fd30fc28f16e1b108d89219db6b5c818df8fcf07f1e0a5c",
+    "tests/test_simulator_server.py": "5c86893dfe93f712ed9cb951a211eecf3a8c8a801cf680e4188eaaa784955c2c",
+    "tests/test_simulator_speed.py": "69964c18c3d005e2afd1bcefdda1163626d7de3ae4a06b7cb5791d368ac1944c",
+    "tests/test_simulator_terrain.py": "188b6be1d3e08c3f0f351a669bce6ca04ee73842141e26f79640411c73419db8",
+    "tests/test_simulator_traffic.py": "36474065cd72f6775c72cf3455bd32899556e4a9cc3f221a2b939e1e79df3e39",
+    "tests/test_simulator_trajectory.py": "2d79cb24f5ca47e53327db1afaba44639a5230ed644e939963329cdd781ae33f",
+    "tests/test_yolo_semantic_runtime.py": "aeaaf592065f2708f27df50a0bdce5e5e76da9a7848cfcfcaeb2044cb5749d3d"
+  },
+  "physical_output": false,
+  "real_data_training_started": false,
+  "model_adoption_performed": false,
+  "licensed_data_or_model_weights_published": false,
+  "limitations": [
+    "CPU synthetic/mock software tests do not validate real perception, braking, timing, road safety or target-hardware latency.",
+    "Skipped tests are not counted as passed.",
+    "Configured Linux CPU and Node.js 22 Actions checks are separate from this local result."
+  ]
+}
